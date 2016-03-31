@@ -1,0 +1,37 @@
+{
+  "name": "autocannon",
+  "version": "0.0.1",
+  "description": "Yet another HTTP benchmarking tool written in Node.js",
+  "main": "autocannon.js",
+  "bin": {
+    "autocannon": "autocannon.js"
+  },
+  "scripts": {
+    "test": "standard && tap test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcollina/autocannon.git"
+  },
+  "keywords": [
+    "http",
+    "soak",
+    "load",
+    "test"
+  ],
+  "author": "Matteo Collina <hello@matteocollina.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mcollina/autocannon/issues"
+  },
+  "homepage": "https://github.com/mcollina/autocannon#readme",
+  "devDependencies": {
+    "pre-commit": "^1.1.2",
+    "standard": "^6.0.8",
+    "tap": "^5.7.0"
+  },
+  "dependencies": {
+    "minimist": "^1.2.0",
+    "native-hdr-histogram": "^0.1.1"
+  }
+}
