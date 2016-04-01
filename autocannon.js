@@ -51,8 +51,8 @@ function run (opts, cb) {
     clearInterval(interval)
     clients.forEach((client) => client.destroy())
     cb(null, {
-      requestsPerSecond: histAsObj(requests),
-      latencies: histAsObj(latencies),
+      requests: histAsObj(requests),
+      latency: histAsObj(latencies),
       throughput: histAsObj(throughput),
       errors: errors
     })
