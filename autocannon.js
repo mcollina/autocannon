@@ -3,19 +3,14 @@
 'use strict'
 
 const minimist = require('minimist')
-const http = require('http')
 const Histogram = require('native-hdr-histogram')
 const URL = require('url')
-const once = require('once')
+const Client = require('./lib/myhttp')
 
 function run (opts, cb) {
   const latencies = new Histogram(1, 10000, 3)
   const requests = new Histogram(1, 1000000, 3)
-  const throughput = new Histogram(1, 1000000, 3)
-  const agent = new http.Agent({
-    keepAlive: true,
-    maxSockets: opts.connections
-  })
+  const throughput = new Histogram(1, 1000000000, 1)
   const url = URL.parse(opts.url)
   let counter = 0
   let bytes = 0
@@ -27,70 +22,38 @@ function run (opts, cb) {
     bytes = 0
   }, 1000)
 
-  let stop = false
-  let onStop = once(() => {
+  if (!opts.connections) {
+    cb(new Error('connections > 0'))
+    return
+  }
+
+  let clients = []
+  for (let i = 0; i < opts.connections; i++) {
+    let client = new Client(url)
+    client.on('response', record)
+    client.on('error', onError)
+    clients.push(client)
+  }
+
+  function record (statusCode, resBytes, responseTime) {
+    latencies.record(responseTime)
+    bytes += resBytes
+    counter++
+  }
+
+  function onError () {
+    errors++
+  }
+
+  setTimeout(() => {
+    clearInterval(interval)
+    clients.forEach((client) => client.destroy())
     cb(null, {
       requestsPerSecond: histAsObj(requests),
       latencies: histAsObj(latencies),
       throughput: histAsObj(throughput),
       errors: errors
     })
-  })
-
-  url.headers = {
-    'Connection': 'keep-alive'
-  }
-  url.agent = agent
-
-  if (!opts.connections) {
-    cb(new Error('connections > 0'))
-    return
-  }
-
-  for (let i = 0; i < opts.connections; i++) {
-    launch()
-  }
-
-  function next (res) {
-    let req = this
-    res.on('data', countThroughput)
-    res.on('end', record)
-    res.on('error', onError)
-    res.startTime = req.startTime
-  }
-
-  function countThroughput (buf) {
-    bytes += buf.length
-  }
-
-  function record () {
-    let end = process.hrtime(this.startTime)
-    let responseTime = end[0] * 1e3 + end[1] / 1e6
-    latencies.record(responseTime)
-    counter++
-    setImmediate(launch)
-  }
-
-  function onError () {
-    errors++
-    setImmediate(launch)
-  }
-
-  function launch () {
-    if (!stop) {
-      let req = http.request(url, next)
-
-      req.end()
-      req.on('error', onError)
-      req.startTime = process.hrtime()
-    } else {
-      onStop()
-    }
-  }
-
-  setTimeout(() => {
-    stop = true
-    clearInterval(interval)
   }, opts.duration * 1000)
 }
 

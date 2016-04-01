@@ -31,8 +31,8 @@
     "tap": "^5.7.0"
   },
   "dependencies": {
+    "http-parser-js": "^0.4.2",
     "minimist": "^1.2.0",
-    "native-hdr-histogram": "^0.1.1",
-    "once": "^1.3.3"
+    "native-hdr-histogram": "^0.1.1"
   }
 }
