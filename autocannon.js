@@ -27,6 +27,8 @@ function run (opts, cb) {
     return
   }
 
+  url.pipelining = opts.pipelining
+
   let clients = []
   for (let i = 0; i < opts.connections; i++) {
     let client = new Client(url)
@@ -72,10 +74,12 @@ function start () {
   const argv = minimist(process.argv.slice(2), {
     alias: {
       connections: 'c',
+      pipelining: 'p',
       duration: 'd'
     },
     default: {
       connections: 10,
+      pipelining: 1,
       duration: 10
     }
   })
