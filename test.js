@@ -31,6 +31,27 @@ test('client calls a server twice', (t) => {
   })
 })
 
+test('myhttp client automatically reconnects', (t) => {
+  t.plan(4)
+
+  const client = new Client(server.address())
+  let count = 0
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    t.ok(length > 'hello world'.length, 'length includes the headers')
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+
+  server.once('request', function (req, res) {
+    setImmediate(() => {
+      req.socket.destroy()
+    })
+  })
+})
+
 test('autocannon', (t) => {
   autocannon({
     url: 'http://localhost:' + server.address().port,
