@@ -3,3 +3,13 @@ sudo: false
 node_js:
   - "4"
   - "5"
+env:
+  - CC=gcc-4.8 CXX=g++-4.8
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.8
+      - g++-4.8
+      - zlib1g-dev
