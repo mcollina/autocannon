@@ -4,37 +4,36 @@
 
 const minimist = require('minimist')
 const http = require('http')
-const https = require('https')
 const Histogram = require('native-hdr-histogram')
-const eos = require('end-of-stream')
 const URL = require('url')
 const once = require('once')
 
 function run (opts, cb) {
   const latencies = new Histogram(1, 10000, 3)
   const requests = new Histogram(1, 1000000, 3)
+  const throughput = new Histogram(1, 1000000, 3)
   const agent = new http.Agent({
     keepAlive: true,
-    maxSockets: opts.connections + 1
+    maxSockets: opts.connections
   })
   const url = URL.parse(opts.url)
   let counter = 0
+  let bytes = 0
+  let errors = 0
   const interval = setInterval(() => {
     requests.record(counter)
+    throughput.record(bytes)
     counter = 0
+    bytes = 0
   }, 1000)
 
   let stop = false
   let onStop = once(() => {
     cb(null, {
-      requestsPerSecond: {
-        average: requests.mean(),
-        stdDev: requests.stddev(),
-      },
-      latencies: {
-        average: latencies.mean(),
-        stdDev: requests.stddev()
-      }
+      requestsPerSecond: histAsObj(requests),
+      latencies: histAsObj(latencies),
+      throughput: histAsObj(throughput),
+      errors: errors
     })
   })
 
@@ -54,29 +53,35 @@ function run (opts, cb) {
 
   function next (res) {
     let req = this
+    res.on('data', countThroughput)
     res.on('end', record)
-    res.resume()
+    res.on('error', onError)
     res.startTime = req.startTime
+  }
+
+  function countThroughput (buf) {
+    bytes += buf.length
   }
 
   function record () {
     let end = process.hrtime(this.startTime)
     let responseTime = end[0] * 1e3 + end[1] / 1e6
     latencies.record(responseTime)
-    launch()
+    counter++
+    setImmediate(launch)
   }
 
-  function onError (err) {
-    launch()
+  function onError () {
+    errors++
+    setImmediate(launch)
   }
 
   function launch () {
     if (!stop) {
-      counter++
-      let req = http.request(url)
-        .on('response', next)
+      let req = http.request(url, next)
 
       req.end()
+      req.on('error', onError)
       req.startTime = process.hrtime()
     } else {
       onStop()
@@ -89,13 +94,22 @@ function run (opts, cb) {
   }, opts.duration * 1000)
 }
 
+function histAsObj (hist) {
+  return {
+    average: hist.mean(),
+    stddev: hist.stddev(),
+    min: hist.min(),
+    max: hist.max()
+  }
+}
+
 module.exports = run
 
 function start () {
   const argv = minimist(process.argv.slice(2), {
     alias: {
       connections: 'c',
-      duration: 'd',
+      duration: 'd'
     },
     default: {
       connections: 10,
