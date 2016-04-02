@@ -88,8 +88,8 @@ function run (opts, cb) {
 
 function histAsObj (hist, total) {
   const result = {
-    average: hist.mean(),
-    stddev: hist.stddev(),
+    average: Math.ceil(hist.mean() * 100) / 100,
+    stddev: Math.ceil(hist.stddev() * 100) / 100,
     min: hist.min(),
     max: hist.max()
   }
