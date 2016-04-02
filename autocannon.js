@@ -6,8 +6,16 @@ const minimist = require('minimist')
 const Histogram = require('native-hdr-histogram')
 const URL = require('url')
 const Client = require('./lib/myhttp')
+const EE = require('events').EventEmitter
+const ProgressBar = require('progress')
+const table = require('table')
+const prettyBytes = require('pretty-bytes')
+const si = require('si-tools')
 
 function run (opts, cb) {
+  cb = cb || noop
+
+  const tracker = new EE()
   const latencies = new Histogram(1, 10000, 3)
   const requests = new Histogram(1, 1000000, 3)
   const throughput = new Histogram(1, 1000000000, 1)
@@ -37,11 +45,12 @@ function run (opts, cb) {
     throughput.record(bytes)
     counter = 0
     bytes = 0
+    tracker.emit('tick')
 
     if (stop) {
       clearInterval(interval)
       clients.forEach((client) => client.destroy())
-      cb(null, {
+      let result = {
         requests: histAsObj(requests, totalRequests),
         latency: histAsObj(latencies),
         throughput: histAsObj(throughput, totalBytes),
@@ -51,7 +60,9 @@ function run (opts, cb) {
         pipelining: opts.pipelining,
         '2xx': statusCodes[1],
         'non2xx': statusCodes[0] + statusCodes[2] + statusCodes[3] + statusCodes[4]
-      })
+      }
+      tracker.emit('done', result)
+      cb(null, result)
     }
   }, 1000)
 
@@ -84,6 +95,8 @@ function run (opts, cb) {
   setTimeout(() => {
     stop = true
   }, opts.duration * 1000)
+
+  return tracker
 }
 
 function histAsObj (hist, total) {
@@ -101,19 +114,24 @@ function histAsObj (hist, total) {
   return result
 }
 
+function noop () {}
+
 module.exports = run
 
 function start () {
   const argv = minimist(process.argv.slice(2), {
+    boolean: 'json',
     alias: {
       connections: 'c',
       pipelining: 'p',
-      duration: 'd'
+      duration: 'd',
+      json: 'j'
     },
     default: {
       connections: 10,
       pipelining: 1,
-      duration: 10
+      duration: 10,
+      json: false
     }
   })
 
@@ -124,13 +142,72 @@ function start () {
     return
   }
 
-  run(argv, (err, result) => {
+  const tracker = run(argv, (err, result) => {
     if (err) {
       throw err
     }
 
-    console.log(result)
+    function asRow (name, stat) {
+      return [
+        name,
+        stat.average,
+        stat.stddev,
+        stat.max
+      ]
+    }
+
+    if (!argv.json) {
+      const out = table.default([
+        ['Stat', 'Avg', 'Stdev', 'Max'],
+        asRow('Latency (ms)', result.latency),
+        asRow('Req/Sec', result.requests),
+        asRow('Bytes/Sec', asBytes(result.throughput))
+      ], {
+        border: table.getBorderCharacters('void'),
+        columnDefault: {
+          paddingLeft: 0,
+          paddingRight: 1
+        },
+        drawHorizontalLine: () => false
+      })
+
+      console.log(out)
+      if (result.non2xx) {
+        console.log(`${result['2xx']} 2xx responses, ${result.non2xx} non 2xx responses`)
+      }
+      console.log(`${si.format(result.requests.total, '', 0, 0)} requests in ${result.duration}s, ${prettyBytes(result.throughput.total)} read`)
+    } else {
+      console.log(JSON.stringify(result, null, 2))
+    }
   })
+
+  if (!argv.json) {
+    const bar = new ProgressBar('running [:bar] :percent :etas', {
+      width: 20,
+      incomplete: ' ',
+      total: argv.duration,
+      clear: true
+    })
+
+    console.log(`Running ${argv.duration}s test @ ${argv.url}`)
+    console.log(`${argv.connections} connections with ${argv.pipelining} pipelining factor`)
+    console.log()
+
+    bar.tick(0)
+
+    tracker.on('tick', () => {
+      bar.tick()
+    })
+  }
+}
+
+function asBytes (stat) {
+  const result = Object.create(stat)
+  result.average = prettyBytes(stat.average)
+  result.stddev = prettyBytes(stat.stddev)
+  result.max = prettyBytes(stat.max)
+  result.min = prettyBytes(stat.min)
+  return result
 }
 
 if (require.main === module) {

@@ -33,6 +33,10 @@
   "dependencies": {
     "http-parser-js": "^0.4.2",
     "minimist": "^1.2.0",
-    "native-hdr-histogram": "^0.1.1"
+    "native-hdr-histogram": "^0.1.1",
+    "pretty-bytes": "^3.0.1",
+    "progress": "^1.1.8",
+    "si-tools": "^1.1.1",
+    "table": "^3.7.8"
   }
 }
