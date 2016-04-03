@@ -12,12 +12,21 @@ const table = require('table')
 const prettyBytes = require('pretty-bytes')
 const si = require('si-tools')
 const chalk = require('chalk')
+const percentiles = [
+  50,
+  75,
+  90,
+  99,
+  99.9,
+  99.99,
+  99.999
+]
 
 function run (opts, cb) {
   cb = cb || noop
 
   const tracker = new EE()
-  const latencies = new Histogram(1, 10000, 3)
+  const latencies = new Histogram(1, 10000, 5)
   const requests = new Histogram(1, 1000000, 3)
   const throughput = new Histogram(1, 1000000000, 1)
   const statusCodes = [
@@ -53,7 +62,7 @@ function run (opts, cb) {
       clients.forEach((client) => client.destroy())
       let result = {
         requests: histAsObj(requests, totalRequests),
-        latency: histAsObj(latencies),
+        latency: addPercentiles(latencies, histAsObj(latencies)),
         throughput: histAsObj(throughput, totalBytes),
         errors: errors,
         duration: opts.duration,
@@ -115,18 +124,28 @@ function histAsObj (hist, total) {
   return result
 }
 
+function addPercentiles (hist, result) {
+  percentiles.forEach((perc) => {
+    const key = ('p' + perc).replace('.', '')
+    result[key] = hist.percentile(perc)
+  })
+
+  return result
+}
+
 function noop () {}
 
 module.exports = run
 
 function start () {
   const argv = minimist(process.argv.slice(2), {
-    boolean: 'json',
+    boolean: ['json', 'latencies'],
     alias: {
       connections: 'c',
       pipelining: 'p',
       duration: 'd',
-      json: 'j'
+      json: 'j',
+      latencies: 'l'
     },
     default: {
       connections: 10,
@@ -148,18 +167,9 @@ function start () {
       throw err
     }
 
-    function asRow (name, stat) {
-      return [
-        name,
-        stat.average,
-        stat.stddev,
-        stat.max
-      ]
-    }
-
     if (!argv.json) {
       const out = table.default([
-        [chalk.cyan('Stat'), chalk.cyan('Avg'), chalk.cyan('Stdev'), chalk.cyan('Max')],
+        asColor('cyan', ['Stat', 'Avg', 'Stdev', 'Max']),
         asRow(chalk.bold('Latency (ms)'), result.latency),
         asRow(chalk.bold('Req/Sec'), result.requests),
         asRow(chalk.bold('Bytes/Sec'), asBytes(result.throughput))
@@ -173,6 +183,28 @@ function start () {
       })
 
       console.log(out)
+
+      if (argv.latencies) {
+        const latencies = table.default([
+          asColor('cyan', ['Percentile', 'Latency (ms)'])
+        ].concat(percentiles.map((perc) => {
+          const key = ('p' + perc).replace('.', '')
+          return [
+            chalk.bold('' + perc),
+            result.latency[key]
+          ]
+        })), {
+          border: table.getBorderCharacters('void'),
+          columnDefault: {
+            paddingLeft: 0,
+            paddingRight: 6
+          },
+          drawHorizontalLine: () => false
+        })
+
+        console.log(latencies)
+      }
+
       if (result.non2xx) {
         console.log(`${result['2xx']} 2xx responses, ${result.non2xx} non 2xx responses`)
       }
@@ -200,6 +232,19 @@ function start () {
       bar.tick()
     })
   }
+}
+
+function asRow (name, stat) {
+  return [
+    name,
+    stat.average,
+    stat.stddev,
+    stat.max
+  ]
+}
+
+function asColor (color, row) {
+  return row.map((entry) => chalk[color](entry))
 }
 
 function asBytes (stat) {
