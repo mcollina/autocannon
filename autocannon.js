@@ -11,6 +11,7 @@ const ProgressBar = require('progress')
 const table = require('table')
 const prettyBytes = require('pretty-bytes')
 const si = require('si-tools')
+const chalk = require('chalk')
 
 function run (opts, cb) {
   cb = cb || noop
@@ -158,10 +159,10 @@ function start () {
 
     if (!argv.json) {
       const out = table.default([
-        ['Stat', 'Avg', 'Stdev', 'Max'],
-        asRow('Latency (ms)', result.latency),
-        asRow('Req/Sec', result.requests),
-        asRow('Bytes/Sec', asBytes(result.throughput))
+        [chalk.cyan('Stat'), chalk.cyan('Avg'), chalk.cyan('Stdev'), chalk.cyan('Max')],
+        asRow(chalk.bold('Latency (ms)'), result.latency),
+        asRow(chalk.bold('Req/Sec'), result.requests),
+        asRow(chalk.bold('Bytes/Sec'), asBytes(result.throughput))
       ], {
         border: table.getBorderCharacters('void'),
         columnDefault: {
@@ -182,7 +183,7 @@ function start () {
   })
 
   if (!argv.json) {
-    const bar = new ProgressBar('running [:bar] :percent :etas', {
+    const bar = new ProgressBar(`${chalk.green('running')} [:bar] :percent`, {
       width: 20,
       incomplete: ' ',
       total: argv.duration,
