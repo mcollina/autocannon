@@ -5,6 +5,9 @@
 const minimist = require('minimist')
 const Histogram = require('native-hdr-histogram')
 const URL = require('url')
+const fs = require('fs')
+const path = require('path')
+const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const Client = require('./lib/myhttp')
 const EE = require('events').EventEmitter
 const ProgressBar = require('progress')
@@ -139,13 +142,14 @@ module.exports = run
 
 function start () {
   const argv = minimist(process.argv.slice(2), {
-    boolean: ['json', 'latencies'],
+    boolean: ['json', 'latency', 'help'],
     alias: {
       connections: 'c',
       pipelining: 'p',
       duration: 'd',
       json: 'j',
-      latencies: 'l'
+      latency: 'l',
+      help: 'h'
     },
     default: {
       connections: 10,
@@ -157,9 +161,9 @@ function start () {
 
   argv.url = argv._[0]
 
-  if (!argv.url) {
-    console.error('Usage: autocannon [opts] url')
-    return
+  if (!argv.url || argv.help) {
+    console.error(help)
+    process.exit(1)
   }
 
   const tracker = run(argv, (err, result) => {
@@ -184,8 +188,8 @@ function start () {
 
       console.log(out)
 
-      if (argv.latencies) {
-        const latencies = table.default([
+      if (argv.latency) {
+        const latency = table.default([
           asColor('cyan', ['Percentile', 'Latency (ms)'])
         ].concat(percentiles.map((perc) => {
           const key = ('p' + perc).replace('.', '')
@@ -202,7 +206,7 @@ function start () {
           drawHorizontalLine: () => false
         })
 
-        console.log(latencies)
+        console.log(latency)
       }
 
       if (result.non2xx) {
