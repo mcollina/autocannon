@@ -87,7 +87,7 @@ function run (opts, cb) {
   for (let i = 0; i < opts.connections; i++) {
     let client = new Client(url)
     client.on('response', record)
-    client.on('error', onError)
+    client.on('connError', onError)
     clients.push(client)
   }
 
@@ -117,7 +117,7 @@ function histAsObj (hist, total) {
     max: hist.max()
   }
 
-  if (total) {
+  if (typeof total === 'number') {
     result.total = total
   }
 
@@ -209,6 +209,9 @@ function start () {
         console.log(`${result['2xx']} 2xx responses, ${result.non2xx} non 2xx responses`)
       }
       console.log(`${si.format(result.requests.total, '', 0, 0)} requests in ${result.duration}s, ${prettyBytes(result.throughput.total)} read`)
+      if (result.errors) {
+        console.log(`${si.format(result.errors)} errors`)
+      }
     } else {
       console.log(JSON.stringify(result, null, 2))
     }
