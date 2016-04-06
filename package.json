@@ -7,7 +7,7 @@
     "autocannon": "autocannon.js"
   },
   "scripts": {
-    "test": "standard && tap test.js"
+    "test": "standard && tap test/myhttp.js test/autocannon.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/mcollina/autocannon#readme",
   "devDependencies": {
+    "bl": "^1.1.2",
     "pre-commit": "^1.1.2",
     "standard": "^6.0.8",
     "tap": "^5.7.0"

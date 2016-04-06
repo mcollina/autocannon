@@ -85,6 +85,8 @@ function run (opts, cb) {
   }
 
   url.pipelining = opts.pipelining
+  url.method = opts.method
+  url.body = opts.body
 
   let clients = []
   for (let i = 0; i < opts.connections; i++) {
@@ -149,13 +151,16 @@ function start () {
       duration: 'd',
       json: 'j',
       latency: 'l',
+      method: 'm',
+      body: 'b',
       help: 'h'
     },
     default: {
       connections: 10,
       pipelining: 1,
       duration: 10,
-      json: false
+      json: false,
+      method: 'GET'
     }
   })
 
@@ -164,6 +169,10 @@ function start () {
   if (!argv.url || argv.help) {
     console.error(help)
     process.exit(1)
+  }
+
+  if (argv.body) {
+    argv.body = fs.readFileSync(argv.body)
   }
 
   const tracker = run(argv, (err, result) => {
