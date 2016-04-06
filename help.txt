@@ -7,6 +7,7 @@ Available options:
   -d/--duration SEC     The number of seconds to run the autocannnon
   -m/--method METHOD    The http method to use
   -b/--body FILE        The body of the request
+  -h/--headers K=V      The request headers
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data
   -h/--help             Print this menu

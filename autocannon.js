@@ -84,9 +84,12 @@ function run (opts, cb) {
     return
   }
 
+  // copy over fields so that the client
+  // performs the right HTTP requests
   url.pipelining = opts.pipelining
   url.method = opts.method
   url.body = opts.body
+  url.headers = opts.headers
 
   let clients = []
   for (let i = 0; i < opts.connections; i++) {
@@ -152,6 +155,7 @@ function start () {
       json: 'j',
       latency: 'l',
       method: 'm',
+      headers: 'H',
       body: 'b',
       help: 'h'
     },
@@ -173,6 +177,18 @@ function start () {
 
   if (argv.body) {
     argv.body = fs.readFileSync(argv.body)
+  }
+
+  if (argv.headers) {
+    if (!Array.isArray(argv.headers)) {
+      argv.headers = [argv.headers]
+    }
+
+    argv.headers = argv.headers.reduce((obj, header) => {
+      const split = header.split('=')
+      obj[split[0]] = split[1]
+      return obj
+    }, {})
   }
 
   const tracker = run(argv, (err, result) => {
