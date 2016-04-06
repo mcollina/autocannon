@@ -36,6 +36,8 @@ Available options:
   -c/--connections NUM  The number of concurrent connections to use
   -p/--pipelining NUM   The number of pipelined requests to use
   -d/--duration SEC     The number of seconds to run the autocannnon
+  -m/--method METHOD    The http method to use
+  -b/--body FILE        The body of the request
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data
   -h/--help             Print this menu
@@ -67,6 +69,8 @@ Start the autocannong against the given target, options:
 * `pipelining`: the number of pipelined requests for each connection,
   see https://en.wikipedia.org/wiki/HTTP_pipelining
 * `duration`: the number of seconds to run the autocannon
+* `body`: a `Buffer` containing the body of the request
+* `method`: the http method to use, `GET` is the default
 
 <a name="acknowledgements"></a>
 ## Acknowledgements
