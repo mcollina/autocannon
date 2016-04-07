@@ -3,7 +3,8 @@
 ![demo](https://raw.githubusercontent.com/mcollina/autocannon/master/demo.gif)
 
 An HTTP benchmarking tool written in node, greatly inspired by
-[wrk](https://github.com/wg/wrk) and [wrk2](https://github.com/giltene/wrk2), with support to HTTP pipelining. On _my_ box, *autocannon* can produce more of `wrk` and `wrk2`.
+[wrk][wrk] and [wrk2][wrk2], with support to HTTP pipelining.
+On _my_ box, *autocannon* can produce more load than `wrk` and `wrk2`.
 
 * [Installation](#install)
 * [Usage](#usage)
@@ -23,6 +24,13 @@ or if you want to use the [API](#api) or as a dependency:
 ```
 npm i autocannon --save
 ```
+
+### Supported systems
+
+**autocannon** is supported on Linux, Mac OS X and Windows.
+If you see any errors during installation, you might need to configure
+your system to compile native addons:
+follow the instructions at [node-gyp][node-gyp].
 
 ## Usage
 
@@ -78,6 +86,12 @@ Start the autocannong against the given target, options:
 
 This project was kindly sponsored by [nearForm](http://nearform.com).
 
+[wrk][wrk] and [wrk2][wrk2] provided great inspiration.
+
 ## License
 
 MIT
+
+[node-gyp]: https://github.com/nodejs/node-gyp#installation
+[wrk]: https://github.com/wg/wrk
+[wrk2]: https://github.com/giltene/wrk2
