@@ -117,3 +117,26 @@ test('client supports sending a body', (t) => {
     client.destroy()
   })
 })
+
+test('client supports sending a body which is a string', (t) => {
+  t.plan(4)
+
+  const opts = server.address()
+  opts.method = 'POST'
+  opts.body = 'hello world'
+
+  const client = new Client(opts)
+
+  server.once('request', (req, res) => {
+    req.pipe(bl((err, body) => {
+      t.error(err)
+      t.deepEqual(body.toString(), opts.body, 'body matches')
+    }))
+  })
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    t.ok(length > 'hello world'.length, 'length includes the headers')
+    client.destroy()
+  })
+})

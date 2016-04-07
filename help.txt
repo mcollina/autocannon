@@ -6,7 +6,8 @@ Available options:
   -p/--pipelining NUM   The number of pipelined requests to use
   -d/--duration SEC     The number of seconds to run the autocannnon
   -m/--method METHOD    The http method to use
-  -b/--body FILE        The body of the request
+  -b/--body BODY        The body of the request
+  -i/--input FILE       The body of the request
   -h/--headers K=V      The request headers
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data

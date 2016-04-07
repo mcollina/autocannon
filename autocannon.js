@@ -157,6 +157,7 @@ function start () {
       method: 'm',
       headers: 'H',
       body: 'b',
+      input: 'i',
       help: 'h'
     },
     default: {
@@ -175,8 +176,8 @@ function start () {
     process.exit(1)
   }
 
-  if (argv.body) {
-    argv.body = fs.readFileSync(argv.body)
+  if (argv.input) {
+    argv.body = fs.readFileSync(argv.input)
   }
 
   if (argv.headers) {
