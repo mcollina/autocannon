@@ -71,7 +71,7 @@ autocannon({
 
 ### autocannon(opts, cb)
 
-Start the autocannong against the given target, options:
+Start autocannon against the given target, options:
 
 * `url`: the given target, mandatory
 * `connections`: the number of concurrent connections
