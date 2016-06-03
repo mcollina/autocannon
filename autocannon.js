@@ -128,7 +128,7 @@ function start () {
 
     console.log(`Running ${argv.duration}s test @ ${argv.url}`)
     let msg = `${argv.connections} connections`
-    if (argv.pipelining) {
+    if (argv.pipelining > 1) {
       msg += ` with ${argv.pipelining} pipelining factor`
     }
     console.log(msg)
