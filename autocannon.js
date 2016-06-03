@@ -50,34 +50,7 @@ function run (opts, cb) {
   let totalBytes = 0
   let totalRequests = 0
   let stop = false
-
-  const interval = setInterval(() => {
-    totalBytes += bytes
-    totalRequests += counter
-    requests.record(counter)
-    throughput.record(bytes)
-    counter = 0
-    bytes = 0
-    tracker.emit('tick')
-
-    if (stop) {
-      clearInterval(interval)
-      clients.forEach((client) => client.destroy())
-      let result = {
-        requests: histAsObj(requests, totalRequests),
-        latency: addPercentiles(latencies, histAsObj(latencies)),
-        throughput: histAsObj(throughput, totalBytes),
-        errors: errors,
-        duration: opts.duration,
-        connections: opts.connections,
-        pipelining: opts.pipelining,
-        '2xx': statusCodes[1],
-        'non2xx': statusCodes[0] + statusCodes[2] + statusCodes[3] + statusCodes[4]
-      }
-      tracker.emit('done', result)
-      cb(null, result)
-    }
-  }, 1000)
+  let startTime = Date.now()
 
   if (!opts.connections) {
     cb(new Error('connections > 0'))
@@ -110,9 +83,42 @@ function run (opts, cb) {
     errors++
   }
 
-  setTimeout(() => {
+  const stopTimer = setTimeout(() => {
     stop = true
   }, opts.duration * 1000)
+
+  tracker.stop = () => {
+    clearTimeout(stopTimer)
+    stop = true
+  }
+
+  const interval = setInterval(() => {
+    totalBytes += bytes
+    totalRequests += counter
+    requests.record(counter)
+    throughput.record(bytes)
+    counter = 0
+    bytes = 0
+    tracker.emit('tick')
+
+    if (stop) {
+      clearInterval(interval)
+      clients.forEach((client) => client.destroy())
+      let result = {
+        requests: histAsObj(requests, totalRequests),
+        latency: addPercentiles(latencies, histAsObj(latencies)),
+        throughput: histAsObj(throughput, totalBytes),
+        errors: errors,
+        duration: Math.round((Date.now() - startTime) / 1000),
+        connections: opts.connections,
+        pipelining: opts.pipelining,
+        '2xx': statusCodes[1],
+        'non2xx': statusCodes[0] + statusCodes[2] + statusCodes[3] + statusCodes[4]
+      }
+      tracker.emit('done', result)
+      cb(null, result)
+    }
+  }, 1000)
 
   return tracker
 }
@@ -173,7 +179,7 @@ function start () {
 
   if (!argv.url || argv.help) {
     console.error(help)
-    process.exit(1)
+    return
   }
 
   if (argv.input) {
@@ -268,7 +274,15 @@ function start () {
     tracker.on('tick', () => {
       bar.tick()
     })
+
+    process.once('SIGINT', () => {
+      bar.tick(argv.duration - 1)
+    })
   }
+
+  process.once('SIGINT', () => {
+    tracker.stop()
+  })
 }
 
 function asRow (name, stat) {
