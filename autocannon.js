@@ -13,7 +13,7 @@ const EE = require('events').EventEmitter
 const ProgressBar = require('progress')
 const table = require('table')
 const prettyBytes = require('pretty-bytes')
-const si = require('si-tools')
+const format = require('./lib/format')
 const chalk = require('chalk')
 const percentiles = [
   50,
@@ -238,9 +238,9 @@ function start () {
       if (result.non2xx) {
         console.log(`${result['2xx']} 2xx responses, ${result.non2xx} non 2xx responses`)
       }
-      console.log(`${si.format(result.requests.total, '', 0, 0)} requests in ${result.duration}s, ${prettyBytes(result.throughput.total)} read`)
+      console.log(`${format(result.requests.total)} requests in ${result.duration}s, ${prettyBytes(result.throughput.total)} read`)
       if (result.errors) {
-        console.log(`${si.format(result.errors)} errors`)
+        console.log(`${format(result.errors)} errors`)
       }
     } else {
       console.log(JSON.stringify(result, null, 2))
@@ -256,7 +256,11 @@ function start () {
     })
 
     console.log(`Running ${argv.duration}s test @ ${argv.url}`)
-    console.log(`${argv.connections} connections with ${argv.pipelining} pipelining factor`)
+    let msg = `${argv.connections} connections`
+    if (argv.pipelining) {
+      msg += ` with ${argv.pipelining} pipelining factor`
+    }
+    console.log(msg)
     console.log()
 
     bar.tick(0)
