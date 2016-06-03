@@ -1,11 +1,11 @@
 'use strict'
 
 const test = require('tap').test
-const autocannon = require('..')
+const run = require('../lib/run')
 const server = require('./helper').startServer()
 
-test('autocannon', (t) => {
-  autocannon({
+test('run', (t) => {
+  run({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: 2
@@ -45,7 +45,7 @@ test('autocannon', (t) => {
 })
 
 test('tracker.stop()', (t) => {
-  const tracker = autocannon({
+  const tracker = run({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: 5
