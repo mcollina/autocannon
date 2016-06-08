@@ -90,9 +90,13 @@ This project was kindly sponsored by [nearForm](http://nearform.com).
 
 [wrk][wrk] and [wrk2][wrk2] provided great inspiration.
 
+### Chat on Gitter
+
+If you are using autocannon or you have any questions, let us know: [Gitter](https://gitter.im/mcollina/autocannon)
+
 ## License
 
-MIT
+Copyright [Matteo Collina](https://github.com/mcollina) and other contributors, Licensed under [MIT](./LICENSE).
 
 [node-gyp]: https://github.com/nodejs/node-gyp#installation
 [wrk]: https://github.com/wg/wrk
