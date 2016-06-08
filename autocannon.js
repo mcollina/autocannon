@@ -26,7 +26,7 @@ function start () {
       json: 'j',
       latency: 'l',
       method: 'm',
-      headers: 'H',
+      headers: ['H', 'header'],
       body: 'b',
       input: 'i',
       help: 'h'

@@ -8,7 +8,7 @@ Available options:
   -m/--method METHOD    The http method to use
   -b/--body BODY        The body of the request
   -i/--input FILE       The body of the request
-  -h/--headers K=V      The request headers
+  -H/--headers K=V      The request headers
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data
   -h/--help             Print this menu
