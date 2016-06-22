@@ -82,6 +82,8 @@ Start autocannon against the given target, options:
 * `duration`: the number of seconds to run the autocannon
 * `body`: a `Buffer` containing the body of the request
 * `method`: the http method to use, `GET` is the default
+* `renderProgressBar`: A truthy value to enable the rendering of the progress bar. false by default
+* `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress).
 
 <a name="acknowledgements"></a>
 ## Acknowledgements
