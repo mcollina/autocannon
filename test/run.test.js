@@ -31,7 +31,7 @@ test('run', (t) => {
 
     t.ok(result.throughput, 'throughput exists')
     t.ok(result.throughput.average, 'throughput.average exists')
-    t.ok(result.throughput.stddev, 'throughput.stddev exists')
+    t.type(result.throughput.stddev, 'number', 'throughput.stddev exists')
     t.ok(result.throughput.min, 'throughput.min exists')
     t.ok(result.throughput.max, 'throughput.max exists')
     t.ok(result.throughput.total >= result.throughput.average * 2 / 100 * 95, 'throughput.total exists')
@@ -71,7 +71,7 @@ test('tracker.stop()', (t) => {
 
     t.ok(result.throughput, 'throughput exists')
     t.ok(result.throughput.average, 'throughput.average exists')
-    t.ok(result.throughput.stddev, 'throughput.stddev exists')
+    t.type(result.throughput.stddev, 'number', 'throughput.stddev exists')
     t.ok(result.throughput.min, 'throughput.min exists')
     t.ok(result.throughput.max, 'throughput.max exists')
     t.ok(result.throughput.total >= result.throughput.average * 2 / 100 * 95, 'throughput.total exists')
