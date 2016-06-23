@@ -185,3 +185,31 @@ test('client supports changing the headers', (t) => {
   'header changes updated request')
   client.destroy()
 })
+
+test('client supports changing the headers and body together', (t) => {
+  t.plan(6)
+
+  const opts = server.address()
+  opts.body = 'hello world'
+  opts.method = 'POST'
+
+  const client = new Client(opts)
+
+  t.same(client._req,
+  new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
+  'request is okay before modifying')
+
+  t.same(client.opts.body, 'hello world', 'body was as expected')
+  t.same(client.opts.headers, {'Content-Length': 11}, 'header was as expected')
+
+  client.setBody('modified')
+  client.setHeaders({header: 'modifiedHeader'})
+
+  t.same(client.opts.body, 'modified', 'body was changed')
+  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
+
+  t.same(client._req,
+  new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
+  'header changes updated request')
+  client.destroy()
+})
