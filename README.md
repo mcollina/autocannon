@@ -83,6 +83,36 @@ Start autocannon against the given target, options:
 * `body`: a `Buffer` containing the body of the request
 * `method`: the http method to use, `GET` is the default
 
+**Returns** an instance/event emitter for tracking progress, etc.
+
+### autocannon.track(instance[, outputStream])
+
+* `instance`: the instance of autocannon
+* `opts`: OPTIONAL. configuration options for tracking. this can have the
+following attibutes
+    * `outputStream`: the stream to output to. Defaults to process.stderr
+    * `renderProgressBar`: A truthy value to enable the rendering of the progress bar. true by default
+    * `renderResultTable`: A truthy value to enable the rendering of the results table. true by default
+    * `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress). Defaults to the progress bar output seen in the demo above
+
+Example:
+
+```js
+'use strict'
+
+const autocannon = require('autocannon')
+
+const instance = autocannon({
+  url: 'http://localhost:3000',
+  connections: 10,
+  pipelining: 1, // default
+  duration: 10
+}, console.log)
+
+// just render results
+autocannon.track(instance, {renderProgressBar: false})
+```
+
 <a name="acknowledgements"></a>
 ## Acknowledgements
 
