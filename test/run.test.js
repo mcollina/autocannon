@@ -83,6 +83,8 @@ test('tracker.stop()', (t) => {
     t.end()
   })
 
+  t.ok(tracker.opts, 'opts exist on tracker')
+
   setTimeout(() => {
     tracker.stop()
   }, 1000)
