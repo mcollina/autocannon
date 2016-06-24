@@ -89,3 +89,68 @@ test('tracker.stop()', (t) => {
     tracker.stop()
   }, 1000)
 })
+
+test('run should callback with an error with an invalid connections factor', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: -1
+  }, function (err, result) {
+    t.ok(err, 'invalid connections should cause an error')
+    t.notOk(result, 'results should not exist')
+    t.end()
+  })
+})
+
+test('run should callback with an error with an invalid pipelining factor', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    pipelining: -1
+  }, function (err, result) {
+    t.ok(err, 'invalid pipelining should cause an error')
+    t.notOk(result, 'results should not exist')
+    t.end()
+  })
+})
+
+test('run should callback with an error with an invalid duration', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    duration: -1
+  }, function (err, result) {
+    t.ok(err, 'invalid duration should cause an error')
+    t.notOk(result, 'results should not exist')
+    t.end()
+  })
+})
+
+test('run should callback with an error when no url is passed in', (t) => {
+  t.plan(2)
+
+  run({}, function (err, result) {
+    t.ok(err, 'no url should cause an error')
+    t.notOk(result, 'results should not exist')
+    t.end()
+  })
+})
+
+test('run should callback without an error when defaults are used', (t) => {
+  t.plan(4)
+
+  run({
+    url: 'http://localhost:' + server.address().port
+  }, function (err, result) {
+    t.error(err)
+
+    t.ok(result.duration >= 10, 'duration is at least 2s')
+    t.equal(result.connections, 10, 'connections is the same')
+    t.equal(result.pipelining, 1, 'pipelining is the default')
+
+    t.end()
+  })
+})

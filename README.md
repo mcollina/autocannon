@@ -63,39 +63,44 @@ const autocannon = require('autocannon')
 
 autocannon({
   url: 'http://localhost:3000',
-  connections: 10,
+  connections: 10, //default
   pipelining: 1, // default
-  duration: 10
+  duration: 10 // default
 }, console.log)
 ```
 
 ## API
 
-### autocannon(opts, cb)
+### autocannon(opts[, cb])
 
-Start autocannon against the given target, options:
+Start autocannon against the given target.
 
-* `url`: the given target, mandatory
-* `connections`: the number of concurrent connections
-* `pipelining`: the number of pipelined requests for each connection,
-  see https://en.wikipedia.org/wiki/HTTP_pipelining
-* `duration`: the number of seconds to run the autocannon
-* `body`: a `Buffer` containing the body of the request
-* `method`: the http method to use, `GET` is the default
+* `opts`: Configuration options for the autocannon instance. This can have the following attributes. _REQUIRED_.
+    * `url`: The given target. _REQUIRED_.
+    * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
+    * `duration`: The number of seconds to run the autocannon. _OPTIONAL_ default: `10`.
+    * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. _OPTIONAL_ default: `1`.
+    * `method`: The http method to use. _OPTIONAL_ `default: 'GET'`.
+    * `body`: A `String` or a `Buffer` containing the body of the request. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
+    * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
+* `cb`: The callback which is called on completion of the benchmark. Takes the following params. _OPTIONAL_.
+    * `err`: If there was an error encountered with the run.
+    * `results`: The results of the run.
 
 **Returns** an instance/event emitter for tracking progress, etc.
 
-### autocannon.track(instance[, outputStream])
+### autocannon.track(instance[, opts])
 
-* `instance`: the instance of autocannon
-* `opts`: OPTIONAL. configuration options for tracking. this can have the
-following attibutes
-    * `outputStream`: the stream to output to. Defaults to process.stderr
-    * `renderProgressBar`: A truthy value to enable the rendering of the progress bar. true by default
-    * `renderResultTable`: A truthy value to enable the rendering of the results table. true by default
-    * `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress). Defaults to the progress bar output seen in the demo above
+Track the progress of your autocannon, programmatically.
 
-Example:
+* `instance`: The instance of autocannon. _REQUIRED_.
+* `opts`: Configuration options for tracking. This can have the following attibutes. _OPTIONAL_.
+    * `outputStream`: The stream to output to. `default: process.stderr`.
+    * `renderProgressBar`: A truthy value to enable the rendering of the progress bar. `default: true`.
+    * `renderResultTable`: A truthy value to enable the rendering of the results table. `default: true`.
+    * `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress). `default: 'running [:bar] :percent'`.
+
+Example that just prints on completion:
 
 ```js
 'use strict'
@@ -111,21 +116,27 @@ autocannon.track(instance, {renderProgressBar: false})
 ```
 
 ### autocannon events
+
 Because an autocannon instance is an `EventEmitter`, it emits several events. these are below:
-* `tick`: emitted every second this autocannon is running a benchmark. Useful for displaying stats, etc. Used by the `track` function.
+
+* `tick`: Emitted every second this autocannon is running a benchmark. Useful for displaying stats, etc. Used by the `track` function.
 * `done`: Emitted when the autocannon finishes a benchmark. passes the `results` as an argument to the callback.
 * `response`: Emitted when the autocannons http-client gets a http response from the server. This passes the following arguments to the callback:
-    * `client`: The `http-client` itself. Can be used to modify the headers and body the client will send to the server. api below
-    * `statusCode`: The http status code of the response
-    * `resBytes`: the response bytes in `Buffer` format
-    * `responseTime`: The time taken to get a response for the initiating the request
+    * `client`: The `http-client` itself. Can be used to modify the headers and body the client will send to the server. API below.
+    * `statusCode`: The http status code of the response.
+    * `resBytes`: The response bytes in `Buffer` format.
+    * `responseTime`: The time taken to get a response for the initiating the request.
 
-### `Client` api
-* `client.setHeaders(headers)`: used to modify the headers of future requests this client makes. `headers` should be an object
-* `client.setBody(body)`: used to modify the body of futures requests this client makes. `body` should be a string or buffer
-* `client.setHeadersAndBody(headers, body)`: used to modify the both the header and body of futures requests this client makes.`headers` should be an object and `body` should be a string or buffer. `Note: call this when modifying both headers and body for faster response encoding`
+### `Client` API
 
-Example using these events and the client functions:
+This object is passed as the first parameter of the `response` event from an autocannon instance. You can use this to modify the body and headers of the requests you are sending while benchmarking.
+
+* `client.setHeaders(headers)`: Used to modify the headers of future requests this client makes. `headers` should be an `Object`, or `undefined` if you want to remove your headers.
+* `client.setBody(body)`: Used to modify the body of futures requests this client makes. `body` should be a `String` or `Buffer`, or `undefined` if you want to remove the body.
+* `client.setHeadersAndBody(headers, body)`: Used to modify the both the header and body of future requests this client makes.`headers` and `body` should take the same form as above. `Note: call this when modifying both headers and body for faster response encoding`
+
+Example using the autocannon events and the client API:
+
 ```js
 'use strict'
 
