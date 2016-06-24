@@ -138,19 +138,3 @@ test('run should callback with an error when no url is passed in', (t) => {
     t.end()
   })
 })
-
-test('run should callback without an error when defaults are used', (t) => {
-  t.plan(4)
-
-  run({
-    url: 'http://localhost:' + server.address().port
-  }, function (err, result) {
-    t.error(err)
-
-    t.ok(result.duration >= 10, 'duration is at least 2s')
-    t.equal(result.connections, 10, 'connections is the same')
-    t.equal(result.pipelining, 1, 'pipelining is the default')
-
-    t.end()
-  })
-})
