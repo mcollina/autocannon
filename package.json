@@ -20,6 +20,9 @@
     "test"
   ],
   "author": "Matteo Collina <hello@matteocollina.com>",
+  "contributors": [
+    "Glen Keane <glenkeane.94@gmail.com> (http://glenkeane.me/)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mcollina/autocannon/issues"

@@ -116,6 +116,19 @@ test('run should callback with an error with an invalid pipelining factor', (t) 
   })
 })
 
+test('run should callback with an error with an invalid bailout', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    bailout: -1
+  }, function (err, result) {
+    t.ok(err, 'invalid bailout should cause an error')
+    t.notOk(result, 'results should not exist')
+    t.end()
+  })
+})
+
 test('run should callback with an error with an invalid duration', (t) => {
   t.plan(2)
 
