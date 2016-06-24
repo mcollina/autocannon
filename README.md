@@ -76,7 +76,7 @@ autocannon({
 Start autocannon against the given target, options:
 
 * `url`: the given target, mandatory
-* `connections`: the number of concurrent connections
+* `connections`: the number of concurrent connections, mandatory
 * `pipelining`: the number of pipelined requests for each connection,
   see https://en.wikipedia.org/wiki/HTTP_pipelining
 * `duration`: the number of seconds to run the autocannon

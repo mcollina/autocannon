@@ -89,3 +89,50 @@ test('tracker.stop()', (t) => {
     tracker.stop()
   }, 1000)
 })
+
+test('run should callback with an error with an invalid pipelining factor', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    pipelining: -1,
+    connections: 10
+  }, function (err, result) {
+    t.ok(err, 'invalid pipelining should cause an error')
+    t.notOk(result, 'results should not exist')
+  })
+})
+
+test('run should callback with an error with an invalid connections factor', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: -1
+  }, function (err, result) {
+    t.ok(err, 'invalid connections should cause an error')
+    t.notOk(result, 'results should not exist')
+  })
+})
+
+test('run should callback with an error when no connections are passed in', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port
+  }, function (err, result) {
+    t.ok(err, 'no connections should cause an error')
+    t.notOk(result, 'results should not exist')
+  })
+})
+
+test('run should callback with an error when no url is passed in', (t) => {
+  t.plan(2)
+
+  run({
+    connections: 10
+  }, function (err, result) {
+    t.ok(err, 'no connections should cause an error')
+    t.notOk(result, 'results should not exist')
+  })
+})
