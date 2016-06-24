@@ -72,6 +72,10 @@ function start () {
   if (!argv.json) {
     track(tracker)
   }
+
+  process.once('SIGINT', () => {
+    tracker.stop()
+  })
 }
 
 if (require.main === module) {
