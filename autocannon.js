@@ -23,8 +23,8 @@ function start () {
       latency: 'l',
       method: 'm',
       headers: ['H', 'header'],
-      body: 'B',
-      bailout: 'b',
+      body: 'b',
+      bailout: 'B',
       input: 'i',
       help: 'h'
     },

@@ -151,3 +151,22 @@ test('run should callback with an error when no url is passed in', (t) => {
     t.end()
   })
 })
+
+test('run should callback with after a bailout', (t) => {
+  t.plan(3)
+  let finished = false
+
+  run({
+    url: 'http://localhost:4', // 4 = first unassigned port: https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+    bailout: 1
+  }, function (err, result) {
+    t.error(err)
+    t.ok(result, 'results should not exist')
+    finished = true
+  })
+
+  setTimeout(function () {
+    t.ok(finished, 'test should have bailed out by now')
+    t.end()
+  }, 3000)
+})

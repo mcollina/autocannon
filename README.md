@@ -47,10 +47,10 @@ Available options:
   -p/--pipelining NUM   The number of pipelined requests to use
   -d/--duration SEC     The number of seconds to run the autocannnon
   -m/--method METHOD    The http method to use
-  -B/--body BODY        The body of the request
+  -b/--body BODY        The body of the request
   -i/--input FILE       The body of the request
   -H/--headers K=V      The request headers
-  -b/--bailout NUM      The number of failures before initiating a bailout
+  -B/--bailout NUM      The number of failures before initiating a bailout
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data
   -h/--help             Print this menu
