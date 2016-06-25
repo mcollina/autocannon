@@ -24,6 +24,7 @@ function start () {
       method: 'm',
       headers: ['H', 'header'],
       body: 'b',
+      bailout: 'B',
       input: 'i',
       help: 'h'
     },

@@ -47,8 +47,10 @@ Available options:
   -p/--pipelining NUM   The number of pipelined requests to use
   -d/--duration SEC     The number of seconds to run the autocannnon
   -m/--method METHOD    The http method to use
-  -b/--body FILE        The body of the request
-  -h/--headers K=V      The request headers
+  -b/--body BODY        The body of the request
+  -i/--input FILE       The body of the request
+  -H/--headers K=V      The request headers
+  -B/--bailout NUM      The number of failures before initiating a bailout
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data
   -h/--help             Print this menu
@@ -80,6 +82,7 @@ Start autocannon against the given target.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. _OPTIONAL_ default: `10`.
     * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. _OPTIONAL_ default: `1`.
+    * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
     * `method`: The http method to use. _OPTIONAL_ `default: 'GET'`.
     * `body`: A `String` or a `Buffer` containing the body of the request. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.

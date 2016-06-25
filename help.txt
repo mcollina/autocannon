@@ -9,6 +9,7 @@ Available options:
   -b/--body BODY        The body of the request
   -i/--input FILE       The body of the request
   -H/--headers K=V      The request headers
+  -B/--bailout NUM      The number of failures before initiating a bailout
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data
   -h/--help             Print this menu
