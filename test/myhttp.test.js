@@ -210,7 +210,7 @@ test('client supports changing the headers and body', (t) => {
 
   t.same(client._req,
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
-  'header changes updated request')
+  'changes updated request')
   client.destroy()
 })
 
@@ -237,6 +237,39 @@ test('client supports changing the headers and body together', (t) => {
 
   t.same(client._req,
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
-  'header changes updated request')
+  'changes updated request')
+  client.destroy()
+})
+
+test('client customiseRequest function overwrites the headers and body', (t) => {
+  t.plan(9)
+
+  const opts = server.address()
+  opts.body = 'hello world'
+  opts.method = 'POST'
+  opts.customiseRequest = (client) => {
+    t.ok(client.setHeadersAndBody, 'client had setHeadersAndBody method')
+    t.ok(client.setHeaders, 'client had setHeaders method')
+    t.ok(client.setBody, 'client had setBody method')
+
+    client.setHeadersAndBody({header: 'modifiedHeader'}, 'modified')
+  }
+
+  const client = new Client(opts)
+
+  t.same(client.opts.body, 'modified', 'body was changed')
+  t.notSame(client.opts.body, 'hello world', 'body was changed')
+
+  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
+  t.notSame(client.opts.body, {'Content-Length': 11}, 'header was changed')
+
+  t.same(client._req,
+  new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
+  'changes updated request')
+
+  t.notSame(client._req,
+  new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
+  'changes updated request')
+
   client.destroy()
 })
