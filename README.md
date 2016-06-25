@@ -43,17 +43,18 @@ Usage: autocannon [opts] URL
 
 Available options:
 
-  -c/--connections NUM  The number of concurrent connections to use
-  -p/--pipelining NUM   The number of pipelined requests to use
-  -d/--duration SEC     The number of seconds to run the autocannnon
-  -m/--method METHOD    The http method to use
-  -b/--body BODY        The body of the request
-  -i/--input FILE       The body of the request
-  -H/--headers K=V      The request headers
-  -B/--bailout NUM      The number of failures before initiating a bailout
-  -j/--json             Print the output as json
-  -l/--latency          Print all the latency data
-  -h/--help             Print this menu
+  -c/--connections NUM  The number of concurrent connections to use. default: `10`.
+  -p/--pipelining NUM   The number of pipelined requests to use. default: `1`.
+  -d/--duration SEC     The number of seconds to run the autocannnon. default: `10`.
+  -m/--method METHOD    The http method to use. default: `'GET'`.
+  -b/--body BODY        The body of the request. default: `undefined`.
+  -i/--input FILE       The body of the request. default: `undefined`.
+  -H/--headers K=V      The request headers. default: `undefined`.
+  -B/--bailout NUM      The number of failures before initiating a bailout. default: `undefined`.
+  -p/--progress         Display the progress bar. default: `true`.
+  -l/--latency          Print all the latency data. default: `false`.
+  -j/--json             Print the output as json. This will cause the progress bar and results not to be rendered. `DEFAULT: false`
+  -h/--help             Print this menu. default: `undefined`.
 ```
 
 ### Programmatically
@@ -99,10 +100,11 @@ Track the progress of your autocannon, programmatically.
 
 * `instance`: The instance of autocannon. _REQUIRED_.
 * `opts`: Configuration options for tracking. This can have the following attibutes. _OPTIONAL_.
-    * `outputStream`: The stream to output to. `default: process.stderr`.
-    * `renderProgressBar`: A truthy value to enable the rendering of the progress bar. `default: true`.
-    * `renderResultTable`: A truthy value to enable the rendering of the results table. `default: true`.
-    * `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress). `default: 'running [:bar] :percent'`.
+    * `outputStream`: The stream to output to. default: `process.stderr`.
+    * `renderProgressBar`: A truthy value to enable the rendering of the progress bar. default: `true`.
+    * `renderResultTable`: A truthy value to enable the rendering of the results table. default: `true`.
+    * `renderLatencyTable`: A truthy value to enable the rendering of the advanced latency table. default: `false`.
+    * `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress). default: `'running [:bar] :percent'`.
 
 Example that just prints on completion:
 

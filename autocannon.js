@@ -26,12 +26,15 @@ function start () {
       body: 'b',
       bailout: 'B',
       input: 'i',
+      progress: 'p',
       help: 'h'
     },
     default: {
       connections: 10,
       pipelining: 1,
       duration: 10,
+      progress: true,
+      latency: false,
       json: false,
       method: 'GET'
     }
@@ -71,7 +74,11 @@ function start () {
   })
 
   if (!argv.json) {
-    track(tracker)
+    var render = {
+      renderProgressBar: argv.progress,
+      renderLatencyTable: argv.latency
+    }
+    track(tracker, render)
   }
 
   process.once('SIGINT', () => {
