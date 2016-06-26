@@ -26,6 +26,7 @@ function start () {
       body: 'b',
       bailout: 'B',
       input: 'i',
+      version: 'v',
       help: 'h'
     },
     default: {
@@ -38,6 +39,12 @@ function start () {
   })
 
   argv.url = argv._[0]
+
+  if (argv.version) {
+    console.log('autocannon', 'v' + require('./package').version)
+    console.log('node', process.version)
+    return
+  }
 
   if (!argv.url || argv.help) {
     console.error(help)
