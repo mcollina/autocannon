@@ -20,12 +20,13 @@ function start () {
       pipelining: 'p',
       duration: 'd',
       json: 'j',
-      latency: 'l',
+      renderLatencyTable: ['l', 'latency'],
       method: 'm',
       headers: ['H', 'header'],
       body: 'b',
       bailout: 'B',
       input: 'i',
+      'no-progress': 'n',
       version: 'v',
       help: 'h'
     },
@@ -33,12 +34,16 @@ function start () {
       connections: 10,
       pipelining: 1,
       duration: 10,
+      renderLatencyTable: false,
+      'no-progress': false,
       json: false,
       method: 'GET'
     }
   })
 
   argv.url = argv._[0]
+
+  argv.renderProgressBar = !argv['no-progress']
 
   if (argv.version) {
     console.log('autocannon', 'v' + require('./package').version)
@@ -78,7 +83,7 @@ function start () {
   })
 
   if (!argv.json) {
-    track(tracker)
+    track(tracker, argv)
   }
 
   process.once('SIGINT', () => {
