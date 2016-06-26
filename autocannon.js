@@ -34,8 +34,7 @@ function start () {
       connections: 10,
       pipelining: 1,
       duration: 10,
-      progress: true,
-      latency: false,
+      renderLatencyTable: false,
       'no-progress': false,
       json: false,
       method: 'GET'
