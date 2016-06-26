@@ -53,6 +53,7 @@ Available options:
   -B/--bailout NUM      The number of failures before initiating a bailout
   -j/--json             Print the output as json
   -l/--latency          Print all the latency data
+  -v/--version          Print the version number
   -h/--help             Print this menu
 ```
 
