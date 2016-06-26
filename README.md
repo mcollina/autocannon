@@ -43,18 +43,19 @@ Usage: autocannon [opts] URL
 
 Available options:
 
-  -c/--connections NUM  The number of concurrent connections to use. default: `10`.
-  -p/--pipelining NUM   The number of pipelined requests to use. default: `1`.
-  -d/--duration SEC     The number of seconds to run the autocannnon. default: `10`.
-  -m/--method METHOD    The http method to use. default: `'GET'`.
-  -b/--body BODY        The body of the request. default: `undefined`.
-  -i/--input FILE       The body of the request. default: `undefined`.
-  -H/--headers K=V      The request headers. default: `undefined`.
-  -B/--bailout NUM      The number of failures before initiating a bailout. default: `undefined`.
-  -p/--progress         Display the progress bar. default: `true`.
-  -l/--latency          Print all the latency data. default: `false`.
-  -j/--json             Print the output as json. This will cause the progress bar and results not to be rendered. `DEFAULT: false`
-  -h/--help             Print this menu. default: `undefined`.
+  -c/--connections NUM  The number of concurrent connections to use. default: 10.
+  -p/--pipelining NUM   The number of pipelined requests to use. default: 1.
+  -d/--duration SEC     The number of seconds to run the autocannnon. default: 10.
+  -m/--method METHOD    The http method to use. default: 'GET'.
+  -b/--body BODY        The body of the request.
+  -i/--input FILE       The body of the request.
+  -H/--headers K=V      The request headers.
+  -B/--bailout NUM      The number of failures before initiating a bailout.
+  -n/--no-progress      Don't render the progress bar. default: false.
+  -l/--latency          Print all the latency data. default: false.
+  -j/--json             Print the output as json. This will cause the progress bar and results not to be rendered. default: false.
+  -v/--version          Print the version number.
+  -h/--help             Print this menu.
 ```
 
 ### Programmatically

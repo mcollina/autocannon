@@ -20,13 +20,14 @@ function start () {
       pipelining: 'p',
       duration: 'd',
       json: 'j',
-      latency: 'l',
+      renderLatencyTable: ['l', 'latency'],
       method: 'm',
       headers: ['H', 'header'],
       body: 'b',
       bailout: 'B',
       input: 'i',
-      progress: 'p',
+      'no-progress': 'n',
+      version: 'v',
       help: 'h'
     },
     default: {
@@ -35,12 +36,21 @@ function start () {
       duration: 10,
       progress: true,
       latency: false,
+      'no-progress': false,
       json: false,
       method: 'GET'
     }
   })
 
   argv.url = argv._[0]
+
+  argv.renderProgressBar = !argv['no-progress']
+
+  if (argv.version) {
+    console.log('autocannon', 'v' + require('./package').version)
+    console.log('node', process.version)
+    return
+  }
 
   if (!argv.url || argv.help) {
     console.error(help)
@@ -74,11 +84,7 @@ function start () {
   })
 
   if (!argv.json) {
-    var render = {
-      renderProgressBar: argv.progress,
-      renderLatencyTable: argv.latency
-    }
-    track(tracker, render)
+    track(tracker, argv)
   }
 
   process.once('SIGINT', () => {
