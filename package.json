@@ -1,6 +1,6 @@
 {
   "name": "autocannon",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Fast HTTP benchmarking tool written in Node.js",
   "main": "autocannon.js",
   "bin": {
@@ -44,6 +44,7 @@
     "native-hdr-histogram": "^0.2.0",
     "pretty-bytes": "^3.0.1",
     "progress": "^1.1.8",
-    "table": "^3.7.8"
+    "table": "^3.7.8",
+    "xtend": "^4.0.1"
   }
 }

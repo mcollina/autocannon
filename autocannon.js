@@ -14,7 +14,7 @@ module.exports.track = track
 
 function start () {
   const argv = minimist(process.argv.slice(2), {
-    boolean: ['json', 'latency', 'help'],
+    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar'],
     alias: {
       connections: 'c',
       pipelining: 'p',
@@ -26,7 +26,7 @@ function start () {
       body: 'b',
       bailout: 'B',
       input: 'i',
-      'no-progress': 'n',
+      renderProgressBar: 'progress',
       version: 'v',
       help: 'h'
     },
@@ -35,7 +35,7 @@ function start () {
       pipelining: 1,
       duration: 10,
       renderLatencyTable: false,
-      'no-progress': false,
+      renderProgressBar: true,
       json: false,
       method: 'GET'
     }
@@ -43,7 +43,10 @@ function start () {
 
   argv.url = argv._[0]
 
-  argv.renderProgressBar = !argv['no-progress']
+  // support -n to disable the progress bar
+  if (argv.n) {
+    argv.renderProgressBar = false
+  }
 
   if (argv.version) {
     console.log('autocannon', 'v' + require('./package').version)
