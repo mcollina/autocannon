@@ -4,7 +4,7 @@
 
 ![demo](https://raw.githubusercontent.com/mcollina/autocannon/master/demo.gif)
 
-A HTTP benchmarking tool written in node, greatly inspired by [wrk][wrk]
+A HTTP/1.1 benchmarking tool written in node, greatly inspired by [wrk][wrk]
 and [wrk2][wrk2], with support for HTTP pipelining and HTTPS.
 On _my_ box, *autocannon* can produce more load than `wrk` and `wrk2`.
 
