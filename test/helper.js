@@ -16,4 +16,15 @@ function startServer () {
   return server
 }
 
+// this server won't reply to requests
+function startTimeoutServer () {
+  const server = http.createServer(() => {})
+
+  server.listen(0)
+  server.unref()
+
+  return server
+}
+
 module.exports.startServer = startServer
+module.exports.startTimeoutServer = startTimeoutServer
