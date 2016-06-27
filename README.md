@@ -4,8 +4,8 @@
 
 ![demo](https://raw.githubusercontent.com/mcollina/autocannon/master/demo.gif)
 
-An HTTP benchmarking tool written in node, greatly inspired by
-[wrk][wrk] and [wrk2][wrk2], with support to HTTP pipelining.
+A HTTP/1.1 benchmarking tool written in node, greatly inspired by [wrk][wrk]
+and [wrk2][wrk2], with support for HTTP pipelining and HTTPS.
 On _my_ box, *autocannon* can produce more load than `wrk` and `wrk2`.
 
 * [Installation](#install)
@@ -40,6 +40,8 @@ follow the instructions at [node-gyp][node-gyp].
 
 ```
 Usage: autocannon [opts] URL
+
+URL is any valid http or https url.
 
 Available options:
 
@@ -81,7 +83,7 @@ autocannon({
 Start autocannon against the given target.
 
 * `opts`: Configuration options for the autocannon instance. This can have the following attributes. _REQUIRED_.
-    * `url`: The given target. _REQUIRED_.
+    * `url`: The given target. Can be http or https. _REQUIRED_.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. _OPTIONAL_ default: `10`.
     * `timeout`: The number of seconds to wait for a response before . _OPTIONAL_ default: `10`.
