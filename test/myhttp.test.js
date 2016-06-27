@@ -2,7 +2,9 @@
 
 const test = require('tap').test
 const Client = require('../lib/myhttp')
-const server = require('./helper').startServer()
+const helper = require('./helper')
+const server = helper.startServer()
+const timeoutServer = helper.startTimeoutServer()
 const bl = require('bl')
 
 test('client calls a server twice', (t) => {
@@ -272,4 +274,20 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
   'changes updated request')
 
   client.destroy()
+})
+
+test('client should emit a timeout when no response is received', (t) => {
+  t.plan(1)
+
+  const opts = timeoutServer.address()
+  opts.timeout = 1
+  const client = new Client(opts)
+
+  client.on('timeout', () => {
+    t.ok(1, 'timeout should have happened')
+  })
+
+  setTimeout(() => {
+    client.destroy()
+  }, 1500)
 })
