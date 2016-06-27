@@ -5,12 +5,30 @@ const Client = require('../lib/myhttp')
 const helper = require('./helper')
 const server = helper.startServer()
 const timeoutServer = helper.startTimeoutServer()
+const httpsServer = helper.startHttpsServer()
 const bl = require('bl')
 
 test('client calls a server twice', (t) => {
   t.plan(4)
 
   const client = new Client(server.address())
+  let count = 0
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    t.ok(length > 'hello world'.length, 'length includes the headers')
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+})
+
+test('client calls a https server twice', (t) => {
+  t.plan(4)
+
+  var opts = httpsServer.address()
+  opts.protocol = 'https:'
+  const client = new Client(opts)
   let count = 0
 
   client.on('response', (statusCode, length) => {
