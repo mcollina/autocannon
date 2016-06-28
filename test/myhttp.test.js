@@ -305,7 +305,19 @@ test('client should emit a timeout when no response is received', (t) => {
     t.ok(1, 'timeout should have happened')
   })
 
-  setTimeout(() => {
-    client.destroy()
-  }, 1500)
+  setTimeout(() => client.destroy(), 1500)
+})
+
+test('client should emit 2 timeouts when no responses are received', (t) => {
+  t.plan(2)
+
+  const opts = timeoutServer.address()
+  opts.timeout = 1
+  const client = new Client(opts)
+
+  client.on('timeout', () => {
+    t.ok(1, 'timeout should have happened')
+  })
+
+  setTimeout(() => client.destroy(), 2500)
 })
