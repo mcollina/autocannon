@@ -9,6 +9,7 @@
   "scripts": {
     "test": "standard && tap test/*.test.js"
   },
+  "pre-commit": ["test"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mcollina/autocannon.git"
