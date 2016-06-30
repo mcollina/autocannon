@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('tap').test
-const Client = require('../lib/myhttp')
+const Client = require('../lib/httpClient')
 const helper = require('./helper')
 const server = helper.startServer()
 const timeoutServer = helper.startTimeoutServer()
