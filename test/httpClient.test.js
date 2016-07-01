@@ -267,7 +267,7 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
-  opts.customiseRequest = (client) => {
+  opts.setupClient = (client) => {
     t.ok(client.setHeadersAndBody, 'client had setHeadersAndBody method')
     t.ok(client.setHeaders, 'client had setHeaders method')
     t.ok(client.setBody, 'client had setBody method')
