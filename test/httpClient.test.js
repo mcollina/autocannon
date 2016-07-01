@@ -14,7 +14,7 @@ test('client calls a server twice', (t) => {
   const client = new Client(server.address())
   let count = 0
 
-  client.on('response', (statusCode, length) => {
+  client.on('response', (request, statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
     if (count++ > 0) {
@@ -31,7 +31,7 @@ test('client calls a https server twice', (t) => {
   const client = new Client(opts)
   let count = 0
 
-  client.on('response', (statusCode, length) => {
+  client.on('response', (request, statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
     if (count++ > 0) {
@@ -46,7 +46,7 @@ test('myhttp client automatically reconnects', (t) => {
   const client = new Client(server.address())
   let count = 0
 
-  client.on('response', (statusCode, length) => {
+  client.on('response', (request, statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
     if (count++ > 0) {
@@ -74,7 +74,7 @@ test('client supports custom headers', (t) => {
     t.equal(req.headers.hello, 'world', 'custom header matches')
   })
 
-  client.on('response', (statusCode, length) => {
+  client.on('response', (request, statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
     client.destroy()
@@ -98,7 +98,7 @@ test('client supports custom headers', (t) => {
       t.equal(req.method, method, 'custom method matches')
     })
 
-    client.on('response', (statusCode, length) => {
+    client.on('response', (request, statusCode, length) => {
       t.equal(statusCode, 200, 'status code matches')
       t.ok(length > 'hello world'.length, 'length includes the headers')
       client.destroy()
@@ -131,7 +131,7 @@ test('client supports sending a body', (t) => {
     }))
   })
 
-  client.on('response', (statusCode, length) => {
+  client.on('response', (request, statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
     client.destroy()
@@ -154,7 +154,7 @@ test('client supports sending a body which is a string', (t) => {
     }))
   })
 
-  client.on('response', (statusCode, length) => {
+  client.on('response', (request, statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
     client.destroy()
@@ -162,7 +162,7 @@ test('client supports sending a body which is a string', (t) => {
 })
 
 test('client supports changing the body', (t) => {
-  t.plan(4)
+  t.plan(2)
 
   const opts = server.address()
   opts.method = 'POST'
@@ -174,9 +174,7 @@ test('client supports changing the body', (t) => {
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
-  t.same(client.opts.body, 'hello world', 'body was as expected')
   client.setBody('modified')
-  t.same(client.opts.body, 'modified', 'body was changed')
 
   t.same(client._req,
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
@@ -185,7 +183,7 @@ test('client supports changing the body', (t) => {
 })
 
 test('client supports changing the headers', (t) => {
-  t.plan(4)
+  t.plan(2)
 
   const opts = server.address()
   opts.method = 'POST'
@@ -196,9 +194,7 @@ test('client supports changing the headers', (t) => {
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
   'request is okay before modifying')
 
-  t.same(client.opts.headers, {}, 'header was as expected')
   client.setHeaders({header: 'modified'})
-  t.same(client.opts.headers, {header: 'modified'}, 'header was changed')
 
   t.same(client._req,
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modified\r\n\r\n`),
@@ -207,7 +203,7 @@ test('client supports changing the headers', (t) => {
 })
 
 test('client supports changing the headers and body', (t) => {
-  t.plan(6)
+  t.plan(2)
 
   const opts = server.address()
   opts.body = 'hello world'
@@ -219,14 +215,8 @@ test('client supports changing the headers and body', (t) => {
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
-  t.same(client.opts.body, 'hello world', 'body was as expected')
-  t.same(client.opts.headers, {'Content-Length': 11}, 'header was as expected')
-
   client.setBody('modified')
   client.setHeaders({header: 'modifiedHeader'})
-
-  t.same(client.opts.body, 'modified', 'body was changed')
-  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
 
   t.same(client._req,
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
@@ -235,7 +225,7 @@ test('client supports changing the headers and body', (t) => {
 })
 
 test('client supports changing the headers and body together', (t) => {
-  t.plan(6)
+  t.plan(2)
 
   const opts = server.address()
   opts.body = 'hello world'
@@ -247,13 +237,7 @@ test('client supports changing the headers and body together', (t) => {
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
-  t.same(client.opts.body, 'hello world', 'body was as expected')
-  t.same(client.opts.headers, {'Content-Length': 11}, 'header was as expected')
-
   client.setHeadersAndBody({header: 'modifiedHeader'}, 'modified')
-
-  t.same(client.opts.body, 'modified', 'body was changed')
-  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
 
   t.same(client._req,
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
@@ -262,7 +246,7 @@ test('client supports changing the headers and body together', (t) => {
 })
 
 test('client customiseRequest function overwrites the headers and body', (t) => {
-  t.plan(9)
+  t.plan(5)
 
   const opts = server.address()
   opts.body = 'hello world'
@@ -276,12 +260,6 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
   }
 
   const client = new Client(opts)
-
-  t.same(client.opts.body, 'modified', 'body was changed')
-  t.notSame(client.opts.body, 'hello world', 'body was changed')
-
-  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
-  t.notSame(client.opts.body, {'Content-Length': 11}, 'header was changed')
 
   t.same(client._req,
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
