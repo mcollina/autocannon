@@ -107,3 +107,39 @@ test('request iterator should allow for overwriting the requests passed in, but 
   iterator.nextRequest()
   t.same(iterator.currentRequest.requestBuffer, request3Res, 'request was okay')
 })
+
+test('request iterator should allow for rebuilding the current request', (t) => {
+  t.plan(6)
+
+  const opts = server.address()
+  opts.method = 'POST'
+
+  const requests1 = [
+    {
+      body: 'hello world'
+    },
+    {
+      method: 'GET',
+      body: 'modified'
+    }
+  ]
+
+  const request1Res = new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`)
+  const request2Res = new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`)
+  const request3Res = new Buffer(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`)
+  const request4Res = new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`)
+  const request5Res = new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`)
+
+  let iterator = new RequestIterator(requests1, opts)
+  t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
+  iterator.setBody('modified')
+  t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')
+  iterator.nextRequest() // verify it didn't affect the other request
+  t.same(iterator.currentRequest.requestBuffer, request3Res, 'request was okay')
+  iterator.nextRequest()
+  t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')
+  iterator.setHeaders({header: 'modifiedHeader'})
+  t.same(iterator.currentRequest.requestBuffer, request4Res, 'request was okay')
+  iterator.setRequest() // this should build default request
+  t.same(iterator.currentRequest.requestBuffer, request5Res, 'request was okay')
+})

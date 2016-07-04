@@ -170,13 +170,13 @@ test('client supports changing the body', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
   client.setBody('modified')
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'body changes updated request')
   client.destroy()
@@ -189,13 +189,13 @@ test('client supports changing the headers', (t) => {
   opts.method = 'POST'
 
   const client = new Client(opts)
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
   'request is okay before modifying')
 
   client.setHeaders({header: 'modified'})
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modified\r\n\r\n`),
   'header changes updated request')
   client.destroy()
@@ -210,14 +210,14 @@ test('client supports changing the headers and body', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
   client.setBody('modified')
   client.setHeaders({header: 'modifiedHeader'})
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'changes updated request')
   client.destroy()
@@ -232,13 +232,13 @@ test('client supports changing the headers and body together', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
   client.setHeadersAndBody({header: 'modifiedHeader'}, 'modified')
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'changes updated request')
   client.destroy()
@@ -260,11 +260,11 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
 
   const client = new Client(opts)
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'changes updated request')
 
-  t.notSame(client._req,
+  t.notSame(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'changes updated request')
 
@@ -318,7 +318,7 @@ test('client should have 2 different requests it iterates over', (t) => {
   client.on('response', (statusCode, length) => {
     number++
     if (number === 1 || number === 3) {
-      t.same(client._req,
+      t.same(client.getRequestBuffer(),
         new Buffer(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
         'body changes updated request')
 
@@ -327,7 +327,7 @@ test('client should have 2 different requests it iterates over', (t) => {
         t.end()
       }
     } else {
-      t.same(client._req,
+      t.same(client.getRequestBuffer(),
         new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
         'request was okay')
     }
