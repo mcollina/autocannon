@@ -244,6 +244,27 @@ test('client supports changing the headers and body together', (t) => {
   client.destroy()
 })
 
+test('client supports updating the current request object', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.body = 'hello world'
+  opts.method = 'POST'
+
+  const client = new Client(opts)
+
+  t.same(client.getRequestBuffer(),
+    new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
+    'request is okay before modifying')
+
+  client.setRequest({ headers: { header: 'modifiedHeader' }, body: 'modified', method: 'GET' })
+
+  t.same(client.getRequestBuffer(),
+    new Buffer(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
+    'changes updated request')
+  client.destroy()
+})
+
 test('client customiseRequest function overwrites the headers and body', (t) => {
   t.plan(5)
 
