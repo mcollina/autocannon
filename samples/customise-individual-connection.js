@@ -18,12 +18,12 @@ function startBench () {
     url: url,
     connections: 1000,
     duration: 10,
-    customiseRequest: customiseRequest
+    setupClient: setupClient
   }, finishedBench)
 
   let connection = 0
 
-  function customiseRequest (client) {
+  function setupClient (client) {
     client.setBody('connection number', connection++)
   }
 
