@@ -87,12 +87,13 @@ Start autocannon against the given target.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. _OPTIONAL_ default: `10`.
     * `timeout`: The number of seconds to wait for a response before . _OPTIONAL_ default: `10`.
-    * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. _OPTIONAL_ default: `1`.
+    * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
     * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
     * `method`: The http method to use. _OPTIONAL_ `default: 'GET'`.
     * `body`: A `String` or a `Buffer` containing the body of the request. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
-    * `customiseRequest`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.
+    * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.
+    * `Requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. The `Object`s in this array can have `body`, `headers`, `method`, or `path` attributes, which overwrite those that are passed in this `opts` object. Therefore, the ones in this (`opts`) object take precedence and should be viewed as defaults. _OPTIONAL_.
 * `cb`: The callback which is called on completion of the benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
     * `results`: The results of the run.
@@ -140,11 +141,14 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
 
 ### `Client` API
 
-This object is passed as the first parameter of the `response` event from an autocannon instance. You can use this to modify the body and headers of the requests you are sending while benchmarking.
+This object is passed as the first parameter of the `response` event from an autocannon instance. You can use this to modify the requests you are sending while benchmarking.
 
-* `client.setHeaders(headers)`: Used to modify the headers of future requests this client makes. `headers` should be an `Object`, or `undefined` if you want to remove your headers.
-* `client.setBody(body)`: Used to modify the body of futures requests this client makes. `body` should be a `String` or `Buffer`, or `undefined` if you want to remove the body.
-* `client.setHeadersAndBody(headers, body)`: Used to modify the both the header and body of future requests this client makes.`headers` and `body` should take the same form as above. `Note: call this when modifying both headers and body for faster response encoding`
+* `client.setHeaders(headers)`: Used to modify the headers of the request this client iterator is currently on. `headers` should be an `Object`, or `undefined` if you want to remove your headers.
+* `client.setBody(body)`: Used to modify the body of the request this client iterator is currently on. `body` should be a `String` or `Buffer`, or `undefined` if you want to remove the body.
+* `client.setHeadersAndBody(headers, body)`: Used to modify the both the headers and body this client iterator is currently on.`headers` and `body` should take the same form as above.
+* `client.setRequest(request)`: Used to modify the both the entire request that this client iterator is currently on. Can have `headers`, `body`, `method`, or `path` as attributes. Defaults to the values passed into the autocannon instance when it was created. `Note: call this when modifying multiple request values for faster encoding`
+* `client.setRequests(newRequests)`: Used to overwrite the entire requests array that was passed into the instance on initiation. `Note: call this when modifying multiple requests for faster encoding`
+
 
 Example using the autocannon events and the client API:
 

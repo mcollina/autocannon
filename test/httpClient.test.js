@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('tap').test
-const Client = require('../lib/myhttp')
+const Client = require('../lib/httpClient')
 const helper = require('./helper')
 const server = helper.startServer()
 const timeoutServer = helper.startTimeoutServer()
@@ -40,7 +40,7 @@ test('client calls a https server twice', (t) => {
   })
 })
 
-test('myhttp client automatically reconnects', (t) => {
+test('http client automatically reconnects', (t) => {
   t.plan(4)
 
   const client = new Client(server.address())
@@ -162,7 +162,7 @@ test('client supports sending a body which is a string', (t) => {
 })
 
 test('client supports changing the body', (t) => {
-  t.plan(4)
+  t.plan(2)
 
   const opts = server.address()
   opts.method = 'POST'
@@ -170,44 +170,39 @@ test('client supports changing the body', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
-  t.same(client.opts.body, 'hello world', 'body was as expected')
   client.setBody('modified')
-  t.same(client.opts.body, 'modified', 'body was changed')
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'body changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers', (t) => {
-  t.plan(4)
+  t.plan(2)
 
   const opts = server.address()
   opts.method = 'POST'
 
   const client = new Client(opts)
-
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
   'request is okay before modifying')
 
-  t.same(client.opts.headers, {}, 'header was as expected')
   client.setHeaders({header: 'modified'})
-  t.same(client.opts.headers, {header: 'modified'}, 'header was changed')
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modified\r\n\r\n`),
   'header changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers and body', (t) => {
-  t.plan(6)
+  t.plan(2)
 
   const opts = server.address()
   opts.body = 'hello world'
@@ -215,27 +210,21 @@ test('client supports changing the headers and body', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
-
-  t.same(client.opts.body, 'hello world', 'body was as expected')
-  t.same(client.opts.headers, {'Content-Length': 11}, 'header was as expected')
 
   client.setBody('modified')
   client.setHeaders({header: 'modifiedHeader'})
 
-  t.same(client.opts.body, 'modified', 'body was changed')
-  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
-
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers and body together', (t) => {
-  t.plan(6)
+  t.plan(2)
 
   const opts = server.address()
   opts.body = 'hello world'
@@ -243,31 +232,46 @@ test('client supports changing the headers and body together', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'request is okay before modifying')
 
-  t.same(client.opts.body, 'hello world', 'body was as expected')
-  t.same(client.opts.headers, {'Content-Length': 11}, 'header was as expected')
-
   client.setHeadersAndBody({header: 'modifiedHeader'}, 'modified')
 
-  t.same(client.opts.body, 'modified', 'body was changed')
-  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
-
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'changes updated request')
   client.destroy()
 })
 
-test('client customiseRequest function overwrites the headers and body', (t) => {
-  t.plan(9)
+test('client supports updating the current request object', (t) => {
+  t.plan(2)
 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
-  opts.customiseRequest = (client) => {
+
+  const client = new Client(opts)
+
+  t.same(client.getRequestBuffer(),
+    new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
+    'request is okay before modifying')
+
+  client.setRequest({ headers: { header: 'modifiedHeader' }, body: 'modified', method: 'GET' })
+
+  t.same(client.getRequestBuffer(),
+    new Buffer(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
+    'changes updated request')
+  client.destroy()
+})
+
+test('client customiseRequest function overwrites the headers and body', (t) => {
+  t.plan(5)
+
+  const opts = server.address()
+  opts.body = 'hello world'
+  opts.method = 'POST'
+  opts.setupClient = (client) => {
     t.ok(client.setHeadersAndBody, 'client had setHeadersAndBody method')
     t.ok(client.setHeaders, 'client had setHeaders method')
     t.ok(client.setBody, 'client had setBody method')
@@ -277,19 +281,25 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
 
   const client = new Client(opts)
 
-  t.same(client.opts.body, 'modified', 'body was changed')
-  t.notSame(client.opts.body, 'hello world', 'body was changed')
-
-  t.same(client.opts.headers, {'Content-Length': 8, header: 'modifiedHeader'}, 'header was changed')
-  t.notSame(client.opts.body, {'Content-Length': 11}, 'header was changed')
-
-  t.same(client._req,
+  t.same(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
   'changes updated request')
 
-  t.notSame(client._req,
+  t.notSame(client.getRequestBuffer(),
   new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
   'changes updated request')
+
+  client.destroy()
+})
+
+test('client should throw when attempting to modify the request with a pipelining greater than 1', (t) => {
+  t.plan(1)
+
+  const opts = server.address()
+  opts.pipelining = 10
+  const client = new Client(opts)
+
+  t.throws(() => client.setHeaders({}))
 
   client.destroy()
 })
@@ -320,4 +330,39 @@ test('client should emit 2 timeouts when no responses are received', (t) => {
   })
 
   setTimeout(() => client.destroy(), 2500)
+})
+
+test('client should have 2 different requests it iterates over', (t) => {
+  t.plan(3)
+  const opts = server.address()
+  opts.method = 'POST'
+
+  opts.requests = [{
+    body: 'hello world'
+  },
+  {
+    method: 'GET',
+    body: 'modified'
+  }]
+
+  const client = new Client(opts)
+  let number = 0
+
+  client.on('response', (statusCode, length) => {
+    number++
+    if (number === 1 || number === 3) {
+      t.same(client.getRequestBuffer(),
+        new Buffer(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
+        'body changes updated request')
+
+      if (number === 3) {
+        client.destroy()
+        t.end()
+      }
+    } else {
+      t.same(client.getRequestBuffer(),
+        new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
+        'request was okay')
+    }
+  })
 })
