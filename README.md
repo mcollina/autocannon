@@ -141,11 +141,14 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
 
 ### `Client` API
 
-This object is passed as the first parameter of the `response` event from an autocannon instance. You can use this to modify the body and headers of the requests you are sending while benchmarking.
+This object is passed as the first parameter of the `response` event from an autocannon instance. You can use this to modify the requests you are sending while benchmarking.
 
-* `client.setHeaders(headers)`: Used to modify the headers of future requests this client makes. `headers` should be an `Object`, or `undefined` if you want to remove your headers.
-* `client.setBody(body)`: Used to modify the body of futures requests this client makes. `body` should be a `String` or `Buffer`, or `undefined` if you want to remove the body.
-* `client.setHeadersAndBody(headers, body)`: Used to modify the both the header and body of future requests this client makes.`headers` and `body` should take the same form as above. `Note: call this when modifying both headers and body for faster response encoding`
+* `client.setHeaders(headers)`: Used to modify the headers of the request this client iterator is currently on. `headers` should be an `Object`, or `undefined` if you want to remove your headers.
+* `client.setBody(body)`: Used to modify the body of the request this client iterator is currently on. `body` should be a `String` or `Buffer`, or `undefined` if you want to remove the body.
+* `client.setHeadersAndBody(headers, body)`: Used to modify the both the headers and body this client iterator is currently on.`headers` and `body` should take the same form as above.
+* `client.setRequest(request)`: Used to modify the both the entire request that this client iterator is currently on. Can have `headers`, `body`, `method`, or `path` as attributes. Defaults to the values passed into the autocannon instance when it was created. `Note: call this when modifying multiple request values for faster encoding`
+* `client.setRequests(newRequests)`: Used to overwrite the entire requests array that was passed into the instance on initiation. `Note: call this when modifying multiple requests for faster encoding`
+
 
 Example using the autocannon events and the client API:
 
