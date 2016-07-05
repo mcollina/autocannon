@@ -27,7 +27,7 @@ function start () {
       bailout: 'B',
       input: 'i',
       renderProgressBar: 'progress',
-      title: 't'
+      title: 't',
       version: 'v',
       help: 'h'
     },
