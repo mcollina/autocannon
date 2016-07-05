@@ -50,6 +50,7 @@ Available options:
   -d/--duration SEC     The number of seconds to run the autocannnon. default: 10.
   -m/--method METHOD    The http method to use. default: 'GET'.
   -t/--timeout NUM      The number of seconds before timing out and resetting a connection. default: 10
+  -T/--title TITLE      The title to place in the results for identifcation.
   -b/--body BODY        The body of the request.
   -i/--input FILE       The body of the request.
   -H/--headers K=V      The request headers.
@@ -90,6 +91,7 @@ Start autocannon against the given target.
     * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
     * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
     * `method`: The http method to use. _OPTIONAL_ `default: 'GET'`.
+    * `title`: A `String` to be added to the results for identification. _OPTIONAL_ default: `undefined`.
     * `body`: A `String` or a `Buffer` containing the body of the request. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
     * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.

@@ -8,11 +8,13 @@ test('run', (t) => {
   run({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
-    duration: 2
+    duration: 2,
+    title: 'title321'
   }, function (err, result) {
     t.error(err)
 
     t.ok(result.duration >= 2, 'duration is at least 2s')
+    t.equal(result.title, 'title321', 'title should be what was passed in')
     t.equal(result.connections, 2, 'connections is the same')
     t.equal(result.pipelining, 1, 'pipelining is the default')
 
@@ -35,6 +37,9 @@ test('run', (t) => {
     t.ok(result.throughput.min, 'throughput.min exists')
     t.ok(result.throughput.max, 'throughput.max exists')
     t.ok(result.throughput.total >= result.throughput.average * 2 / 100 * 95, 'throughput.total exists')
+
+    t.ok(result.start, 'start time exists')
+    t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -53,6 +58,7 @@ test('tracker.stop()', (t) => {
     t.error(err)
 
     t.ok(result.duration < 5, 'duration is lower because of stop')
+    t.notOk(result.title, 'title should not exist when not passed in')
     t.equal(result.connections, 2, 'connections is the same')
     t.equal(result.pipelining, 1, 'pipelining is the default')
 
@@ -75,6 +81,9 @@ test('tracker.stop()', (t) => {
     t.ok(result.throughput.min, 'throughput.min exists')
     t.ok(result.throughput.max, 'throughput.max exists')
     t.ok(result.throughput.total >= result.throughput.average * 2 / 100 * 95, 'throughput.total exists')
+
+    t.ok(result.start, 'start time exists')
+    t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
