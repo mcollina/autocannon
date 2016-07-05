@@ -18,6 +18,7 @@ function start () {
     alias: {
       connections: 'c',
       pipelining: 'p',
+      timeout: 't',
       duration: 'd',
       json: 'j',
       renderLatencyTable: ['l', 'latency'],
@@ -27,12 +28,13 @@ function start () {
       bailout: 'B',
       input: 'i',
       renderProgressBar: 'progress',
-      title: 't',
+      title: 'T',
       version: 'v',
       help: 'h'
     },
     default: {
       connections: 10,
+      timeout: 10,
       pipelining: 1,
       duration: 10,
       renderLatencyTable: false,
