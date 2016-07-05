@@ -7,6 +7,7 @@ Available options:
   -d/--duration SEC     The number of seconds to run the autocannnon. default: 10.
   -m/--method METHOD    The http method to use. default: 'GET'.
   -t/--timeout NUM      The number of seconds before timing out and resetting a connection. default: 10
+  -T/--title TITLE      The title to place in the results for identifcation.
   -b/--body BODY        The body of the request.
   -i/--input FILE       The body of the request.
   -H/--headers K=V      The request headers.
