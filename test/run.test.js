@@ -42,7 +42,12 @@ test('run', (t) => {
     t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
+
+    t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
+    t.equal(result['3xx'], 0, '3xx codes')
+    t.equal(result['4xx'], 0, '4xx codes')
+    t.equal(result['5xx'], 0, '5xx codes')
     t.equal(result.non2xx, 0, 'non 2xx codes')
 
     t.end()
@@ -86,7 +91,12 @@ test('tracker.stop()', (t) => {
     t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
+
+    t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
+    t.equal(result['3xx'], 0, '3xx codes')
+    t.equal(result['4xx'], 0, '4xx codes')
+    t.equal(result['5xx'], 0, '5xx codes')
     t.equal(result.non2xx, 0, 'non 2xx codes')
 
     t.end()
