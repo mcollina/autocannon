@@ -2,7 +2,8 @@
 
 const test = require('tap').test
 const run = require('../lib/run')
-const server = require('./helper').startServer()
+const helper = require('./helper')
+const server = helper.startServer()
 
 test('run', (t) => {
   run({
@@ -189,3 +190,22 @@ test('run should callback with after a bailout', (t) => {
     t.end()
   }, 3000)
 })
+
+for (var i = 1; i <= 5; i++) closure(i)
+
+function closure (i) {
+  test('run should count all reply status codes', (t) => {
+    t.plan(2)
+    const server = helper[`start${i}xxServer`]()
+
+    run({
+      url: `http://localhost:${server.address().port}`,
+      connections: 2,
+      duration: 2
+    }, (err, res) => {
+      t.error(err)
+      t.ok(res[`${i}xx`], `${i}xx status codes recorded`)
+      t.end()
+    })
+  })
+}

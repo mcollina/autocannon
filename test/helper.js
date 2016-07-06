@@ -50,6 +50,25 @@ function startHttpsServer () {
   return server
 }
 
+for (var i = 1; i <= 5; i++) closure(i)
+
+function closure (i) {
+  module.exports[`start${i}xxServer`] = function () {
+    const server = http.createServer(handle)
+
+    server.listen(0)
+
+    function handle (req, res) {
+      res.writeHead(Number(`${i}00`))
+      res.end()
+    }
+
+    server.unref()
+
+    return server
+  }
+}
+
 module.exports.startServer = startServer
 module.exports.startTimeoutServer = startTimeoutServer
 module.exports.startHttpsServer = startHttpsServer
