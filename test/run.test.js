@@ -191,10 +191,8 @@ test('run should callback with after a bailout', (t) => {
   }, 3000)
 })
 
-for (var i = 1; i <= 5; i++) closure(i)
-
-function closure (i) {
-  test('run should count all reply status codes', (t) => {
+for (let i = 1; i <= 5; i++) {
+  test(`run should count all ${i}xx status codes`, (t) => {
     t.plan(2)
     const server = helper[`start${i}xxServer`]()
 

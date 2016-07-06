@@ -50,9 +50,7 @@ function startHttpsServer () {
   return server
 }
 
-for (var i = 1; i <= 5; i++) closure(i)
-
-function closure (i) {
+for (let i = 1; i <= 5; i++) {
   module.exports[`start${i}xxServer`] = function () {
     const server = http.createServer(handle)
 
