@@ -138,12 +138,12 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
 * `response`: Emitted when the autocannons http-client gets a http response from the server. This passes the following arguments to the callback:
     * `client`: The `http-client` itself. Can be used to modify the headers and body the client will send to the server. API below.
     * `statusCode`: The http status code of the response.
-    * `resBytes`: The response bytes in `Buffer` format.
+    * `resBytes`: The response byte length.
     * `responseTime`: The time taken to get a response for the initiating the request.
 
 ### `Client` API
 
-This object is passed as the first parameter of the `response` event from an autocannon instance. You can use this to modify the requests you are sending while benchmarking.
+This object is passed as the first parameter of both the `setupClient` function and the `response` event from an autocannon instance. You can use this to modify the requests you are sending while benchmarking. This is also an `EventEmitter`, with the events and their params listed below.
 
 * `client.setHeaders(headers)`: Used to modify the headers of the request this client iterator is currently on. `headers` should be an `Object`, or `undefined` if you want to remove your headers.
 * `client.setBody(body)`: Used to modify the body of the request this client iterator is currently on. `body` should be a `String` or `Buffer`, or `undefined` if you want to remove the body.
@@ -151,8 +151,18 @@ This object is passed as the first parameter of the `response` event from an aut
 * `client.setRequest(request)`: Used to modify the both the entire request that this client iterator is currently on. Can have `headers`, `body`, `method`, or `path` as attributes. Defaults to the values passed into the autocannon instance when it was created. `Note: call this when modifying multiple request values for faster encoding`
 * `client.setRequests(newRequests)`: Used to overwrite the entire requests array that was passed into the instance on initiation. `Note: call this when modifying multiple requests for faster encoding`
 
+### `Client` events
 
-Example using the autocannon events and the client API:
+The events a `Client` can emit are listed here:
+
+* `headers`: Emitted when a request sent from this client has received the headers of its reply. This received an `Object` as the parameter.
+* `body`: Emitted when a request sent from this client has received the body of a reply. This receives a `Buffer` as the parameter.
+* `response`: Emitted when the client has received a completed response for a request it made. This is passed the following arguments:
+    * `statusCode`: The http status code of the response.
+    * `resBytes`: The response byte length.
+    * `responseTime`: The time taken to get a response for the initiating the request.
+
+Example using the autocannon events and the client API and events:
 
 ```js
 'use strict'
@@ -160,7 +170,8 @@ Example using the autocannon events and the client API:
 const autocannon = require('autocannon')
 
 const instance = autocannon({
-  url: 'http://localhost:3000'
+  url: 'http://localhost:3000',
+  setupClient: setupClient
 }, (err, result) => handleResults(result))
 // results passed to the callback are the same as those emitted from the done events
 instance.on('done', handleResults)
@@ -168,6 +179,10 @@ instance.on('done', handleResults)
 instance.on('tick', () => console.log('ticking'))
 
 instance.on('response', handleResonse)
+
+function setupClient (client) {
+  client.on('body', console.log) // console.log a response body when its received
+}
 
 function handleResponse (client, statusCode, resBytes, responseTime) {
   console.log(`Got response with code ${statusCode} in ${responseTime} milliseconds`)
