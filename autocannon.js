@@ -27,6 +27,8 @@ function start () {
       body: 'b',
       bailout: 'B',
       input: 'i',
+      maxConnectionRequests: 'M',
+      maxOverallRequests: 'O',
       renderProgressBar: 'progress',
       title: 'T',
       version: 'v',

@@ -59,7 +59,7 @@ test('tracker.stop()', (t) => {
   const tracker = run({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
-    duration: 5
+    duration: 2
   }, function (err, result) {
     t.error(err)
 
@@ -172,9 +172,8 @@ test('run should callback with an error when no url is passed in', (t) => {
   })
 })
 
-test('run should callback with after a bailout', (t) => {
-  t.plan(3)
-  let finished = false
+test('run should callback with an error after a bailout', (t) => {
+  t.plan(2)
 
   run({
     url: 'http://localhost:4', // 4 = first unassigned port: https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
@@ -182,13 +181,30 @@ test('run should callback with after a bailout', (t) => {
   }, function (err, result) {
     t.error(err)
     t.ok(result, 'results should not exist')
-    finished = true
+    t.end()
+  })
+})
+
+test('run should only send the expected number of requests', (t) => {
+  t.plan(4)
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 2,
+    maxConnectionRequests: 10
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.requests.total, 20, 'results should match max connection requests * connections')
   })
 
-  setTimeout(function () {
-    t.ok(finished, 'test should have bailed out by now')
-    t.end()
-  }, 3000)
+  run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 2,
+    maxOverallRequests: 10
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.requests.total, 10, 'results should match max overall requests')
+  })
 })
 
 for (let i = 1; i <= 5; i++) {
