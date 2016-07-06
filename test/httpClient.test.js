@@ -6,6 +6,7 @@ const helper = require('./helper')
 const server = helper.startServer()
 const timeoutServer = helper.startTimeoutServer()
 const httpsServer = helper.startHttpsServer()
+const trailerServer = helper.startTrailerServer()
 const bl = require('bl')
 
 test('client calls a server twice', (t) => {
@@ -74,6 +75,24 @@ test('client supports custom headers', (t) => {
     t.equal(req.headers.hello, 'world', 'custom header matches')
   })
 
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    t.ok(length > 'hello world'.length, 'length includes the headers')
+    client.destroy()
+  })
+})
+
+test('client supports response trailers', (t) => {
+  t.plan(3)
+
+  const client = new Client(trailerServer.address())
+  let n = 0
+  client.on('body', (raw) => {
+    if (++n === 1) {
+      // trailer value
+      t.ok(/7895bf4b8828b55ceaf47747b4bca667/.test(raw.toString()))
+    }
+  })
   client.on('response', (statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
