@@ -186,7 +186,24 @@ test('run should callback with an error after a bailout', (t) => {
 })
 
 test('run should only send the expected number of requests', (t) => {
-  t.plan(4)
+  t.plan(7)
+
+  let done = false
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    duration: 1,
+    connections: 100,
+    amount: 50146
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.requests.total, 50146, 'results should match the amount')
+    done = true
+  })
+
+  setTimeout(() => {
+    t.notOk(done)
+  }, 1000)
 
   run({
     url: `http://localhost:${server.address().port}`,
