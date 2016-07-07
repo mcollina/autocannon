@@ -185,45 +185,6 @@ test('run should callback with an error after a bailout', (t) => {
   })
 })
 
-test('run should only send the expected number of requests', (t) => {
-  t.plan(7)
-
-  let done = false
-
-  run({
-    url: `http://localhost:${server.address().port}`,
-    duration: 1,
-    connections: 100,
-    amount: 50146
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.requests.total, 50146, 'results should match the amount')
-    done = true
-  })
-
-  setTimeout(() => {
-    t.notOk(done)
-  }, 1000)
-
-  run({
-    url: `http://localhost:${server.address().port}`,
-    connections: 2,
-    maxConnectionRequests: 10
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.requests.total, 20, 'results should match max connection requests * connections')
-  })
-
-  run({
-    url: `http://localhost:${server.address().port}`,
-    connections: 2,
-    maxOverallRequests: 10
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.requests.total, 10, 'results should match max overall requests')
-  })
-})
-
 for (let i = 1; i <= 5; i++) {
   test(`run should count all ${i}xx status codes`, (t) => {
     t.plan(2)
