@@ -20,6 +20,7 @@ function start () {
       pipelining: 'p',
       timeout: 't',
       duration: 'd',
+      amount: 'a',
       json: 'j',
       renderLatencyTable: ['l', 'latency'],
       method: 'm',

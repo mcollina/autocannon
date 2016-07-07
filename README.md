@@ -106,6 +106,7 @@ Start autocannon against the given target.
     * `url`: The given target. Can be http or https. _REQUIRED_.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. _OPTIONAL_ default: `10`.
+    * `amount`: A `Number` stating the amount of requests to make before ending the test. This overrides duration and takes precedence. _OPTIONAL_.
     * `timeout`: The number of seconds to wait for a response before . _OPTIONAL_ default: `10`.
     * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
     * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
