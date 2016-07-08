@@ -45,21 +45,42 @@ URL is any valid http or https url.
 
 Available options:
 
-  -c/--connections NUM  The number of concurrent connections to use. default: 10.
-  -p/--pipelining NUM   The number of pipelined requests to use. default: 1.
-  -d/--duration SEC     The number of seconds to run the autocannnon. default: 10.
-  -m/--method METHOD    The http method to use. default: 'GET'.
-  -t/--timeout NUM      The number of seconds before timing out and resetting a connection. default: 10
-  -T/--title TITLE      The title to place in the results for identifcation.
-  -b/--body BODY        The body of the request.
-  -i/--input FILE       The body of the request.
-  -H/--headers K=V      The request headers.
-  -B/--bailout NUM      The number of failures before initiating a bailout.
-  -n/--no-progress      Don't render the progress bar. default: false.
-  -l/--latency          Print all the latency data. default: false.
-  -j/--json             Print the output as json. This will cause the progress bar and results not to be rendered. default: false.
-  -v/--version          Print the version number.
-  -h/--help             Print this menu.
+  -c/--connections NUM
+        The number of concurrent connections to use. default: 10.
+  -p/--pipelining NUM
+        The number of pipelined requests to use. default: 1.
+  -d/--duration SEC
+        The number of seconds to run the autocannnon. default: 10.
+  -a/--amount NUM
+        The amount of requests to make before exiting the benchmark. If set, duration is ignored.
+  -m/--method METHOD
+        The http method to use. default: 'GET'.
+  -t/--timeout NUM
+        The number of seconds before timing out and resetting a connection. default: 10
+  -T/--title TITLE
+        The title to place in the results for identifcation.
+  -b/--body BODY
+        The body of the request.
+  -i/--input FILE
+        The body of the request.
+  -H/--headers K=V
+        The request headers.
+  -B/--bailout NUM
+        The number of failures before initiating a bailout.
+  -M/--maxConnectionRequests NUM
+        The max number of requests to make per connection to the server
+  -O/--maxOverallRequests NUM
+        The max number of requests to make overall to the server
+  -n/--no-progress
+        Don't render the progress bar. default: false.
+  -l/--latency
+        Print all the latency data. default: false.
+  -j/--json
+        Print the output as json. This will cause the progress bar and results not to be rendered. default: false.
+  -v/--version
+        Print the version number.
+  -h/--help
+        Print this menu.
 ```
 
 ### Programmatically
@@ -87,6 +108,7 @@ Start autocannon against the given target.
     * `url`: The given target. Can be http or https. _REQUIRED_.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. _OPTIONAL_ default: `10`.
+    * `amount`: A `Number` stating the amount of requests to make before ending the test. This overrides duration and takes precedence, so the test won't end until the amount of requests needed to be completed are completed. _OPTIONAL_.
     * `timeout`: The number of seconds to wait for a response before . _OPTIONAL_ default: `10`.
     * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
     * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
@@ -95,6 +117,8 @@ Start autocannon against the given target.
     * `body`: A `String` or a `Buffer` containing the body of the request. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
     * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.
+    * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
+    * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. The `Object`s in this array can have `body`, `headers`, `method`, or `path` attributes, which overwrite those that are passed in this `opts` object. Therefore, the ones in this (`opts`) object take precedence and should be viewed as defaults. Check the samples folder for an example of how this might be used. _OPTIONAL_.
 * `cb`: The callback which is called on completion of the benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.

@@ -59,7 +59,7 @@ test('tracker.stop()', (t) => {
   const tracker = run({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
-    duration: 5
+    duration: 2
   }, function (err, result) {
     t.error(err)
 
@@ -172,9 +172,8 @@ test('run should callback with an error when no url is passed in', (t) => {
   })
 })
 
-test('run should callback with after a bailout', (t) => {
-  t.plan(3)
-  let finished = false
+test('run should callback with an error after a bailout', (t) => {
+  t.plan(2)
 
   run({
     url: 'http://localhost:4', // 4 = first unassigned port: https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
@@ -182,13 +181,8 @@ test('run should callback with after a bailout', (t) => {
   }, function (err, result) {
     t.error(err)
     t.ok(result, 'results should not exist')
-    finished = true
-  })
-
-  setTimeout(function () {
-    t.ok(finished, 'test should have bailed out by now')
     t.end()
-  }, 3000)
+  })
 })
 
 for (let i = 1; i <= 5; i++) {
