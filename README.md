@@ -107,7 +107,7 @@ Start autocannon against the given target.
 * `opts`: Configuration options for the autocannon instance. This can have the following attributes. _REQUIRED_.
     * `url`: The given target. Can be http or https. _REQUIRED_.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
-    * `duration`: The number of seconds to run the autocannon. _OPTIONAL_ default: `10`.
+    * `duration`: The number of seconds to run the autocannon. Can be a [timestring](https://www.npmjs.com/package/timestring). _OPTIONAL_ default: `10`.
     * `amount`: A `Number` stating the amount of requests to make before ending the test. This overrides duration and takes precedence, so the test won't end until the amount of requests needed to be completed are completed. _OPTIONAL_.
     * `timeout`: The number of seconds to wait for a response before . _OPTIONAL_ default: `10`.
     * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
