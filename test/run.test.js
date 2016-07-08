@@ -185,6 +185,25 @@ test('run should callback with an error after a bailout', (t) => {
   })
 })
 
+test('run should allow users to enter timestrings to be used for duration', (t) => {
+  t.plan(3)
+
+  const instance = run({
+    url: 'http://localhost:' + server.address().port,
+    duration: '10m'
+  }, function (err, result) {
+    t.error(err)
+    t.ok(result, 'results should exist')
+    t.end()
+  })
+
+  t.equal(instance.opts.duration, 10 * 60, 'duration should have been parsed to be 600 seconds (10m)')
+
+  setTimeout(() => {
+    instance.stop()
+  }, 500)
+})
+
 for (let i = 1; i <= 5; i++) {
   test(`run should count all ${i}xx status codes`, (t) => {
     t.plan(2)
