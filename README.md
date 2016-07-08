@@ -68,9 +68,16 @@ Available options:
   -B/--bailout NUM
         The number of failures before initiating a bailout.
   -M/--maxConnectionRequests NUM
-        The max number of requests to make per connection to the server
+        The max number of requests to make per connection to the server.
   -O/--maxOverallRequests NUM
-        The max number of requests to make overall to the server
+        The max number of requests to make overall to the server.
+  -r/--connectionRate NUM
+        The max number of requests to make per second from an individual connection.
+  -R/--overallRate NUM
+        The max number of requests to make per second from an all connections.
+        connection rate will take precedence if both are set.
+        NOTE: if using rate limiting and a very large rate is entered which cannot be met,
+              Autocannon will do as many requests as possible per second.
   -n/--no-progress
         Don't render the progress bar. default: false.
   -l/--latency
@@ -119,6 +126,8 @@ Start autocannon against the given target.
     * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.
     * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
     * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
+    * `connectionRate`: A `Number` stating the rate of requests to make per second from each individual connection. No rate limiting by default. _OPTIONAL_
+    * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `conenctionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. The `Object`s in this array can have `body`, `headers`, `method`, or `path` attributes, which overwrite those that are passed in this `opts` object. Therefore, the ones in this (`opts`) object take precedence and should be viewed as defaults. Check the samples folder for an example of how this might be used. _OPTIONAL_.
 * `cb`: The callback which is called on completion of the benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
