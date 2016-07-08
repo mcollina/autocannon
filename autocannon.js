@@ -30,6 +30,8 @@ function start () {
       input: 'i',
       maxConnectionRequests: 'M',
       maxOverallRequests: 'O',
+      connectionRate: 'r',
+      overallRate: 'R',
       renderProgressBar: 'progress',
       title: 'T',
       version: 'v',
