@@ -93,9 +93,7 @@ function start () {
     }
   })
 
-  if (!argv.json) {
-    track(tracker, argv)
-  }
+  track(tracker, argv)
 
   process.once('SIGINT', () => {
     tracker.stop()
