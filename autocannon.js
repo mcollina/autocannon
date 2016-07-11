@@ -93,7 +93,8 @@ function start () {
     }
   })
 
-  track(tracker, argv)
+  // if not rendering json, or if std isn't a tty, track progress
+  if (!argv.json || !process.stdout.isTTY) track(tracker, argv)
 
   process.once('SIGINT', () => {
     tracker.stop()
