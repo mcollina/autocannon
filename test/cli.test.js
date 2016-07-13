@@ -15,7 +15,7 @@ const lines = [
   /Req\/Sec.*$/,
   /Bytes\/Sec.*$/,
   /$/,
-  /\d+k requests in 1s, .* MB read$/
+  /.* requests in 1s, .* read/
 ]
 
 t.plan(lines.length * 2)
