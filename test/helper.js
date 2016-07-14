@@ -5,12 +5,16 @@ const https = require('https')
 const fs = require('fs')
 const path = require('path')
 
-function startServer () {
+function startServer (opts) {
+  opts = opts || {}
+
+  const statusCode = opts.statusCode || 200
   const server = http.createServer(handle)
 
   server.listen(0)
 
   function handle (req, res) {
+    res.statusCode = statusCode
     res.end('hello world')
   }
 
@@ -65,23 +69,6 @@ function startHttpsServer () {
   server.unref()
 
   return server
-}
-
-for (let i = 1; i <= 5; i++) {
-  module.exports[`start${i}xxServer`] = function () {
-    const server = http.createServer(handle)
-
-    server.listen(0)
-
-    function handle (req, res) {
-      res.writeHead(Number(`${i}00`))
-      res.end()
-    }
-
-    server.unref()
-
-    return server
-  }
 }
 
 module.exports.startServer = startServer

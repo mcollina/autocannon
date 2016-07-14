@@ -207,7 +207,8 @@ test('run should allow users to enter timestrings to be used for duration', (t) 
 for (let i = 1; i <= 5; i++) {
   test(`run should count all ${i}xx status codes`, (t) => {
     t.plan(2)
-    const server = helper[`start${i}xxServer`]()
+
+    const server = helper.startServer({ statusCode: i * 100 + 2 })
 
     run({
       url: `http://localhost:${server.address().port}`,
