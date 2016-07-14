@@ -204,6 +204,19 @@ test('run should allow users to enter timestrings to be used for duration', (t) 
   }, 500)
 })
 
+test('run should recognise valid urls without http at the start', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'localhost:' + server.address().port,
+    duration: 1
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.url, 'http://localhost:' + server.address().port, 'url should have http:// added to start')
+    t.end()
+  })
+})
+
 for (let i = 1; i <= 5; i++) {
   test(`run should count all ${i}xx status codes`, (t) => {
     t.plan(2)
