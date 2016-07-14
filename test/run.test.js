@@ -205,13 +205,14 @@ test('run should allow users to enter timestrings to be used for duration', (t) 
 })
 
 test('run should recognise valid urls without http at the start', (t) => {
-  t.plan(2)
+  t.plan(3)
 
   run({
     url: 'localhost:' + server.address().port,
     duration: 1
   }, (err, res) => {
     t.error(err)
+    t.ok(res, 'results should exist')
     t.equal(res.url, 'http://localhost:' + server.address().port, 'url should have http:// added to start')
     t.end()
   })
