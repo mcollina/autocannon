@@ -19,7 +19,7 @@ test('run should only send the expected number of requests', (t) => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.requests.total + res.timeouts, 50146, 'results should match the amount')
-    t.equal(res.totalRequests, 50146, 'totalRequests should match the amount')
+    t.equal(res.sent, 50146, 'totalRequests should match the amount')
     done = true
   })
 
@@ -34,7 +34,7 @@ test('run should only send the expected number of requests', (t) => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.requests.total, 20, 'results should match max connection requests * connections')
-    t.equal(res.totalRequests, 20, 'totalRequests should match the expected amount')
+    t.equal(res.sent, 20, 'totalRequests should match the expected amount')
   })
 
   run({
@@ -44,7 +44,7 @@ test('run should only send the expected number of requests', (t) => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.requests.total, 10, 'results should match max overall requests')
-    t.equal(res.totalRequests, 10, 'totalRequests should match the expected amount')
+    t.equal(res.sent, 10, 'totalRequests should match the expected amount')
   })
 })
 
@@ -60,7 +60,7 @@ test('should shutdown after all amounts timeout', (t) => {
     t.error(err)
     t.equal(res.errors, 10)
     t.equal(res.timeouts, 10)
-    t.equal(res.totalRequests, 10, 'totalRequests should match the expected amount')
+    t.equal(res.sent, 10, 'totalRequests should match the expected amount')
     t.equal(res.requests.total, 0, 'total completed requests should be 0')
   })
 })
