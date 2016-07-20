@@ -7,7 +7,7 @@ const timeoutServer = helper.startTimeoutServer()
 const server = helper.startServer()
 
 test('run should only send the expected number of requests', (t) => {
-  t.plan(7)
+  t.plan(10)
 
   let done = false
 
@@ -18,7 +18,8 @@ test('run should only send the expected number of requests', (t) => {
     amount: 50146
   }, (err, res) => {
     t.error(err)
-    t.equal(res.requests.total, 50146, 'results should match the amount')
+    t.equal(res.requests.total + res.timeouts, 50146, 'results should match the amount')
+    t.equal(res.totalRequests, 50146, 'totalRequests should match the amount')
     done = true
   })
 
@@ -33,6 +34,7 @@ test('run should only send the expected number of requests', (t) => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.requests.total, 20, 'results should match max connection requests * connections')
+    t.equal(res.totalRequests, 20, 'totalRequests should match the expected amount')
   })
 
   run({
@@ -42,11 +44,12 @@ test('run should only send the expected number of requests', (t) => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.requests.total, 10, 'results should match max overall requests')
+    t.equal(res.totalRequests, 10, 'totalRequests should match the expected amount')
   })
 })
 
 test('should shutdown after all amounts timeout', (t) => {
-  t.plan(2)
+  t.plan(5)
 
   run({
     url: `http://localhost:${timeoutServer.address().port}`,
@@ -56,5 +59,8 @@ test('should shutdown after all amounts timeout', (t) => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.errors, 10)
+    t.equal(res.timeouts, 10)
+    t.equal(res.totalRequests, 10, 'totalRequests should match the expected amount')
+    t.equal(res.requests.total, 0, 'total completed requests should be 0')
   })
 })

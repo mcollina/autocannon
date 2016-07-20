@@ -31,6 +31,8 @@ test('run', (t) => {
     t.ok(result.requests.min, 'requests.min exists')
     t.ok(result.requests.max, 'requests.max exists')
     t.ok(result.requests.total >= result.requests.average * 2 / 100 * 95, 'requests.total exists')
+    t.ok(result.totalRequests, 'totalRequests exists')
+    t.ok(result.totalRequests >= result.requests.total, 'total requests made should be more than or equal to completed requests total')
 
     t.ok(result.throughput, 'throughput exists')
     t.ok(result.throughput.average, 'throughput.average exists')
