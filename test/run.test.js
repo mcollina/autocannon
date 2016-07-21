@@ -31,8 +31,8 @@ test('run', (t) => {
     t.ok(result.requests.min, 'requests.min exists')
     t.ok(result.requests.max, 'requests.max exists')
     t.ok(result.requests.total >= result.requests.average * 2 / 100 * 95, 'requests.total exists')
-    t.ok(result.sent, 'sent exists')
-    t.ok(result.sent >= result.requests.total, 'total requests made should be more than or equal to completed requests total')
+    t.ok(result.requests.sent, 'sent exists')
+    t.ok(result.requests.sent >= result.requests.total, 'total requests made should be more than or equal to completed requests total')
 
     t.ok(result.throughput, 'throughput exists')
     t.ok(result.throughput.average, 'throughput.average exists')
@@ -82,8 +82,8 @@ test('tracker.stop()', (t) => {
     t.ok(result.requests.min, 'requests.min exists')
     t.ok(result.requests.max, 'requests.max exists')
     t.ok(result.requests.total >= result.requests.average * 2 / 100 * 95, 'requests.total exists')
-    t.ok(result.sent, 'sent exists')
-    t.ok(result.sent >= result.requests.total, 'total requests made should be more than or equal to completed requests total')
+    t.ok(result.requests.sent, 'sent exists')
+    t.ok(result.requests.sent >= result.requests.total, 'total requests made should be more than or equal to completed requests total')
 
     t.ok(result.throughput, 'throughput exists')
     t.ok(result.throughput.average, 'throughput.average exists')
