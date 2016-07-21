@@ -150,7 +150,7 @@ Track the progress of your autocannon, programmatically.
     * `renderLatencyTable`: A truthy value to enable the rendering of the advanced latency table. default: `false`.
     * `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress). default: `'running [:bar] :percent'`.
 
-Example that just prints on completion:
+Example that just prints the table of results on completion:
 
 ```js
 'use strict'
@@ -161,9 +161,16 @@ const instance = autocannon({
   url: 'http://localhost:3000'
 }, console.log)
 
+// this is used to kill the instance on CTRL-C
+process.once('SIGINT', () => {
+  instance.stop()
+})
+
 // just render results
 autocannon.track(instance, {renderProgressBar: false})
 ```
+
+Checkout [this example](./samples/track-run.js) to see it in use, as well.
 
 ### autocannon events
 
