@@ -37,6 +37,9 @@ Available options:
         connection rate will take precedence if both are set.
         NOTE: if using rate limiting and a very large rate is entered which cannot be met,
               Autocannon will do as many requests as possible per second.
+  -D/--resetRate NUM
+        Some number of requests to make before resetting a connections connection to the
+        server.
   -n/--no-progress
         Don't render the progress bar. default: false.
   -l/--latency
