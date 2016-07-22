@@ -73,7 +73,7 @@ test('should reconnect twice to the server with a reset rate of 10 for 20 connec
     url: 'localhost:' + testServer.address().port,
     connections: 1,
     amount: 20,
-    resetRate: 2
+    reconnectRate: 2
   }, (err, res) => {
     t.error(err)
     t.equal(res.requests.sent, 20, 'totalRequests should match the expected amount')
