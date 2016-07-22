@@ -42,7 +42,7 @@ Available options:
   -l/--latency
         Print all the latency data. default: false.
   -j/--json
-        Print the output as json. This will cause the progress bar and results not to be rendered. default: false.
+        Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
   -v/--version
         Print the version number.
   -h/--help
