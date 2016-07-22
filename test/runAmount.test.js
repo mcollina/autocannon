@@ -64,3 +64,20 @@ test('should shutdown after all amounts timeout', (t) => {
     t.equal(res.requests.total, 0, 'total completed requests should be 0')
   })
 })
+
+test('should reconnect twice to the server with a reset rate of 10 for 20 connections', (t) => {
+  t.plan(3)
+  const testServer = helper.startServer()
+
+  run({
+    url: 'localhost:' + testServer.address().port,
+    connections: 1,
+    amount: 20,
+    resetRate: 2
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.requests.sent, 20, 'totalRequests should match the expected amount')
+    t.equal(testServer.autocannonConnects, 10, 'should have connected to the server 10 times after dropping the connection every second request')
+    t.end()
+  })
+})

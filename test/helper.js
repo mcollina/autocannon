@@ -10,6 +10,9 @@ function startServer (opts) {
 
   const statusCode = opts.statusCode || 200
   const server = http.createServer(handle)
+  server.autocannonConnects = 0
+
+  server.on('connection', () => { server.autocannonConnects++ })
 
   server.listen(0)
 
