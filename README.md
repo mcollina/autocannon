@@ -242,6 +242,8 @@ function handleResults(result) {
 
 This project was kindly sponsored by [nearForm](http://nearform.com).
 
+Logo and identity designed by Beibhinn Murphy O'Brien: https://www.behance.net/BeibhinnMurphyOBrien.
+
 [wrk][wrk] and [wrk2][wrk2] provided great inspiration.
 
 ### Chat on Gitter
