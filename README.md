@@ -1,3 +1,5 @@
+![banner](autocannon-banner.png)
+
 # autocannon
 
 [![Join the chat at https://gitter.im/mcollina/autocannon](https://badges.gitter.im/mcollina/autocannon.svg)](https://gitter.im/mcollina/autocannon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -250,6 +252,8 @@ function handleResults(result) {
 ## Acknowledgements
 
 This project was kindly sponsored by [nearForm](http://nearform.com).
+
+Logo and identity designed by Beibhinn Murphy O'Brien: https://www.behance.net/BeibhinnMurphyOBrien.
 
 [wrk][wrk] and [wrk2][wrk2] provided great inspiration.
 
