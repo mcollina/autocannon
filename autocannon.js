@@ -56,7 +56,7 @@ function start () {
   // support -n to disable the progress bar and results table
   if (argv.n) {
     argv.renderProgressBar = false
-    opts.renderResultsTable = false
+    argv.renderResultsTable = false
   }
 
   if (argv.version) {
