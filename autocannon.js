@@ -53,9 +53,10 @@ function start () {
 
   argv.url = argv._[0]
 
-  // support -n to disable the progress bar
+  // support -n to disable the progress bar and results table
   if (argv.n) {
     argv.renderProgressBar = false
+    argv.renderResultsTable = false
   }
 
   if (argv.version) {
