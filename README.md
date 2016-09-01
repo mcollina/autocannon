@@ -227,7 +227,7 @@ instance.on('done', handleResults)
 
 instance.on('tick', () => console.log('ticking'))
 
-instance.on('response', handleResonse)
+instance.on('response', handleResponse)
 
 function setupClient (client) {
   client.on('body', console.log) // console.log a response body when its received
