@@ -17,7 +17,7 @@ Available options:
   -t/--timeout NUM
         The number of seconds before timing out and resetting a connection. default: 10
   -T/--title TITLE
-        The title to place in the results for identifcation.
+        The title to place in the results for identification.
   -b/--body BODY
         The body of the request.
   -i/--input FILE
