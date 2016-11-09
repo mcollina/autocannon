@@ -193,6 +193,8 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
     * `statusCode`: The http status code of the response.
     * `resBytes`: The response byte length.
     * `responseTime`: The time taken to get a response for the initiating the request.
+* `reqError`: Emitted in the case of a request error e.g. a timeout.
+* `error`: Emitted if there is an error during the setup phase of autocannon.
 
 ### `Client` API
 
