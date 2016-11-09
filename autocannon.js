@@ -88,13 +88,17 @@ function start () {
     }, {})
   }
 
-  const tracker = run(argv, (err, result) => {
-    if (err) {
-      throw err
-    }
+  const tracker = run(argv)
 
+  tracker.on('done', (result) => {
     if (argv.json) {
       console.log(JSON.stringify(result))
+    }
+  })
+
+  tracker.on('error', (err) => {
+    if (err) {
+      throw err
     }
   })
 

@@ -5,19 +5,32 @@ const run = require('../lib/run')
 const helper = require('./helper')
 const server = helper.startServer()
 
+test('running with forever set to true and passing in a callback should cause an error to be returned in the callback', (t) => {
+  t.plan(2)
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    forever: true
+  }, (err, res) => {
+    t.ok(err, 'should be error when callback passed to run')
+    t.notOk(res, 'should not exist')
+    t.end()
+  })
+})
+
 test('run forever should run until .stop() is called', (t) => {
-  t.plan(5)
+  t.plan(3)
   let numRuns = 0
 
   let instance = run({
     url: `http://localhost:${server.address().port}`,
     duration: 0.5,
     forever: true
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.duration, 1, 'should have take 1 seconds to run')
-    numRuns++
-    if (numRuns === 2) {
+  })
+
+  instance.on('done', (results) => {
+    t.ok(results, 'should have gotten results')
+    if (++numRuns === 2) {
       instance.stop()
       setTimeout(() => {
         t.ok(true, 'should have reached here without the callback being called again')
