@@ -63,7 +63,7 @@ Available options:
   -t/--timeout NUM
         The number of seconds before timing out and resetting a connection. default: 10
   -T/--title TITLE
-        The title to place in the results for identifcation.
+        The title to place in the results for identification.
   -b/--body BODY
         The body of the request.
   -i/--input FILE
@@ -92,6 +92,8 @@ Available options:
         Print all the latency data. default: false.
   -j/--json
         Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
+  -f/--forever
+        Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -v/--version
         Print the version number.
   -h/--help
@@ -138,7 +140,8 @@ Start autocannon against the given target.
     * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `conenctionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
     * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. The `Object`s in this array can have `body`, `headers`, `method`, or `path` attributes, which overwrite those that are passed in this `opts` object. Therefore, the ones in this (`opts`) object take precedence and should be viewed as defaults. Check the samples folder for an example of how this might be used. _OPTIONAL_.
-* `cb`: The callback which is called on completion of the benchmark. Takes the following params. _OPTIONAL_.
+    * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinatly after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
+* `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
     * `results`: The results of the run.
 
@@ -182,6 +185,7 @@ Checkout [this example](./samples/track-run.js) to see it in use, as well.
 
 Because an autocannon instance is an `EventEmitter`, it emits several events. these are below:
 
+* `start`: Emitted once everything has been setup in your autocannon instance and it has started. Useful for if running the instance forever.
 * `tick`: Emitted every second this autocannon is running a benchmark. Useful for displaying stats, etc. Used by the `track` function.
 * `done`: Emitted when the autocannon finishes a benchmark. passes the `results` as an argument to the callback.
 * `response`: Emitted when the autocannons http-client gets a http response from the server. This passes the following arguments to the callback:
@@ -189,6 +193,8 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
     * `statusCode`: The http status code of the response.
     * `resBytes`: The response byte length.
     * `responseTime`: The time taken to get a response for the initiating the request.
+* `reqError`: Emitted in the case of a request error e.g. a timeout.
+* `error`: Emitted if there is an error during the setup phase of autocannon.
 
 ### `Client` API
 

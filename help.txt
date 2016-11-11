@@ -46,6 +46,8 @@ Available options:
         Print all the latency data. default: false.
   -j/--json
         Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
+  -f/--forever
+        Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -v/--version
         Print the version number.
   -h/--help
