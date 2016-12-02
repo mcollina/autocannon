@@ -4,6 +4,7 @@ const test = require('tap').test
 const helper = require('./helper')
 const server = helper.startServer()
 const RequestBuilder = require('../lib/httpRequestBuilder')
+const httpMethods = require('../lib/httpMethods')
 
 test('request builder should create a request with sensible defaults', (t) => {
   t.plan(1)
@@ -54,5 +55,17 @@ test('request builder should throw on unknown http method', (t) => {
 
   const build = RequestBuilder(opts)
 
-  t.throws(() => build({method: 'HEAD'}))
+  t.throws(() => build({method: 'UNKNOWN'}))
+})
+
+test('request builder should accept all valid standard http methods', (t) => {
+  t.plan(httpMethods.length)
+  httpMethods.forEach((method) => {
+    const opts = server.address()
+
+    const build = RequestBuilder(opts)
+
+    t.doesNotThrow(() => build({method: method}), `${method} should be usable by the request builded`)
+  })
+  t.end()
 })

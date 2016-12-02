@@ -125,15 +125,6 @@ test('client supports response trailers', (t) => {
   })
 })
 
-test('client does not supports HEAD', (t) => {
-  t.plan(1)
-
-  const opts = server.address()
-  opts.method = 'HEAD'
-
-  t.throws(() => new Client(opts))
-})
-
 test('client supports sending a body', (t) => {
   t.plan(4)
 
