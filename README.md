@@ -91,7 +91,7 @@ Available options:
   -l/--latency
         Print all the latency data. default: false.
   -I/--idReplacement
-        Enable replacement of [<uuid>] with a unique identifier within the body string. default: false.
+        Enable replacement of [<uuid>] with a randomly generated unique identifier within the request body. default: false.
   -j/--json
         Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
