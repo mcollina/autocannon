@@ -144,30 +144,30 @@ test('request iterator should allow for rebuilding the current request', (t) => 
   t.same(iterator.currentRequest.requestBuffer, request5Res, 'request was okay')
 })
 
-test('request iterator should not replace all [<uuid>] tags with generated IDs when calling move with idReplacement disabled', (t) => {
+test('request iterator should not replace all [<id>] tags with generated IDs when calling move with idReplacement disabled', (t) => {
   t.plan(2)
 
   const opts = server.address()
   opts.method = 'POST'
-  opts.body = '[<uuid>]'
+  opts.body = '[<id>]'
   opts.requests = [{}]
 
   const iterator = new RequestIterator(opts.requests, opts)
   const result = iterator.move().toString().trim()
 
   const contentLength = result.split('Content-Length: ')[1].slice(0, 1)
-  t.equal(contentLength, '8', 'Content-Length was incorrect')
+  t.equal(contentLength, '6', 'Content-Length was incorrect')
 
-  const body = result.split('Content-Length: 8')[1].trim()
-  t.equal(body, '[<uuid>]', '[<uuid>] should be present in body')
+  const body = result.split('Content-Length: 6')[1].trim()
+  t.equal(body, '[<id>]', '[<id>] should be present in body')
 })
 
-test('request iterator should replace all [<uuid>] tags with generated IDs and replace [<contentLength>] with correct value when calling move with idReplacement enabled', (t) => {
+test('request iterator should replace all [<id>] tags with generated IDs and replace [<contentLength>] with correct value when calling move with idReplacement enabled', (t) => {
   t.plan(3)
 
   const opts = server.address()
   opts.method = 'POST'
-  opts.body = '[<uuid>]'
+  opts.body = '[<id>]'
   opts.requests = [{}]
   opts.idReplacement = true
 
@@ -178,6 +178,6 @@ test('request iterator should replace all [<uuid>] tags with generated IDs and r
   t.equal(contentLength, '24', 'Content-Length was incorrect')
 
   const body = result.split('Content-Length: 24')[1].trim()
-  t.equal(body.includes('[<uuid>]'), false, 'One or more [<uuid>] tags were not replaced')
+  t.equal(body.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
   t.equal(body.slice(-1), '0', 'Generated ID should end with request number')
 })
