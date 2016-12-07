@@ -90,6 +90,8 @@ Available options:
         Don't render the progress bar. default: false.
   -l/--latency
         Print all the latency data. default: false.
+  -I/--idReplacement
+        Enable replacement of [<uuid>] with a unique identifier within the body string. default: false.
   -j/--json
         Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
@@ -140,6 +142,7 @@ Start autocannon against the given target.
     * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `conenctionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
     * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. The `Object`s in this array can have `body`, `headers`, `method`, or `path` attributes, which overwrite those that are passed in this `opts` object. Therefore, the ones in this (`opts`) object take precedence and should be viewed as defaults. Check the samples folder for an example of how this might be used. _OPTIONAL_.
+    * `idReplacement`: A `Boolean` which enables the replacement of `[<uuid>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinatly after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
