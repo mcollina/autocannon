@@ -99,19 +99,19 @@ test('request builder should add a Content-Length header when the body buffer ex
     'request is okay')
 })
 
-test('request builder should add a Content-Length header with value "[<contentLength>]" when the body buffer exists and idReplacement is enabled as a default override', (t) => {
+test('request builder should add a Content-Length header with correct calculated value when the body buffer exists and idReplacement is enabled as a default override', (t) => {
   t.plan(1)
 
   const opts = server.address()
   opts.method = 'POST'
-  opts.body = 'body'
+  opts.body = '[<id>]'
   opts.idReplacement = true
 
   const build = RequestBuilder(opts)
 
   const result = build()
   t.same(result,
-    new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: [<contentLength>]\r\n\r\nbody\r\n`),
+    new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 33\r\n\r\n[<id>]\r\n`),
     'request is okay')
 })
 
@@ -120,12 +120,12 @@ test('request builder should add a Content-Length header with value "[<contentLe
 
   const opts = server.address()
   opts.method = 'POST'
-  opts.body = 'body'
+  opts.body = '[<id>]'
 
   const build = RequestBuilder(opts)
 
   const result = build({ idReplacement: true })
   t.same(result,
-    new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: [<contentLength>]\r\n\r\nbody\r\n`),
+    new Buffer(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 33\r\n\r\n[<id>]\r\n`),
     'request is okay')
 })

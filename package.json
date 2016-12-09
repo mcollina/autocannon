@@ -27,7 +27,8 @@
   ],
   "author": "Matteo Collina <hello@matteocollina.com>",
   "contributors": [
-    "Glen Keane <glenkeane.94@gmail.com> (http://glenkeane.me/)"
+    "Glen Keane <glenkeane.94@gmail.com> (http://glenkeane.me/)",
+    "Donald Robertson <donaldarobertson89@gmail.com"
   ],
   "license": "MIT",
   "bugs": {
@@ -47,7 +48,7 @@
     "deep-extend": "^0.4.1",
     "hdr-histogram-percentiles-obj": "^1.1.0",
     "http-parser-js": "^0.4.2",
-    "hyperid": "^1.0.2",
+    "hyperid": "^1.1.0",
     "minimist": "^1.2.0",
     "native-hdr-histogram": "^0.4.0",
     "pretty-bytes": "^3.0.1",
