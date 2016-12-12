@@ -90,6 +90,8 @@ Available options:
         Don't render the progress bar. default: false.
   -l/--latency
         Print all the latency data. default: false.
+  -I/--idReplacement
+        Enable replacement of [<id>] with a randomly generated ID within the request body. default: false.
   -j/--json
         Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
@@ -131,7 +133,7 @@ Start autocannon against the given target.
     * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
     * `method`: The http method to use. _OPTIONAL_ `default: 'GET'`.
     * `title`: A `String` to be added to the results for identification. _OPTIONAL_ default: `undefined`.
-    * `body`: A `String` or a `Buffer` containing the body of the request. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
+    * `body`: A `String` or a `Buffer` containing the body of the request. Insert one or more randomly generated IDs into the body by including `[<id>]` where the randomly generated ID should be inserted. This can be useful in soak testing POST endpoints where one or more fields must be unique. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
     * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.
     * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
@@ -140,6 +142,7 @@ Start autocannon against the given target.
     * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `conenctionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
     * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. The `Object`s in this array can have `body`, `headers`, `method`, or `path` attributes, which overwrite those that are passed in this `opts` object. Therefore, the ones in this (`opts`) object take precedence and should be viewed as defaults. Check the samples folder for an example of how this might be used. _OPTIONAL_.
+    * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinatly after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.

@@ -14,7 +14,7 @@ module.exports.track = track
 
 function start () {
   const argv = minimist(process.argv.slice(2), {
-    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever'],
+    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement'],
     alias: {
       connections: 'c',
       pipelining: 'p',
@@ -37,6 +37,7 @@ function start () {
       title: 'T',
       version: 'v',
       forever: 'f',
+      idReplacement: 'I',
       help: 'h'
     },
     default: {
@@ -49,7 +50,8 @@ function start () {
       renderProgressBar: true,
       json: false,
       forever: false,
-      method: 'GET'
+      method: 'GET',
+      idReplacement: false
     }
   })
 

@@ -143,3 +143,37 @@ test('request iterator should allow for rebuilding the current request', (t) => 
   iterator.setRequest() // this should build default request
   t.same(iterator.currentRequest.requestBuffer, request5Res, 'request was okay')
 })
+
+test('request iterator should not replace any [<id>] tags with generated IDs when calling move with idReplacement disabled', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.method = 'POST'
+  opts.body = '[<id>]'
+  opts.requests = [{}]
+
+  const iterator = new RequestIterator(opts.requests, opts)
+  const result = iterator.move().toString().trim()
+
+  const contentLength = result.split('Content-Length: ')[1].slice(0, 1)
+  t.equal(contentLength, '6', 'Content-Length was incorrect')
+
+  const body = result.split('Content-Length: 6')[1].trim()
+  t.equal(body, '[<id>]', '[<id>] should be present in body')
+})
+
+test('request iterator should replace all [<id>] tags with generated IDs when calling move with idReplacement enabled', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.method = 'POST'
+  opts.body = '[<id>]'
+  opts.requests = [{}]
+  opts.idReplacement = true
+
+  const iterator = new RequestIterator(opts.requests, opts)
+  const result = iterator.move().toString().trim()
+
+  t.equal(result.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
+  t.equal(result.slice(-1), '0', 'Generated ID should end with request number')
+})
