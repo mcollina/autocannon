@@ -41,3 +41,16 @@ test('parse argument with multiple headers', (t) => {
   })
   t.equal(args.method, 'GET')
 })
+
+test('parse argument with "=" in value header', (t) => {
+  t.plan(1)
+
+  var args = Autocannon.parseArguments([
+    '-H', 'header1=foo=bar',
+    'http://localhost/foo/bar'
+  ])
+
+  t.strictSame(args.headers, {
+    'header1': 'foo=bar'
+  })
+})
