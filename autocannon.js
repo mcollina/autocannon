@@ -84,8 +84,8 @@ function parseArguments (argvs) {
     }
 
     argv.headers = argv.headers.reduce((obj, header) => {
-      const split = header.split('=')
-      obj[split[0]] = split[1]
+      const index = header.indexOf('=')
+      obj[header.slice(0, index)] = header.slice(index + 1)
       return obj
     }, {})
   }
