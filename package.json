@@ -39,8 +39,8 @@
     "bl": "^1.1.2",
     "pre-commit": "^1.1.2",
     "split2": "^2.1.0",
-    "standard": "^6.0.8",
-    "tap": "^5.7.0"
+    "standard": "^9.0.0",
+    "tap": "^10.3.0"
   },
   "dependencies": {
     "chalk": "^1.1.3",
@@ -51,11 +51,11 @@
     "hyperid": "^1.1.0",
     "minimist": "^1.2.0",
     "native-hdr-histogram": "^0.4.0",
-    "pretty-bytes": "^3.0.1",
+    "pretty-bytes": "^4.0.2",
     "progress": "^1.1.8",
     "reinterval": "^1.1.0",
     "retimer": "^1.0.1",
-    "table": "^3.7.8",
+    "table": "^4.0.1",
     "timestring": "^3.0.1",
     "xtend": "^4.0.1"
   }
