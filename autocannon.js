@@ -12,6 +12,9 @@ const track = require('./lib/progressTracker')
 module.exports = run
 module.exports.track = track
 
+module.exports.start = start
+module.exports.parseArguments = parseArguments
+
 function parseArguments (argvs) {
   const argv = minimist(argvs, {
     boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement'],
@@ -117,11 +120,5 @@ function start (argv) {
 }
 
 if (require.main === module) {
-  const argv = parseArguments(process.argv.slice(2))
-  if (argv) start(argv)
-}
-
-module.exports = {
-  start: start,
-  parseArguments: parseArguments
+  start(parseArguments(process.argv.slice(2)))
 }
