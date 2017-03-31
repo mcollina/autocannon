@@ -97,6 +97,11 @@ function parseArguments (argvs) {
 }
 
 function start (argv) {
+  if (!argv) {
+    // we are printing the help
+    return
+  }
+
   const tracker = run(argv)
 
   tracker.on('done', (result) => {
