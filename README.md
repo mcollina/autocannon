@@ -15,7 +15,6 @@ On _my_ box, *autocannon* can produce more load than `wrk` and `wrk2`.
 
 * [Installation](#install)
 * [Usage](#usage)
-* [Benchmarks](#benchmarks)
 * [API](#api)
 * [Acknowledgements](#acknowledgements)
 * [License](#license)
