@@ -1,21 +1,27 @@
 environment:
   matrix:
-    - nodejs_version: 4.0.0
+    - nodejs_version: 4.8.7
       platform: x64
       msvs_toolset: 12
-    - nodejs_version: 4.0.0
+    - nodejs_version: 4.8.7
       platform: x86
       msvs_toolset: 12
-    - nodejs_version: 5.0.0
+    - nodejs_version: 6.12.3
       platform: x64
       msvs_toolset: 12
-    - nodejs_version: 5.0.0
+    - nodejs_version: 6.12.3
       platform: x86
       msvs_toolset: 12
-    - nodejs_version: 6.0.0
+    - nodejs_version: 8.9.4
       platform: x64
       msvs_toolset: 12
-    - nodejs_version: 6.0.0
+    - nodejs_version: 8.9.4
+      platform: x86
+      msvs_toolset: 12
+    - nodejs_version: 9.4.0
+      platform: x64
+      msvs_toolset: 12
+    - nodejs_version: 9.4.0
       platform: x86
       msvs_toolset: 12
 
