@@ -1,6 +1,6 @@
 Usage: autocannon [opts] URL
 
-URL is any valid http or https url.
+URL is any valid http or https url. Can alternatively be a path to a Unix Domain socket.
 
 Available options:
 

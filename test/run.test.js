@@ -1,5 +1,7 @@
 'use strict'
 
+const os = require('os')
+const path = require('path')
 const test = require('tap').test
 const run = require('../lib/run')
 const helper = require('./helper')
@@ -221,6 +223,30 @@ test('run should recognise valid urls without http at the start', (t) => {
     t.end()
   })
 })
+
+if (process.platform !== 'win32') {
+  test('run should accept a unix socket instead of a url', (t) => {
+    t.plan(11)
+
+    const socketPath = path.join(os.tmpdir(), 'autocannon-' + Date.now() + '.sock')
+    helper.startServer({socketPath})
+
+    run({socketPath}, (err, result) => {
+      t.error(err)
+      t.ok(result, 'results should exist')
+      t.equal(result.socketPath, socketPath, 'socketPath should be included in result')
+      t.ok(result.requests.total > 0, 'should make at least one request')
+      t.equal(result.errors, 0, 'no errors')
+      t.equal(result['1xx'], 0, '1xx codes')
+      t.equal(result['2xx'], result.requests.total, '2xx codes')
+      t.equal(result['3xx'], 0, '3xx codes')
+      t.equal(result['4xx'], 0, '4xx codes')
+      t.equal(result['5xx'], 0, '5xx codes')
+      t.equal(result.non2xx, 0, 'non 2xx codes')
+      t.end()
+    })
+  })
+}
 
 for (let i = 1; i <= 5; i++) {
   test(`run should count all ${i}xx status codes`, (t) => {
