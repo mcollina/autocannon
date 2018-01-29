@@ -58,7 +58,7 @@ function parseArguments (argvs) {
     }
   })
 
-  if (isUnixSocket(argv._[0])) {
+  if (isIPC(argv._[0])) {
     argv.socketPath = argv._[0]
   } else {
     argv.url = argv._[0]
@@ -128,8 +128,8 @@ function start (argv) {
   })
 }
 
-function isUnixSocket (path) {
-  return /\.sock$/.test(path) && fs.existsSync(path)
+function isIPC (path) {
+  return (/\.sock$/.test(path) && fs.existsSync(path)) || /^\\\\[?.]\\pipe/.test(path)
 }
 
 if (require.main === module) {
