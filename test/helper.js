@@ -14,7 +14,7 @@ function startServer (opts) {
 
   server.on('connection', () => { server.autocannonConnects++ })
 
-  server.listen(0)
+  server.listen(opts.socketPath || 0)
 
   function handle (req, res) {
     res.statusCode = statusCode

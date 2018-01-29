@@ -58,7 +58,11 @@ function parseArguments (argvs) {
     }
   })
 
-  argv.url = argv._[0]
+  if (isUnixSocket(argv._[0])) {
+    argv.socketPath = argv._[0]
+  } else {
+    argv.url = argv._[0]
+  }
 
   // support -n to disable the progress bar and results table
   if (argv.n) {
@@ -72,7 +76,7 @@ function parseArguments (argvs) {
     return
   }
 
-  if (!argv.url || argv.help) {
+  if (!(argv.url || argv.socketPath) || argv.help) {
     console.error(help)
     return
   }
@@ -122,6 +126,10 @@ function start (argv) {
   process.once('SIGINT', () => {
     tracker.stop()
   })
+}
+
+function isUnixSocket (path) {
+  return /\.sock$/.test(path) && fs.existsSync(path)
 }
 
 if (require.main === module) {
