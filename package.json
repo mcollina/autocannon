@@ -39,24 +39,24 @@
     "bl": "^1.1.2",
     "pre-commit": "^1.1.2",
     "split2": "^2.1.0",
-    "standard": "^9.0.0",
-    "tap": "^10.3.0"
+    "standard": "^10.0.0",
+    "tap": "^11.0.0"
   },
   "dependencies": {
-    "chalk": "^1.1.3",
+    "chalk": "^2.0.0",
     "color-support": "^1.1.1",
-    "deep-extend": "^0.4.1",
-    "hdr-histogram-percentiles-obj": "^1.1.0",
+    "deep-extend": "^0.5.0",
+    "hdr-histogram-js": "^1.0.0",
+    "hdr-histogram-percentiles-obj": "^1.2.0",
     "http-parser-js": "^0.4.2",
     "hyperid": "^1.1.0",
     "minimist": "^1.2.0",
-    "native-hdr-histogram": "^0.4.0",
     "pretty-bytes": "^4.0.2",
-    "progress": "^1.1.8",
+    "progress": "^2.0.0",
     "reinterval": "^1.1.0",
     "retimer": "^1.0.1",
     "table": "^4.0.1",
-    "timestring": "^3.0.1",
+    "timestring": "^5.0.0",
     "xtend": "^4.0.1"
   }
 }

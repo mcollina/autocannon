@@ -31,13 +31,6 @@ or if you want to use the [API](#api) or as a dependency:
 npm i autocannon --save
 ```
 
-### Supported systems
-
-**autocannon** is supported on Linux, Mac OS X and Windows.
-If you see any errors during installation, you might need to configure
-your system to compile native addons:
-follow the instructions at [node-gyp][node-gyp].
-
 ## Usage
 
 ### Command Line
