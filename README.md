@@ -39,7 +39,7 @@ npm i autocannon --save
 Usage: autocannon [opts] URL
 
 URL is any valid http or https url. Can alternatively be a path to a
-UNIX socket.
+Unix Domain socket.
 
 Available options:
 
