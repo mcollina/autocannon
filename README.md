@@ -38,8 +38,10 @@ npm i autocannon --save
 ```
 Usage: autocannon [opts] URL
 
-URL is any valid http or https url. Can alternatively be a path to a
-Unix Domain socket.
+URL is any valid http or https url.
+
+For IPC, the url can be substituted by a path to a Unix Domain Socket or
+a Windows Named Pipe.
 
 Available options:
 
