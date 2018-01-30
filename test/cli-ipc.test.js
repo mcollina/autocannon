@@ -25,8 +25,12 @@ if (!win) {
   // If not Windows we can predict exactly how many lines there will be. On
   // Windows we rely on t.end() being called.
   t.plan(lines.length)
-  t.tearDown(teardown)
 }
+
+t.autoend(false)
+t.tearDown(function () {
+  child.kill()
+})
 
 const socketPath = win
   ? path.join('\\\\?\\pipe', process.cwd(), 'autocannon-' + Date.now())
@@ -61,7 +65,6 @@ child
         // in case there are no more lines.
         failsafeTimer = setTimeout(function () {
           t.end()
-          teardown()
         }, 1000)
       }
     } else if (!errorLine && win) {
@@ -75,12 +78,7 @@ child
       const errors = Number(match[1])
       t.ok(errors / 15000 < 0.01, `should have less than 1% errors on Windows (had ${errors} errors)`)
       t.end()
-      teardown()
     } else {
       throw new Error('Unexpected line: ' + JSON.stringify(line))
     }
   })
-
-function teardown () {
-  child.kill()
-}
