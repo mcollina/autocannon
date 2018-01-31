@@ -40,7 +40,7 @@
     "pre-commit": "^1.1.2",
     "split2": "^2.1.0",
     "standard": "^10.0.0",
-    "tap": "^11.0.0"
+    "tap": "^11.1.0"
   },
   "dependencies": {
     "chalk": "^2.0.0",
