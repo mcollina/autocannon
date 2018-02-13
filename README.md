@@ -258,7 +258,7 @@ function handleResults(result) {
 
 This project was kindly sponsored by [nearForm](http://nearform.com).
 
-Logo and identity designed by Beibhinn Murphy O'Brien: https://www.behance.net/BeibhinnMurphyOBrien.
+Logo and identity designed by Cosmic Fox Design: https://www.behance.net/cosmicfox.
 
 [wrk][wrk] and [wrk2][wrk2] provided great inspiration.
 
