@@ -2,8 +2,6 @@ Usage: autocannon [opts] URL
 
 URL is any valid http or https url.
 
-For IPC, the url can be substituted by a path to a Unix Domain Socket or a Windows Named Pipe.
-
 Available options:
 
   -c/--connections NUM
@@ -14,6 +12,8 @@ Available options:
         The number of seconds to run the autocannnon. default: 10.
   -a/--amount NUM
         The amount of requests to make before exiting the benchmark. If set, duration is ignored.
+  -S/--socketPath
+        A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
   -m/--method METHOD
         The http method to use. default: 'GET'.
   -t/--timeout NUM
