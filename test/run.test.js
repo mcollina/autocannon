@@ -224,7 +224,7 @@ test('run should recognise valid urls without http at the start', (t) => {
   })
 })
 
-test('run should accept a unix socket/windows pipe instead of a url', (t) => {
+test('run should accept a unix socket/windows pipe', (t) => {
   t.plan(11)
 
   const socketPath = process.platform === 'win32'
@@ -234,6 +234,7 @@ test('run should accept a unix socket/windows pipe instead of a url', (t) => {
   helper.startServer({socketPath})
 
   run({
+    url: 'localhost',
     socketPath,
     connections: 2,
     duration: 2

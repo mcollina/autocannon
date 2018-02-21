@@ -41,6 +41,7 @@ function parseArguments (argvs) {
       version: 'v',
       forever: 'f',
       idReplacement: 'I',
+      socketPath: 'S',
       help: 'h'
     },
     default: {
@@ -58,11 +59,7 @@ function parseArguments (argvs) {
     }
   })
 
-  if (isIPC(argv._[0])) {
-    argv.socketPath = argv._[0]
-  } else {
-    argv.url = argv._[0]
-  }
+  argv.url = argv._[0]
 
   // support -n to disable the progress bar and results table
   if (argv.n) {
@@ -76,7 +73,7 @@ function parseArguments (argvs) {
     return
   }
 
-  if (!(argv.url || argv.socketPath) || argv.help) {
+  if (!argv.url || argv.help) {
     console.error(help)
     return
   }
@@ -126,10 +123,6 @@ function start (argv) {
   process.once('SIGINT', () => {
     tracker.stop()
   })
-}
-
-function isIPC (path) {
-  return (/\.sock$/.test(path) && fs.existsSync(path)) || /^\\\\[?.]\\pipe/.test(path)
 }
 
 if (require.main === module) {

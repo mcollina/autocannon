@@ -10,7 +10,7 @@ const helper = require('./helper')
 const win = process.platform === 'win32'
 
 const lines = [
-  /Running 1s test @ .*$/,
+  /Running 1s test @ http:\/\/example.com\/foo \([^)]*\)$/,
   /10 connections.*$/,
   /$/,
   /Stat.*Avg.*Stdev.*Max.*$/,
@@ -38,7 +38,7 @@ const socketPath = win
 
 helper.startServer({socketPath})
 
-const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', socketPath], {
+const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', '-S', socketPath, 'example.com/foo'], {
   cwd: __dirname,
   env: process.env,
   stdio: ['ignore', 'pipe', 'pipe'],

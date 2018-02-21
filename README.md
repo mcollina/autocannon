@@ -40,9 +40,6 @@ Usage: autocannon [opts] URL
 
 URL is any valid http or https url.
 
-For IPC, the url can be substituted by a path to a Unix Domain Socket or
-a Windows Named Pipe.
-
 Available options:
 
   -c/--connections NUM
@@ -53,6 +50,8 @@ Available options:
         The number of seconds to run the autocannnon. default: 10.
   -a/--amount NUM
         The amount of requests to make before exiting the benchmark. If set, duration is ignored.
+  -S/--socketPath
+        A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
   -m/--method METHOD
         The http method to use. default: 'GET'.
   -t/--timeout NUM
@@ -119,8 +118,8 @@ autocannon({
 Start autocannon against the given target.
 
 * `opts`: Configuration options for the autocannon instance. This can have the following attributes. _REQUIRED_.
-    * `url`: The given target. Can be http or https. _REQUIRED unless `socketPath` is provided_.
-    * `socketPath`:  Unix Domain Socket (use one of `url` or `socketPath`). _REQUIRED unless `url` is provided_.
+    * `url`: The given target. Can be http or https. _REQUIRED_.
+    * `socketPath`: A path to a Unix Domain Socket or a Windows Named Pipe. A `url` is still required in order to send the correct Host header and path. _OPTIONAL_.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. Can be a [timestring](https://www.npmjs.com/package/timestring). _OPTIONAL_ default: `10`.
     * `amount`: A `Number` stating the amount of requests to make before ending the test. This overrides duration and takes precedence, so the test won't end until the amount of requests needed to be completed are completed. _OPTIONAL_.
