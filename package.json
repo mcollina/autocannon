@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "chalk": "^2.0.0",
+    "clone": "^2.1.1",
     "color-support": "^1.1.1",
     "deep-extend": "^0.5.0",
     "hdr-histogram-js": "^1.0.0",
