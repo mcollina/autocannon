@@ -3,7 +3,9 @@
 const os = require('os')
 const path = require('path')
 const test = require('tap').test
+const clone = require('clone')
 const run = require('../lib/run')
+const defaultOptions = require('../lib/defaultOptions')
 const helper = require('./helper')
 const server = helper.startServer()
 
@@ -279,3 +281,16 @@ for (let i = 1; i <= 5; i++) {
     })
   })
 }
+
+test('run should not modify default options', (t) => {
+  const origin = clone(defaultOptions)
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 2,
+    duration: 2
+  }, function (err, result) {
+    t.error(err)
+    t.deepEqual(defaultOptions, origin, 'calling run function does not modify default options')
+    t.end()
+  })
+})
