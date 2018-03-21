@@ -44,7 +44,6 @@
   },
   "dependencies": {
     "chalk": "^2.3.2",
-    "clone": "^2.1.1",
     "color-support": "^1.1.1",
     "deep-extend": "^0.5.0",
     "hdr-histogram-js": "^1.0.0",
@@ -56,6 +55,7 @@
     "progress": "^2.0.0",
     "reinterval": "^1.1.0",
     "retimer": "^1.0.1",
+    "shallow-clone": "^2.0.2",
     "table": "^4.0.3",
     "timestring": "^5.0.0",
     "xtend": "^4.0.1"
