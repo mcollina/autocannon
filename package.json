@@ -46,7 +46,7 @@
     "chalk": "^2.3.2",
     "color-support": "^1.1.1",
     "deep-extend": "^0.5.0",
-    "hdr-histogram-js": "^1.0.0",
+    "hdr-histogram-js": "1.0.0",
     "hdr-histogram-percentiles-obj": "^1.2.0",
     "http-parser-js": "^0.4.11",
     "hyperid": "^1.3.1",
