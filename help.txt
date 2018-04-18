@@ -50,7 +50,7 @@ Available options:
         Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
         Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
-  -s/--sniServerName
+  -s/--servername
         Server name for the SNI (Server Name Indication) TLS extension.
   -v/--version
         Print the version number.

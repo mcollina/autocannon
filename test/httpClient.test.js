@@ -64,13 +64,13 @@ test('client calls a tls server with SNI servername twice', (t) => {
 
   var opts = tlsServer.address()
   opts.protocol = 'https:'
-  opts.sniServerName = 'example.com'
+  opts.servername = 'example.com'
   const client = new Client(opts)
   let count = 0
 
   client.on('headers', (response) => {
     t.equal(response.statusCode, 200, 'status code matches')
-    t.deepEqual(response.headers, ['X-servername', opts.sniServerName, 'Content-Length', '0'])
+    t.deepEqual(response.headers, ['X-servername', opts.servername, 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
