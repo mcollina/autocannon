@@ -6,6 +6,7 @@ const helper = require('./helper')
 const server = helper.startServer()
 const timeoutServer = helper.startTimeoutServer()
 const httpsServer = helper.startHttpsServer()
+const tlsServer = helper.startTlsServer()
 const trailerServer = helper.startTrailerServer()
 const bl = require('bl')
 
@@ -35,6 +36,41 @@ test('client calls a https server twice', (t) => {
   client.on('response', (statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(length > 'hello world'.length, 'length includes the headers')
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+})
+
+test('client calls a tls server without SNI servername twice', (t) => {
+  t.plan(4)
+
+  var opts = tlsServer.address()
+  opts.protocol = 'https:'
+  const client = new Client(opts)
+  let count = 0
+
+  client.on('headers', (response) => {
+    t.equal(response.statusCode, 200, 'status code matches')
+    t.deepEqual(response.headers, ['X-servername', '', 'Content-Length', '0'])
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+})
+
+test('client calls a tls server with SNI servername twice', (t) => {
+  t.plan(4)
+
+  var opts = tlsServer.address()
+  opts.protocol = 'https:'
+  opts.servername = 'example.com'
+  const client = new Client(opts)
+  let count = 0
+
+  client.on('headers', (response) => {
+    t.equal(response.statusCode, 200, 'status code matches')
+    t.deepEqual(response.headers, ['X-servername', opts.servername, 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
