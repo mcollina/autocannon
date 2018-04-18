@@ -2,6 +2,7 @@
 
 const http = require('http')
 const https = require('https')
+const tls = require('tls')
 const fs = require('fs')
 const path = require('path')
 
@@ -74,7 +75,47 @@ function startHttpsServer () {
   return server
 }
 
+// this server will echo the SNI Server Name in a HTTP header
+function startTlsServer () {
+  const key = fs.readFileSync(path.join(__dirname, '/key.pem'))
+  const cert = fs.readFileSync(path.join(__dirname, '/cert.pem'))
+  const passphrase = 'test'
+  var servername = ''
+
+  const options = {
+    key,
+    cert,
+    passphrase,
+    SNICallback: function (name, cb) {
+      servername = name
+      cb(null, tls.createSecureContext({
+        key,
+        cert,
+        passphrase
+      }))
+    }
+  }
+
+  const server = tls.createServer(options, handle)
+
+  server.listen(0)
+
+  function handle (socket) {
+    socket.on('data', function (data) {
+      // Assume this is a http get request and send back the servername in an otherwise empty reponse.
+      socket.write('HTTP/1.1 200 OK\nX-servername: ' + servername + '\nContent-Length: 0\n\n')
+      socket.setEncoding('utf8')
+      socket.pipe(socket)
+    })
+  }
+
+  server.unref()
+
+  return server
+}
+
 module.exports.startServer = startServer
 module.exports.startTimeoutServer = startTimeoutServer
 module.exports.startHttpsServer = startHttpsServer
 module.exports.startTrailerServer = startTrailerServer
+module.exports.startTlsServer = startTlsServer
