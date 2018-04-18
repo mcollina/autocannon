@@ -29,6 +29,7 @@ function parseArguments (argvs) {
       method: 'm',
       headers: ['H', 'header'],
       body: 'b',
+      sniServerName: 's',
       bailout: 'B',
       input: 'i',
       maxConnectionRequests: 'M',
