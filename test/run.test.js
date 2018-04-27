@@ -266,17 +266,32 @@ test('run should accept a unix socket/windows pipe', (t) => {
 
 for (let i = 1; i <= 5; i++) {
   test(`run should count all ${i}xx status codes`, (t) => {
-    t.plan(2)
-
     const server = helper.startServer({ statusCode: i * 100 + 2 })
 
     run({
       url: `http://localhost:${server.address().port}`,
       connections: 2,
       duration: 2
-    }, (err, res) => {
+    }, (err, result) => {
       t.error(err)
-      t.ok(res[`${i}xx`], `${i}xx status codes recorded`)
+
+      t.ok(result[`${i}xx`], `${i}xx status codes recorded`)
+
+      t.ok(result.latency, 'latency exists')
+      t.ok(!Number.isNaN(result.latency.average), 'latency.average is not NaN')
+      t.ok(result.latency.average, 'latency.average exists')
+      t.ok(result.latency.stddev, 'latency.stddev exists')
+      t.ok(result.latency.min >= 0, 'latency.min exists')
+      t.ok(result.latency.max, 'latency.max exists')
+
+      t.ok(result.throughput, 'throughput exists')
+      t.ok(!Number.isNaN(result.throughput.average), 'throughput.average is not NaN')
+      t.ok(result.throughput.average, 'throughput.average exists')
+      t.type(result.throughput.stddev, 'number', 'throughput.stddev exists')
+      t.ok(result.throughput.min, 'throughput.min exists')
+      t.ok(result.throughput.max, 'throughput.max exists')
+      t.ok(result.throughput.total >= result.throughput.average * 2 / 100 * 95, 'throughput.total exists')
+
       t.end()
     })
   })
@@ -291,6 +306,41 @@ test('run should not modify default options', (t) => {
   }, function (err, result) {
     t.error(err)
     t.deepEqual(defaultOptions, origin, 'calling run function does not modify default options')
+    t.end()
+  })
+})
+
+test('run will exclude non 2xx stats from latency and throughput averages if excludeErrorStats is true', (t) => {
+  const server = helper.startServer({ statusCode: 404 })
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 2,
+    duration: 2,
+    excludeErrorStats: true
+  }, (err, result) => {
+    t.error(err)
+
+    t.equal(result['1xx'], 0, '1xx codes')
+    t.equal(result['2xx'], 0, '2xx codes')
+    t.equal(result['3xx'], 0, '3xx codes')
+    t.equal(result['4xx'], result.requests.total, '4xx codes')
+    t.equal(result['5xx'], 0, '5xx codes')
+    t.equal(result.non2xx, result.requests.total, 'non 2xx codes')
+
+    t.ok(result.latency, 'latency exists')
+    t.equal(result.latency.average, 0, 'latency.average should be 0')
+    t.equal(result.latency.stddev, 0, 'latency.stddev should be 0')
+    t.equal(result.latency.min, 0, 'latency.min should be 0')
+    t.equal(result.latency.max, 0, 'latency.max should be 0')
+
+    t.ok(result.throughput, 'throughput exists')
+    t.equal(result.throughput.average, 0, 'throughput.average should be 0')
+    t.equal(result.throughput.stddev, 0, 'throughput.stddev should be 0')
+    t.equal(result.throughput.min, 0, 'throughput.min should be 0')
+    t.equal(result.throughput.max, 0, 'throughput.max should be 0')
+    t.equal(result.throughput.total, 0, 'throughput.total should be 0')
+
     t.end()
   })
 })

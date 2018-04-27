@@ -52,6 +52,8 @@ Available options:
         Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -s/--servername
         Server name for the SNI (Server Name Indication) TLS extension.
+  -x/--excludeErrorStats
+        Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
   -v/--version
         Print the version number.
   -h/--help
