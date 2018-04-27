@@ -84,6 +84,8 @@ Available options:
         Don't render the progress bar. default: false.
   -l/--latency
         Print all the latency data. default: false.
+  -I/--idReplacement
+        Enable replacement of [<id>] with a randomly generated ID within the request body. default: false.
   -j/--json
         Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
