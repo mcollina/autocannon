@@ -92,6 +92,8 @@ Available options:
         Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -s/--servername
         Server name for the SNI (Server Name Indication) TLS extension.
+  -x/--excludeErrorStats
+        Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
   -v/--version
         Print the version number.
   -h/--help
@@ -142,6 +144,7 @@ Start autocannon against the given target.
     * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
     * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: `undefined`.
+    * `excludeErrorStats`: A `Boolean` which allows you to disable tracking non 2xx code responses in latency and bytes per second calculations. _OPTIONAL_ default: `false`.
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
     * `results`: The results of the run.

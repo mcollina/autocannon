@@ -17,7 +17,7 @@ module.exports.parseArguments = parseArguments
 
 function parseArguments (argvs) {
   const argv = minimist(argvs, {
-    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement'],
+    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement', 'excludeErrorStats'],
     alias: {
       connections: 'c',
       pipelining: 'p',
@@ -43,6 +43,7 @@ function parseArguments (argvs) {
       forever: 'f',
       idReplacement: 'I',
       socketPath: 'S',
+      excludeErrorStats: 'x',
       help: 'h'
     },
     default: {
@@ -56,7 +57,8 @@ function parseArguments (argvs) {
       json: false,
       forever: false,
       method: 'GET',
-      idReplacement: false
+      idReplacement: false,
+      excludeErrorStats: false
     }
   })
 
