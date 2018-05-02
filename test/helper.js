@@ -54,6 +54,21 @@ function startTimeoutServer () {
   return server
 }
 
+// this server destroys the socket on connection, should result in ECONNRESET
+function startSocketDestroyingServer () {
+  const server = http.createServer(handle)
+
+  function handle (req, res) {
+    res.destroy()
+    server.close()
+  }
+
+  server.listen(0)
+  server.unref()
+
+  return server
+}
+
 // this server won't reply to requests
 function startHttpsServer () {
   const options = {
@@ -116,6 +131,7 @@ function startTlsServer () {
 
 module.exports.startServer = startServer
 module.exports.startTimeoutServer = startTimeoutServer
+module.exports.startSocketDestroyingServer = startSocketDestroyingServer
 module.exports.startHttpsServer = startHttpsServer
 module.exports.startTrailerServer = startTrailerServer
 module.exports.startTlsServer = startTlsServer
