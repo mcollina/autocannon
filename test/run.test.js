@@ -344,3 +344,45 @@ test('run will exclude non 2xx stats from latency and throughput averages if exc
     t.end()
   })
 })
+
+test('tracker will emit reqError with error message on timeout', (t) => {
+  t.plan(2)
+
+  const server = helper.startTimeoutServer()
+
+  let tracker = run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 1,
+    duration: 5,
+    timeout: 2,
+    bailout: 1,
+    excludeErrorStats: true
+  })
+
+  tracker.once('reqError', (err) => {
+    t.type(err, Error, 'reqError should pass an Error to listener')
+    t.equal(err.message, 'request timed out', 'error should indicate timeout')
+    tracker.stop()
+  })
+})
+
+test('tracker will emit reqError with error message on error', (t) => {
+  t.plan(2)
+
+  const server = helper.startSocketDestroyingServer()
+
+  let tracker = run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 10,
+    duration: 15,
+    method: 'POST',
+    body: 'hello',
+    excludeErrorStats: true
+  })
+
+  tracker.once('reqError', (err) => {
+    t.type(err, Error, 'reqError should pass an Error to listener')
+    t.ok(err.message, 'err.message should have a value')
+    tracker.stop()
+  })
+})
