@@ -5,6 +5,7 @@
 [![Join the chat at https://gitter.im/mcollina/autocannon](https://badges.gitter.im/mcollina/autocannon.svg)](https://gitter.im/mcollina/autocannon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis Build Status](https://travis-ci.org/mcollina/autocannon.svg?branch=master)](https://travis-ci.org/mcollina/autocannon)
 [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/mcollina/autocannon?svg=true)](https://ci.appveyor.com/project/mcollina/autocannon)
+[![Install Size](https://packagephobia.now.sh/badge?p=autocannon)](https://packagephobia.now.sh/result?p=autocannon)
 
 
 ![demo](https://raw.githubusercontent.com/mcollina/autocannon/master/demo.gif)
