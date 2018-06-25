@@ -122,6 +122,8 @@ function startTlsServer () {
       socket.setEncoding('utf8')
       socket.pipe(socket)
     })
+
+    socket.on('error', noop)
   }
 
   server.unref()
@@ -135,3 +137,5 @@ module.exports.startSocketDestroyingServer = startSocketDestroyingServer
 module.exports.startHttpsServer = startHttpsServer
 module.exports.startTrailerServer = startTrailerServer
 module.exports.startTlsServer = startTlsServer
+
+function noop () {}
