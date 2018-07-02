@@ -40,7 +40,7 @@
     "pre-commit": "^1.1.2",
     "split2": "^2.1.0",
     "standard": "^11.0.0",
-    "tap": "^12.0.0"
+    "tap": "^12.0.1"
   },
   "dependencies": {
     "chalk": "^2.4.1",
@@ -50,7 +50,7 @@
     "http-parser-js": "^0.4.13",
     "hyperid": "^1.4.1",
     "minimist": "^1.2.0",
-    "pretty-bytes": "^5.0.0",
+    "pretty-bytes": "^5.1.0",
     "progress": "^2.0.0",
     "reinterval": "^1.1.0",
     "retimer": "^1.0.1",
