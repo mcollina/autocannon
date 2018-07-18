@@ -7,6 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const URL = require('url').URL
 const spawn = require('child_process').spawn
+const URL = require('url').URL
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
