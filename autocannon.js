@@ -6,6 +6,7 @@ const minimist = require('minimist')
 const fs = require('fs')
 const path = require('path')
 const URL = require('url').URL
+const spawn = require('child_process').spawn
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
@@ -23,7 +24,7 @@ module.exports.parseArguments = parseArguments
 
 function parseArguments (argvs) {
   const argv = minimist(argvs, {
-    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement', 'excludeErrorStats'],
+    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort'],
     alias: {
       connections: 'c',
       pipelining: 'p',
@@ -32,6 +33,7 @@ function parseArguments (argvs) {
       amount: 'a',
       json: 'j',
       renderLatencyTable: ['l', 'latency'],
+      onPort: 'on-port',
       method: 'm',
       headers: ['H', 'header'],
       body: 'b',
@@ -65,10 +67,15 @@ function parseArguments (argvs) {
       method: 'GET',
       idReplacement: false,
       excludeErrorStats: false
-    }
+    },
+    '--': true
   })
 
   argv.url = argv._[0]
+
+  if (argv.onPort) {
+    argv.spawn = argv['--']
+  }
 
   // support -n to disable the progress bar and results table
   if (argv.n) {
@@ -139,9 +146,35 @@ function start (argv) {
     return
   }
 
+  if (argv.onPort) {
+    let cmd = argv.spawn[0]
+    if (cmd !== 'node') throw new Error('only works with node right now')
+    const proc = spawn(cmd, [
+      '-r', require.resolve('./lib/detectPort'),
+      ...argv.spawn.slice(1)
+    ], {
+      stdio: ['ignore', 'inherit', 'inherit', 'pipe']
+    })
+
+    proc.stdio[3].once('data', (chunk) => {
+      const port = chunk.toString()
+      runTracker(Object.assign({}, argv, {
+        onPort: false,
+        url: new URL(argv.url, `http://localhost:${port}`).href
+      }), () => {
+        proc.kill('SIGINT')
+      })
+    })
+  } else {
+    runTracker(argv)
+  }
+}
+
+function runTracker (argv, ondone) {
   const tracker = run(argv)
 
   tracker.on('done', (result) => {
+    if (ondone) ondone()
     if (argv.json) {
       console.log(JSON.stringify(result))
     }
