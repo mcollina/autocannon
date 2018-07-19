@@ -6,8 +6,7 @@ const minimist = require('minimist')
 const fs = require('fs')
 const path = require('path')
 const URL = require('url').URL
-const spawn = require('child_process').spawn
-const URL = require('url').URL
+const nitm = require('nitm')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
@@ -148,22 +147,24 @@ function start (argv) {
   }
 
   if (argv.onPort) {
-    let cmd = argv.spawn[0]
-    if (cmd !== 'node') throw new Error('only works with node right now')
-    const proc = spawn(cmd, [
-      '-r', require.resolve('./lib/detectPort'),
-      ...argv.spawn.slice(1)
-    ], {
-      stdio: ['ignore', 'inherit', 'inherit', 'pipe']
-    })
+    const proc = nitm(
+      ['-r', require.resolve('./lib/detectPort')],
+      argv.spawn,
+      { stdio: ['ignore', 'inherit', 'inherit', 'pipe'] }
+    )
 
     proc.stdio[3].once('data', (chunk) => {
       const port = chunk.toString()
-      runTracker(Object.assign({}, argv, {
+      const url = new URL(argv.url, `http://localhost:${port}`).href
+      const opts = Object.assign({}, argv, {
         onPort: false,
-        url: new URL(argv.url, `http://localhost:${port}`).href
-      }), () => {
-        proc.kill('SIGINT')
+        url: url
+      })
+      runTracker(opts, () => {
+        // `nitm` catches the SIGINT so we write it to a file descriptor
+        // instead of doing proc.kill()
+        proc.stdio[3].write('SIGINT')
+        proc.stdio[3].end()
       })
     })
   } else {
