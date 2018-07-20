@@ -16,7 +16,7 @@ const lines = [
   /Bytes\/Sec.*$/,
   /$/,
   // Ensure that there are more than 0 successful requests
-  /[1-9]\d+.* requests in \d+s, .* read/
+  /[1-9]\d*.* requests in \d+s, .* read/
 ]
 
 t.plan(lines.length * 2)
