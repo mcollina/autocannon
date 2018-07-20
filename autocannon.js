@@ -5,6 +5,7 @@
 const minimist = require('minimist')
 const fs = require('fs')
 const path = require('path')
+const URL = require('url').URL
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
@@ -63,6 +64,13 @@ function parseArguments (argvs) {
   })
 
   argv.url = argv._[0]
+
+  // If PORT is set (like by `0x`), target `localhost:PORT/path` by default.
+  // This allows doing:
+  //     0x --on-port 'autocannon /path' -- node server.js
+  if (process.env.PORT) {
+    argv.url = new URL(argv.url, `http://localhost:${process.env.PORT}`).href
+  }
 
   // support -n to disable the progress bar and results table
   if (argv.n) {
