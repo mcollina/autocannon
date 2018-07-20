@@ -43,6 +43,5 @@ child
   .on('data', (line) => {
     const regexp = lines.shift()
     t.ok(regexp, 'we are expecting this line')
-    console.error(line)
     t.ok(regexp.test(line), 'line matches ' + regexp)
   })
