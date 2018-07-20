@@ -5,9 +5,15 @@
 const minimist = require('minimist')
 const fs = require('fs')
 const path = require('path')
+const URL = require('url').URL
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
+
+if (typeof URL !== 'function') {
+  console.error('autocannon requires the WHATWG URL API, but it is not available. Please upgrade to Node 6.13+.')
+  process.exit(1)
+}
 
 module.exports = run
 module.exports.track = track
@@ -79,6 +85,28 @@ function parseArguments (argvs) {
   if (!argv.url || argv.help) {
     console.error(help)
     return
+  }
+
+  // if PORT is set (like by `0x`), target `localhost:PORT/path` by default.
+  // this allows doing:
+  //     0x --on-port 'autocannon /path' -- node server.js
+  if (process.env.PORT) {
+    argv.url = new URL(argv.url, `http://localhost:${process.env.PORT}`).href
+  }
+  // Add http:// if it's not there and this is not a /path
+  if (argv.url.indexOf('http') !== 0 && argv.url[0] !== '/') {
+    argv.url = `http://${argv.url}`
+  }
+
+  // check that the URL is valid.
+  try {
+    new URL(argv.url) // eslint-disable-line no-new
+  } catch (err) {
+    console.error(err.message)
+    console.error('')
+    console.error('When targeting a path without a hostname, the PORT environment variable must be available.')
+    console.error('Use a full URL or set the PORT variable.')
+    process.exit(1)
   }
 
   if (argv.input) {

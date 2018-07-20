@@ -39,6 +39,7 @@ npm i autocannon --save
 Usage: autocannon [opts] URL
 
 URL is any valid http or https url.
+If the PORT environment variable is set, the URL can be a path. In that case 'http://localhost:$PORT/path' will be used as the URL.
 
 Available options:
 
