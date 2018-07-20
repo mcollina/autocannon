@@ -70,6 +70,23 @@ function parseArguments (argvs) {
 
   argv.url = argv._[0]
 
+  // support -n to disable the progress bar and results table
+  if (argv.n) {
+    argv.renderProgressBar = false
+    argv.renderResultsTable = false
+  }
+
+  if (argv.version) {
+    console.log('autocannon', 'v' + require('./package').version)
+    console.log('node', process.version)
+    return
+  }
+
+  if (!argv.url || argv.help) {
+    console.error(help)
+    return
+  }
+
   // if PORT is set (like by `0x`), target `localhost:PORT/path` by default.
   // this allows doing:
   //     0x --on-port 'autocannon /path' -- node server.js
@@ -90,23 +107,6 @@ function parseArguments (argvs) {
     console.error('When targeting a path without a hostname, the PORT environment variable must be available.')
     console.error('Use a full URL or set the PORT variable.')
     process.exit(1)
-  }
-
-  // support -n to disable the progress bar and results table
-  if (argv.n) {
-    argv.renderProgressBar = false
-    argv.renderResultsTable = false
-  }
-
-  if (argv.version) {
-    console.log('autocannon', 'v' + require('./package').version)
-    console.log('node', process.version)
-    return
-  }
-
-  if (!argv.url || argv.help) {
-    console.error(help)
-    return
   }
 
   if (argv.input) {
