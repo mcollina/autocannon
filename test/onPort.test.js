@@ -42,6 +42,7 @@ child
   .pipe(split())
   .on('data', (line) => {
     const regexp = lines.shift()
+    console.error(line)
     t.ok(regexp, 'we are expecting this line')
     t.ok(regexp.test(line), 'line matches ' + regexp)
   })
