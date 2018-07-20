@@ -18,7 +18,7 @@ const lines = [
   /.* requests in \d+s, .* read/
 ]
 
-t.plan(lines.length * 2 + 1)
+t.plan(lines.length * 2 + 2)
 
 const server = helper.startServer()
 const port = server.address().port
@@ -48,3 +48,14 @@ child
   .on('end', () => {
     t.ok(server.autocannonConnects > 0, 'targeted the correct port')
   })
+
+const noPortChild = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), url], {
+  cwd: __dirname,
+  env: process.env,
+  stdio: ['ignore', 'pipe', 'pipe'],
+  detached: false
+})
+
+noPortChild.on('exit', (code) => {
+  t.equal(code, 1, 'should exit with error when a hostless URL is passed and no PORT var is available')
+})

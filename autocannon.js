@@ -65,11 +65,26 @@ function parseArguments (argvs) {
 
   argv.url = argv._[0]
 
-  // If PORT is set (like by `0x`), target `localhost:PORT/path` by default.
-  // This allows doing:
+  // if PORT is set (like by `0x`), target `localhost:PORT/path` by default.
+  // this allows doing:
   //     0x --on-port 'autocannon /path' -- node server.js
   if (process.env.PORT) {
     argv.url = new URL(argv.url, `http://localhost:${process.env.PORT}`).href
+  }
+  // Add http:// if it's not there and this is not a /path
+  if (argv.url.indexOf('http') !== 0 && argv.url[0] !== '/') {
+    argv.url = `http://${argv.url}`
+  }
+
+  // check that the URL is valid.
+  try {
+    new URL(argv.url) // eslint-disable-line no-new
+  } catch (err) {
+    console.error(err.message)
+    console.error('')
+    console.error('When targeting a path without a hostname, the PORT environment variable must be available.')
+    console.error('Use a full URL or set the PORT variable.')
+    process.exit(1)
   }
 
   // support -n to disable the progress bar and results table
