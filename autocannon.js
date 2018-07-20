@@ -107,7 +107,12 @@ function parseArguments (argvs) {
 
   // check that the URL is valid.
   try {
-    new URL(argv.url) // eslint-disable-line no-new
+    // If --on-port is given, it's acceptable to not have a hostname
+    if (argv.onPort) {
+      new URL(argv.url, 'http://localhost') // eslint-disable-line no-new
+    } else {
+      new URL(argv.url) // eslint-disable-line no-new
+    }
   } catch (err) {
     console.error(err.message)
     console.error('')
