@@ -10,6 +10,11 @@ const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
 
+if (typeof URL !== 'function') {
+  console.error('autocannon requires the WHATWG URL API, but it is not available. Please upgrade to Node 6.13+.')
+  process.exit(1)
+}
+
 module.exports = run
 module.exports.track = track
 
