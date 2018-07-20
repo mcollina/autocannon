@@ -14,9 +14,13 @@ const lines = [
   /10 connections.*$/,
   /$/,
   /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
-  /Latency \(ms\).*$/,
+  /Latency.*$/,
+  /$/,
+  /Stat.*1%.*2\.5%.*50%.*97\.5%.*Avg.*Stdev.*Min.*$/,
   /Req\/Sec.*$/,
   /Bytes\/Sec.*$/,
+  /$/,
+  /Req\/Bytes counts sampled once per second.*$/,
   /$/,
   /.* requests in \d+s, .* read/
 ]
