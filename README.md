@@ -60,8 +60,9 @@ Available options:
         The title to place in the results for identification.
   -b/--body BODY
         The body of the request.
+	Note: This option needs to be used with the '-H/--headers' option
   -i/--input FILE
-        The body of the request.
+        The body of the request. See '-b/body' for more details.
   -H/--headers K=V
         The request headers.
   -B/--bailout NUM
