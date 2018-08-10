@@ -165,7 +165,7 @@ function start (argv) {
     const socketPath = process.platform === 'win32'
       ? `\\\\?\\pipe\\${pipeName}`
       : path.join(os.tmpdir(), pipeName)
-    const server = net.createServer({ allowHalfOpen: true }, (socket) => {
+    const server = net.createServer((socket) => {
       socket.once('data', (chunk) => {
         const port = chunk.toString()
         const url = new URL(argv.url, `http://localhost:${port}`).href
