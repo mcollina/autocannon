@@ -8,6 +8,7 @@ const path = require('path')
 const URL = require('url').URL
 const nitm = require('nitm')
 const managePath = require('manage-path')
+const hasAsyncHooks = require('has-async-hooks')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
@@ -153,6 +154,11 @@ function start (argv) {
   }
 
   if (argv.onPort) {
+    if (!hasAsyncHooks()) {
+      console.error('The --on-port flag requires the async_hooks builtin module, but it is not available. Please upgrade to Node 8.1+.')
+      process.exit(1)
+    }
+
     // manage-path always uses the $PATH variable, but we can pretend
     // that it is equal to $NODE_PATH
     const alterPath = managePath({ PATH: process.env.NODE_PATH })
