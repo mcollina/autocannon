@@ -7,6 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const URL = require('url').URL
 const nitm = require('nitm')
+const managePath = require('manage-path')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
@@ -152,11 +153,17 @@ function start (argv) {
   }
 
   if (argv.onPort) {
-    const proc = nitm(
-      ['-r', require.resolve('./lib/detectPort')],
-      argv.spawn,
-      { stdio: ['ignore', 'inherit', 'inherit', 'pipe'] }
-    )
+    // manage-path always uses the $PATH variable, but we can pretend
+    // that it is equal to $NODE_PATH
+    const alterPath = managePath({ PATH: process.env.NODE_PATH })
+    alterPath.unshift(path.join(__dirname, 'injects'))
+
+    const proc = nitm(['-r', 'autocannonDetectPort'], argv.spawn, {
+      stdio: ['ignore', 'inherit', 'inherit', 'pipe'],
+      env: Object.assign({}, process.env, {
+        NODE_PATH: alterPath.get()
+      })
+    })
 
     proc.stdio[3].once('data', (chunk) => {
       const port = chunk.toString()
