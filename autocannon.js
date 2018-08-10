@@ -4,6 +4,8 @@
 
 const minimist = require('minimist')
 const fs = require('fs')
+const os = require('os')
+const net = require('net')
 const path = require('path')
 const URL = require('url').URL
 const nitm = require('nitm')
@@ -159,32 +161,43 @@ function start (argv) {
       process.exit(1)
     }
 
+    const pipeName = `${process.pid}.autocannon`
+    const socketPath = process.platform === 'win32'
+      ? `\\\\?\\pipe\\${pipeName}`
+      : path.join(os.tmpdir(), pipeName)
+    const server = net.createServer({ allowHalfOpen: true }, (socket) => {
+      socket.once('data', (chunk) => {
+        const port = chunk.toString()
+        const url = new URL(argv.url, `http://localhost:${port}`).href
+        const opts = Object.assign({}, argv, {
+          onPort: false,
+          url: url
+        })
+        runTracker(opts, () => {
+          // `nitm` catches the SIGINT so we write it to a file descriptor
+          // instead of doing proc.kill()
+          socket.end('SIGINT')
+          server.close()
+        })
+      })
+    })
+    server.listen(socketPath)
+    server.on('close', () => {
+      try {
+        fs.unlinkSync(socketPath)
+      } catch (err) {}
+    })
+
     // manage-path always uses the $PATH variable, but we can pretend
     // that it is equal to $NODE_PATH
     const alterPath = managePath({ PATH: process.env.NODE_PATH })
     alterPath.unshift(path.join(__dirname, 'injects'))
 
-    const proc = nitm(['-r', 'autocannonDetectPort'], argv.spawn, {
-      stdio: ['ignore', 'inherit', 'inherit', 'pipe'],
+    nitm(['-r', 'autocannonDetectPort'], argv.spawn, {
+      stdio: ['ignore', 'inherit', 'inherit'],
       env: Object.assign({}, process.env, {
-        NODE_PATH: alterPath.get()
-      })
-    })
-
-    proc.stdio[3].once('data', (chunk) => {
-      const port = chunk.toString()
-      const url = new URL(argv.url, `http://localhost:${port}`).href
-      const opts = Object.assign({}, argv, {
-        onPort: false,
-        url: url
-      })
-      runTracker(opts, () => {
-        // `nitm` catches the SIGINT so we write it to a file descriptor
-        // instead of doing proc.kill()
-        proc.stdio[3].write('SIGINT')
-        // Not closing the stream 3 here, calling .end() will throw an error:
-        // https://github.com/nodejs/node/issues/13542
-        // The child will exit cleanly and close the pipe then.
+        NODE_PATH: alterPath.get(),
+        AUTOCANNON_SOCKET: socketPath
       })
     })
   } else {
