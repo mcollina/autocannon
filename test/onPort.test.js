@@ -1,10 +1,10 @@
 'use strict'
 
+const path = require('path')
 const { test } = require('tap')
 const spawn = require('child_process').spawn
 const split = require('split2')
 const hasAsyncHooks = require('has-async-hooks')
-const autocannon = require.resolve('../autocannon')
 const target = require.resolve('./targetProcess')
 
 test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
@@ -23,7 +23,8 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
 
   t.plan(lines.length * 2)
 
-  const child = spawn(autocannon, [
+  const child = spawn(process.execPath, [
+    path.join(__dirname, '..'),
     '-c', '10',
     '-d', '1',
     '--on-port', '/',
