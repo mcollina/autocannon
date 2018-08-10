@@ -5,7 +5,6 @@ const { test } = require('tap')
 const spawn = require('child_process').spawn
 const split = require('split2')
 const hasAsyncHooks = require('has-async-hooks')
-const target = require.resolve('./targetProcess')
 
 test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
   const lines = [
@@ -28,7 +27,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     '-c', '10',
     '-d', '1',
     '--on-port', '/',
-    '--', 'node', target
+    '--', 'node', path.join(__dirname, './targetProcess')
   ], {
     cwd: __dirname,
     env: process.env,
