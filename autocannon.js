@@ -182,7 +182,9 @@ function start (argv) {
         // `nitm` catches the SIGINT so we write it to a file descriptor
         // instead of doing proc.kill()
         proc.stdio[3].write('SIGINT')
-        proc.stdio[3].end()
+        // Not closing the stream 3 here, calling .end() will throw an error:
+        // https://github.com/nodejs/node/issues/13542
+        // The child will exit cleanly and close the pipe then.
       })
     })
   } else {
