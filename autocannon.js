@@ -8,7 +8,7 @@ const os = require('os')
 const net = require('net')
 const path = require('path')
 const URL = require('url').URL
-const nitm = require('nitm')
+const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
@@ -193,9 +193,10 @@ function start (argv) {
     const alterPath = managePath({ PATH: process.env.NODE_PATH })
     alterPath.unshift(path.join(__dirname, 'lib/preload'))
 
-    nitm(['-r', 'autocannonDetectPort'], argv.spawn, {
+    spawn(argv.spawn[0], argv.spawn.slice(1), {
       stdio: ['ignore', 'inherit', 'inherit'],
       env: Object.assign({}, process.env, {
+        NODE_OPTIONS: ['-r', 'autocannonDetectPort'].join(' '),
         NODE_PATH: alterPath.get(),
         AUTOCANNON_SOCKET: socketPath
       })

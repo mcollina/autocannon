@@ -52,7 +52,6 @@
     "hyperid": "^1.4.1",
     "manage-path": "^2.0.0",
     "minimist": "^1.2.0",
-    "nitm": "^1.0.2",
     "on-net-listen": "^1.1.1",
     "pretty-bytes": "^5.1.0",
     "progress": "^2.0.0",
