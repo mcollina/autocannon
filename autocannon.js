@@ -191,7 +191,7 @@ function start (argv) {
     // manage-path always uses the $PATH variable, but we can pretend
     // that it is equal to $NODE_PATH
     const alterPath = managePath({ PATH: process.env.NODE_PATH })
-    alterPath.unshift(path.join(__dirname, 'injects'))
+    alterPath.unshift(path.join(__dirname, 'lib/preload'))
 
     nitm(['-r', 'autocannonDetectPort'], argv.spawn, {
       stdio: ['ignore', 'inherit', 'inherit'],
