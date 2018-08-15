@@ -7,7 +7,7 @@
     "autocannon": "autocannon.js"
   },
   "scripts": {
-    "test": "standard && tap test/*.test.js"
+    "test": "standard && tap --timeout 45 test/*.test.js"
   },
   "pre-commit": [
     "test"
@@ -47,7 +47,7 @@
     "color-support": "^1.1.1",
     "has-async-hooks": "^1.0.0",
     "hdr-histogram-js": "^1.1.4",
-    "hdr-histogram-percentiles-obj": "^1.2.0",
+    "hdr-histogram-percentiles-obj": "^2.0.0",
     "http-parser-js": "^0.4.13",
     "hyperid": "^1.4.1",
     "manage-path": "^2.0.0",
