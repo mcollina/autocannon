@@ -174,9 +174,7 @@ function start (argv) {
           url: url
         })
         runTracker(opts, () => {
-          // `nitm` catches the SIGINT so we write it to a file descriptor
-          // instead of doing proc.kill()
-          socket.end('SIGINT')
+          proc.kill('SIGINT')
           server.close()
         })
       })
@@ -193,7 +191,7 @@ function start (argv) {
     const alterPath = managePath({ PATH: process.env.NODE_PATH })
     alterPath.unshift(path.join(__dirname, 'lib/preload'))
 
-    spawn(argv.spawn[0], argv.spawn.slice(1), {
+    const proc = spawn(argv.spawn[0], argv.spawn.slice(1), {
       stdio: ['ignore', 'inherit', 'inherit'],
       env: Object.assign({}, process.env, {
         NODE_OPTIONS: ['-r', 'autocannonDetectPort'].join(' '),
