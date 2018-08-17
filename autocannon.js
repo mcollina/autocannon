@@ -161,29 +161,16 @@ function start (argv) {
       process.exit(1)
     }
 
-    const pipeName = `${process.pid}.autocannon`
-    const socketPath = process.platform === 'win32'
-      ? `\\\\?\\pipe\\${pipeName}`
-      : path.join(os.tmpdir(), pipeName)
-    const server = net.createServer((socket) => {
-      socket.once('data', (chunk) => {
-        const port = chunk.toString()
-        const url = new URL(argv.url, `http://localhost:${port}`).href
-        const opts = Object.assign({}, argv, {
-          onPort: false,
-          url: url
-        })
-        runTracker(opts, () => {
-          proc.kill('SIGINT')
-          server.close()
-        })
+    const { socketPath, server } = createChannel((port) => {
+      const url = new URL(argv.url, `http://localhost:${port}`).href
+      const opts = Object.assign({}, argv, {
+        onPort: false,
+        url: url
       })
-    })
-    server.listen(socketPath)
-    server.on('close', () => {
-      try {
-        fs.unlinkSync(socketPath)
-      } catch (err) {}
+      runTracker(opts, () => {
+        proc.kill('SIGINT')
+        server.close()
+      })
     })
 
     // manage-path always uses the $PATH variable, but we can pretend
@@ -202,6 +189,27 @@ function start (argv) {
   } else {
     runTracker(argv)
   }
+}
+
+function createChannel (onport) {
+  const pipeName = `${process.pid}.autocannon`
+  const socketPath = process.platform === 'win32'
+    ? `\\\\?\\pipe\\${pipeName}`
+    : path.join(os.tmpdir(), pipeName)
+  const server = net.createServer((socket) => {
+    socket.once('data', (chunk) => {
+      const port = chunk.toString()
+      onport(port)
+    })
+  })
+  server.listen(socketPath)
+  server.on('close', () => {
+    try {
+      fs.unlinkSync(socketPath)
+    } catch (err) {}
+  })
+
+  return { socketPath, server }
 }
 
 function runTracker (argv, ondone) {
