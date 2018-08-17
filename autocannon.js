@@ -181,7 +181,8 @@ function start (argv) {
     const proc = spawn(argv.spawn[0], argv.spawn.slice(1), {
       stdio: ['ignore', 'inherit', 'inherit'],
       env: Object.assign({}, process.env, {
-        NODE_OPTIONS: ['-r', 'autocannonDetectPort'].join(' '),
+        NODE_OPTIONS: ['-r', 'autocannonDetectPort'].join(' ') +
+          (process.env.NODE_OPTIONS ? ` ${process.env.NODE_OPTIONS}` : ''),
         NODE_PATH: alterPath.get(),
         AUTOCANNON_SOCKET: socketPath
       })
