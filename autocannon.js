@@ -4,8 +4,13 @@
 
 const minimist = require('minimist')
 const fs = require('fs')
+const os = require('os')
+const net = require('net')
 const path = require('path')
 const URL = require('url').URL
+const spawn = require('child_process').spawn
+const managePath = require('manage-path')
+const hasAsyncHooks = require('has-async-hooks')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
@@ -23,7 +28,7 @@ module.exports.parseArguments = parseArguments
 
 function parseArguments (argvs) {
   const argv = minimist(argvs, {
-    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement', 'excludeErrorStats'],
+    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort'],
     alias: {
       connections: 'c',
       pipelining: 'p',
@@ -32,6 +37,7 @@ function parseArguments (argvs) {
       amount: 'a',
       json: 'j',
       renderLatencyTable: ['l', 'latency'],
+      onPort: 'on-port',
       method: 'm',
       headers: ['H', 'header'],
       body: 'b',
@@ -65,10 +71,15 @@ function parseArguments (argvs) {
       method: 'GET',
       idReplacement: false,
       excludeErrorStats: false
-    }
+    },
+    '--': true
   })
 
   argv.url = argv._[0]
+
+  if (argv.onPort) {
+    argv.spawn = argv['--']
+  }
 
   // support -n to disable the progress bar and results table
   if (argv.n) {
@@ -100,7 +111,12 @@ function parseArguments (argvs) {
 
   // check that the URL is valid.
   try {
-    new URL(argv.url) // eslint-disable-line no-new
+    // If --on-port is given, it's acceptable to not have a hostname
+    if (argv.onPort) {
+      new URL(argv.url, 'http://localhost') // eslint-disable-line no-new
+    } else {
+      new URL(argv.url) // eslint-disable-line no-new
+    }
   } catch (err) {
     console.error(err.message)
     console.error('')
@@ -139,9 +155,69 @@ function start (argv) {
     return
   }
 
+  if (argv.onPort) {
+    if (!hasAsyncHooks()) {
+      console.error('The --on-port flag requires the async_hooks builtin module, but it is not available. Please upgrade to Node 8.1+.')
+      process.exit(1)
+    }
+
+    const { socketPath, server } = createChannel((port) => {
+      const url = new URL(argv.url, `http://localhost:${port}`).href
+      const opts = Object.assign({}, argv, {
+        onPort: false,
+        url: url
+      })
+      runTracker(opts, () => {
+        proc.kill('SIGINT')
+        server.close()
+      })
+    })
+
+    // manage-path always uses the $PATH variable, but we can pretend
+    // that it is equal to $NODE_PATH
+    const alterPath = managePath({ PATH: process.env.NODE_PATH })
+    alterPath.unshift(path.join(__dirname, 'lib/preload'))
+
+    const proc = spawn(argv.spawn[0], argv.spawn.slice(1), {
+      stdio: ['ignore', 'inherit', 'inherit'],
+      env: Object.assign({}, process.env, {
+        NODE_OPTIONS: ['-r', 'autocannonDetectPort'].join(' ') +
+          (process.env.NODE_OPTIONS ? ` ${process.env.NODE_OPTIONS}` : ''),
+        NODE_PATH: alterPath.get(),
+        AUTOCANNON_SOCKET: socketPath
+      })
+    })
+  } else {
+    runTracker(argv)
+  }
+}
+
+function createChannel (onport) {
+  const pipeName = `${process.pid}.autocannon`
+  const socketPath = process.platform === 'win32'
+    ? `\\\\?\\pipe\\${pipeName}`
+    : path.join(os.tmpdir(), pipeName)
+  const server = net.createServer((socket) => {
+    socket.once('data', (chunk) => {
+      const port = chunk.toString()
+      onport(port)
+    })
+  })
+  server.listen(socketPath)
+  server.on('close', () => {
+    try {
+      fs.unlinkSync(socketPath)
+    } catch (err) {}
+  })
+
+  return { socketPath, server }
+}
+
+function runTracker (argv, ondone) {
   const tracker = run(argv)
 
   tracker.on('done', (result) => {
+    if (ondone) ondone()
     if (argv.json) {
       console.log(JSON.stringify(result))
     }

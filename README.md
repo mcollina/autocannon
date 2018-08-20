@@ -53,6 +53,10 @@ Available options:
         The amount of requests to make before exiting the benchmark. If set, duration is ignored.
   -S/--socketPath
         A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
+  --on-port
+        Start the command listed after -- on the command line. When it starts listening on a port,
+        start sending requests to that port. A URL is still required in order to send requests to
+        the correct path. The hostname can be omitted, `localhost` will be used by default.
   -m/--method METHOD
         The http method to use. default: 'GET'.
   -t/--timeout NUM
@@ -201,6 +205,33 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
     * `responseTime`: The time taken to get a response for the initiating the request.
 * `reqError`: Emitted in the case of a request error e.g. a timeout.
 * `error`: Emitted if there is an error during the setup phase of autocannon.
+
+### results
+
+The results object emitted by `done` and passed to the `autocannon()` callback has these properties:
+
+* `title`: Value of the `title` option passed to `autocannon()`.
+* `url`: The URL that was targeted.
+* `socketPath`: The UNIX Domain Socket or Windows Named Pipe that was targeted, or `undefined`.
+* `requests`: A histogram object containing statistics about the amount of requests that were sent per second.
+* `latency`: A histogram object containing statistics about response latency.
+* `throughput`: A histogram object containing statistics about the response data throughput per second.
+* `duration`: The amount of time the test took, **in seconds**.
+* `errors`: The number of connection errors (including timeouts) that occurred.
+* `timeouts`: The number of connection timeouts that occurred.
+* `start`: A Date object representing when the test started.
+* `finish`: A Date object representing when the test ended.
+* `connections`: The amount of connections used (value of `opts.connections`).
+* `pipelining`: The number of pipelined requests used per connection (value of `opts.pipelining`).
+* `non2xx`: The number of non-2xx response status codes received.
+
+The histogram objects for `requests`, `latency` and `throughput` are [hdr-histogram-percentiles-obj](https://github.com/thekemkid/hdr-histogram-percentiles-obj) objects and have this shape:
+
+* `min`: The lowest value for this statistic.
+* `max`: The highest value for this statistic.
+* `average`: The average (mean) value.
+* `stddev`: The standard deviation.
+* `p*`: The XXth percentile value for this statistic. The percentile properties are: `p2_5`, `p50`, `p75`, `p90`, `p97_5`, `p99`, `p99_9`, `p99_99`, `p99_999`.
 
 ### `Client` API
 
