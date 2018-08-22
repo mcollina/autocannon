@@ -106,6 +106,53 @@ Available options:
         Print this menu.
 ```
 
+autocannon outputs data in tables like this:
+
+```
+Running 5s test @ http://localhost:10000
+100 connections
+
+Stat    2.5%  50%   97.5% 99%   Avg      Stdev   Max
+Latency 13 ms 17 ms 33 ms 40 ms 18.53 ms 7.03 ms 113.75 ms
+
+Stat      1%      2.5%    50%     97.5%   Avg    Stdev   Min
+Req/Sec   3399    3399    5699    5879    5259   936.69  3399
+Bytes/Sec 4.78 MB 4.78 MB 8.02 MB 8.27 MB 7.4 MB 1.32 MB 4.78 MB
+
+Req/Bytes counts sampled once per second.
+
+26k requests in 5s, 37 MB read
+```
+
+There are two tables: one for the request latency, and one for the request volume.
+
+The latency table lists the request times at the 2.5% percentile, the fast outliers; at 50%, the median; at 97.5%, the slow outliers; at 99%, the very slowest outliers. Here, lower means faster.
+
+The request volume table lists the amount of requests sent and the amount of bytes downloaded. These values are sampled once per second. Higher values mean more requests were processed. In the above example, 4.78 MB was downloaded in 1 second in the worst case (slowest 1%). Since we only ran for 5 seconds, there are just 5 samples—the Min value and the 1% and 2.5% percentiles are actually all the same sample. With longer durations these numbers will differ more.
+
+When passing the `-l` flag, a third table lists all the latency percentiles recorded by autocannon:
+
+```
+Percentile      Latency (ms)
+0.001           13
+0.01            13
+0.1             13
+1               13
+2.5             13
+10              14
+25              15
+50              16
+75              19
+90              22
+97.5            27
+99              32
+99.9            67
+99.99           67
+99.999          67
+```
+
+This can give some more insight if a lot (millions) of requests were sent.
+
 ### Programmatically
 
 ```js
