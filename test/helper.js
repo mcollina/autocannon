@@ -33,7 +33,7 @@ function startTrailerServer () {
   function handle (req, res) {
     res.writeHead(200, { 'Content-Type': 'text/plain', 'Trailer': 'Content-MD5' })
     res.write('hello ')
-    res.addTrailers({'Content-MD5': '7895bf4b8828b55ceaf47747b4bca667'})
+    res.addTrailers({ 'Content-MD5': '7895bf4b8828b55ceaf47747b4bca667' })
     res.end('world')
   }
 

@@ -40,7 +40,7 @@ const socketPath = win
   ? path.join('\\\\?\\pipe', process.cwd(), 'autocannon-' + Date.now())
   : path.join(os.tmpdir(), 'autocannon-' + Date.now() + '.sock')
 
-helper.startServer({socketPath})
+helper.startServer({ socketPath })
 
 const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', '-S', socketPath, 'example.com/foo'], {
   cwd: __dirname,

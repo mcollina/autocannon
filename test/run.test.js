@@ -257,7 +257,7 @@ test('run should accept a unix socket/windows pipe', (t) => {
     ? path.join('\\\\?\\pipe', process.cwd(), 'autocannon-' + Date.now())
     : path.join(os.tmpdir(), 'autocannon-' + Date.now() + '.sock')
 
-  helper.startServer({socketPath})
+  helper.startServer({ socketPath })
 
   run({
     url: 'localhost',

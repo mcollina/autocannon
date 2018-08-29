@@ -138,7 +138,7 @@ test('request iterator should allow for rebuilding the current request', (t) => 
   t.same(iterator.currentRequest.requestBuffer, request3Res, 'request was okay')
   iterator.nextRequest()
   t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')
-  iterator.setHeaders({header: 'modifiedHeader'})
+  iterator.setHeaders({ header: 'modifiedHeader' })
   t.same(iterator.currentRequest.requestBuffer, request4Res, 'request was okay')
   iterator.setRequest() // this should build default request
   t.same(iterator.currentRequest.requestBuffer, request5Res, 'request was okay')

@@ -41,7 +41,7 @@ test('request builder should allow per build overwriting', (t) => {
 
   const build = RequestBuilder(opts)
 
-  const result = build({method: 'GET'})
+  const result = build({ method: 'GET' })
 
   t.same(result,
     Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
@@ -55,7 +55,7 @@ test('request builder should throw on unknown http method', (t) => {
 
   const build = RequestBuilder(opts)
 
-  t.throws(() => build({method: 'UNKNOWN'}))
+  t.throws(() => build({ method: 'UNKNOWN' }))
 })
 
 test('request builder should accept all valid standard http methods', (t) => {
@@ -65,7 +65,7 @@ test('request builder should accept all valid standard http methods', (t) => {
 
     const build = RequestBuilder(opts)
 
-    t.doesNotThrow(() => build({method: method}), `${method} should be usable by the request builded`)
+    t.doesNotThrow(() => build({ method: method }), `${method} should be usable by the request builded`)
   })
   t.end()
 })
