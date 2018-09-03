@@ -2,6 +2,7 @@
 
 'use strict'
 
+const crossArgv = require('cross-argv')
 const minimist = require('minimist')
 const fs = require('fs')
 const os = require('os')
@@ -238,5 +239,6 @@ function runTracker (argv, ondone) {
 }
 
 if (require.main === module) {
-  start(parseArguments(process.argv.slice(2)))
+  const argv = crossArgv(process.argv.slice(2))
+  start(parseArguments(argv))
 }
