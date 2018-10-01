@@ -118,6 +118,25 @@ test('client supports custom headers', (t) => {
   })
 })
 
+test('client supports host custom header', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.headers = {
+    host: 'www.autocannon.com'
+  }
+  const client = new Client(opts)
+
+  server.once('request', (req, res) => {
+    t.equal(req.headers.host, 'www.autocannon.com', 'host header matches')
+  })
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    client.destroy()
+  })
+})
+
 test('client supports response trailers', (t) => {
   t.plan(3)
 
@@ -136,7 +155,8 @@ test('client supports response trailers', (t) => {
   })
 })
 
-;[
+;
+[
   'DELETE',
   'POST',
   'PUT'
@@ -239,7 +259,9 @@ test('client supports changing the headers', (t) => {
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
     'request is okay before modifying')
 
-  client.setHeaders({ header: 'modified' })
+  client.setHeaders({
+    header: 'modified'
+  })
 
   t.same(client.getRequestBuffer(),
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modified\r\n\r\n`),
@@ -261,7 +283,9 @@ test('client supports changing the headers and body', (t) => {
     'request is okay before modifying')
 
   client.setBody('modified')
-  client.setHeaders({ header: 'modifiedHeader' })
+  client.setHeaders({
+    header: 'modifiedHeader'
+  })
 
   t.same(client.getRequestBuffer(),
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
@@ -282,7 +306,9 @@ test('client supports changing the headers and body together', (t) => {
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
     'request is okay before modifying')
 
-  client.setHeadersAndBody({ header: 'modifiedHeader' }, 'modified')
+  client.setHeadersAndBody({
+    header: 'modifiedHeader'
+  }, 'modified')
 
   t.same(client.getRequestBuffer(),
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
@@ -303,7 +329,13 @@ test('client supports updating the current request object', (t) => {
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`),
     'request is okay before modifying')
 
-  client.setRequest({ headers: { header: 'modifiedHeader' }, body: 'modified', method: 'GET' })
+  client.setRequest({
+    headers: {
+      header: 'modifiedHeader'
+    },
+    body: 'modified',
+    method: 'GET'
+  })
 
   t.same(client.getRequestBuffer(),
     Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`),
@@ -322,7 +354,9 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
     t.ok(client.setHeaders, 'client had setHeaders method')
     t.ok(client.setBody, 'client had setBody method')
 
-    client.setHeadersAndBody({ header: 'modifiedHeader' }, 'modified')
+    client.setHeadersAndBody({
+      header: 'modifiedHeader'
+    }, 'modified')
   }
 
   const client = new Client(opts)
@@ -389,7 +423,8 @@ test('client should have 2 different requests it iterates over', (t) => {
   {
     method: 'GET',
     body: 'modified'
-  }]
+  }
+  ]
 
   const client = new Client(opts)
   let number = 0
