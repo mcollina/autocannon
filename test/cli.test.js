@@ -19,7 +19,7 @@ const lines = [
   /$/,
   /Req\/Bytes counts sampled once per second.*$/,
   /$/,
-  /.* requests in \d+s, .* read/
+  /.* requests in ([0-9]|\.)+s, .* read/
 ]
 
 t.plan(lines.length * 2)
