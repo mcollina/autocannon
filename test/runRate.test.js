@@ -15,7 +15,7 @@ test('run should only send the expected number of requests per second', (t) => {
     amount: 40
   }, (err, res) => {
     t.error(err)
-    t.equal(res.duration, 4, 'should have take 4 seconds to send 10 requests per seconds')
+    t.equal(Math.round(res.duration), 4, 'should have take 4 seconds to send 10 requests per seconds')
     t.equal(res.requests.average, 10, 'should have sent 10 requests per second on average')
   })
 
@@ -26,7 +26,7 @@ test('run should only send the expected number of requests per second', (t) => {
     amount: 40
   }, (err, res) => {
     t.error(err)
-    t.equal(res.duration, 2, 'should have taken 2 seconds to send 10 requests per connection with 2 connections')
+    t.equal(Math.round(res.duration), 2, 'should have taken 2 seconds to send 10 requests per connection with 2 connections')
     t.equal(res.requests.average, 20, 'should have sent 20 requests per second on average with two connections')
   })
 })

@@ -21,7 +21,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     /Req\/Bytes counts sampled once per second.*$/,
     /$/,
     // Ensure that there are more than 0 successful requests
-    /[1-9]\d*.* requests in \d+s, .* read/
+    /[1-9]\d*.* requests in ([0-9]|\.)+s, .* read/
   ]
 
   t.plan(lines.length * 2)
