@@ -138,10 +138,10 @@ function parseArguments (argvs) {
     argv.headers = argv.headers.reduce((obj, header) => {
       let index
       if (
-        (index = header.indexOf('=')) > 0 ||
-        (index = header.indexOf(':')) > 0
+        (index = header.indexOf(':')) > 0 ||
+        (index = header.indexOf('=')) > 0
       ) {
-        obj[header.slice(0, index)] = header.slice(index + 1)
+        obj[header.slice(0, index)] = header.slice(index + 1).trim()
         return obj
       } else throw new Error(`An HTTP header was not correctly formatted: ${header}`)
     }, {})
