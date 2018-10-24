@@ -59,9 +59,7 @@
     "progress": "^2.0.0",
     "reinterval": "^1.1.0",
     "retimer": "^1.0.1",
-    "shallow-clone": "^3.0.0",
     "table": "^5.1.0",
-    "timestring": "^5.0.1",
-    "xtend": "^4.0.1"
+    "timestring": "^5.0.1"
   }
 }
