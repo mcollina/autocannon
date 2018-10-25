@@ -3,7 +3,6 @@
 const os = require('os')
 const path = require('path')
 const test = require('tap').test
-const clone = require('shallow-clone')
 const run = require('../lib/run')
 const defaultOptions = require('../lib/defaultOptions')
 const helper = require('./helper')
@@ -330,7 +329,7 @@ for (let i = 1; i <= 5; i++) {
 }
 
 test('run should not modify default options', (t) => {
-  const origin = clone(defaultOptions)
+  const origin = Object.assign({}, defaultOptions)
   run({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
