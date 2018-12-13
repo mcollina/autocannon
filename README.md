@@ -33,7 +33,7 @@ npm i autocannon --save
 
 ## Usage
 
-### Command Line
+### Command Line 
 
 ```
 Usage: autocannon [opts] URL
