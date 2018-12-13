@@ -59,7 +59,7 @@
     "pretty-bytes": "^5.1.0",
     "progress": "^2.0.0",
     "reinterval": "^1.1.0",
-    "retimer": "^1.0.1",
+    "retimer": "^2.0.0",
     "timestring": "^5.0.1"
   }
 }
