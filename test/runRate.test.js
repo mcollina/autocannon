@@ -6,7 +6,7 @@ const helper = require('./helper')
 const server = helper.startServer()
 
 test('run should only send the expected number of requests per second', (t) => {
-  t.plan(6)
+  t.plan(9)
 
   run({
     url: `http://localhost:${server.address().port}`,
@@ -28,5 +28,16 @@ test('run should only send the expected number of requests per second', (t) => {
     t.error(err)
     t.equal(Math.round(res.duration), 2, 'should have taken 2 seconds to send 10 requests per connection with 2 connections')
     t.equal(res.requests.average, 20, 'should have sent 20 requests per second on average with two connections')
+  })
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 15,
+    overallRate: 10,
+    amount: 40
+  }, (err, res) => {
+    t.error(err)
+    t.equal(Math.round(res.duration), 4, 'should have take 4 seconds to send 10 requests per seconds')
+    t.equal(res.requests.average, 10, 'should have sent 10 requests per second on average')
   })
 })
