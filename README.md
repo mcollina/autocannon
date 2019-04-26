@@ -235,7 +235,7 @@ Track the progress of your autocannon, programmatically.
 * `opts`: Configuration options for tracking. This can have the following attibutes. _OPTIONAL_.
     * `outputStream`: The stream to output to. default: `process.stderr`.
     * `renderProgressBar`: A truthy value to enable the rendering of the progress bar. default: `true`.
-    * `renderResultTable`: A truthy value to enable the rendering of the results table. default: `true`.
+    * `renderResultsTable`: A truthy value to enable the rendering of the results table. default: `true`.
     * `renderLatencyTable`: A truthy value to enable the rendering of the advanced latency table. default: `false`.
     * `progressBarString`: A `string` defining the format of the progress display output. Must be valid input for the [progress bar module](http://npm.im/progress). default: `'running [:bar] :percent'`.
 
