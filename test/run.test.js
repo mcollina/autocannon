@@ -426,3 +426,18 @@ test('tracker will emit reqError with error message on error', (t) => {
     tracker.stop()
   })
 })
+
+test('throw if connections is greater than amount', (t) => {
+  t.plan(1)
+
+  const server = helper.startSocketDestroyingServer()
+
+  t.throws(function () {
+    run({
+      url: `http://localhost:${server.address().port}`,
+      connections: 10,
+      amount: 1,
+      excludeErrorStats: true
+    })
+  })
+})
