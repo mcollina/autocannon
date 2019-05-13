@@ -60,6 +60,6 @@
     "progress": "^2.0.3",
     "reinterval": "^1.1.0",
     "retimer": "^2.0.0",
-    "timestring": "^5.0.1"
+    "timestring": "^6.0.0"
   }
 }
