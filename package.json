@@ -61,5 +61,10 @@
     "reinterval": "^1.1.0",
     "retimer": "^2.0.0",
     "timestring": "^6.0.0"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "tap"
+    ]
   }
 }
