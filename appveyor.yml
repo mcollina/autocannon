@@ -23,8 +23,7 @@ os: Visual Studio 2015
 
 # Install scripts. (runs after repo cloning)
 install:
-  # Get the latest stable version of Node.js or io.js
-  - ps: Install-Product node $env:nodejs_version
+  - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:PLATFORM
   # install modules
   - npm install
 
