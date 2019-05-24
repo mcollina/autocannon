@@ -438,6 +438,68 @@ test('throw if connections is greater than amount', (t) => {
       connections: 10,
       amount: 1,
       excludeErrorStats: true
-    })
+    }, () => {})
+  })
+})
+
+test('run', (t) => {
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 2,
+    duration: 2,
+    title: 'title321'
+  }).then(result => {
+    t.ok(result.duration >= 2, 'duration is at least 2s')
+    t.equal(result.title, 'title321', 'title should be what was passed in')
+    t.equal(result.connections, 2, 'connections is the same')
+    t.equal(result.pipelining, 1, 'pipelining is the default')
+
+    t.ok(result.latency, 'latency exists')
+    t.type(result.latency.average, 'number', 'latency.average exists')
+    t.type(result.latency.stddev, 'number', 'latency.stddev exists')
+    t.ok(result.latency.min >= 0, 'latency.min exists')
+    t.type(result.latency.max, 'number', 'latency.max exists')
+    t.type(result.latency.p2_5, 'number', 'latency.p2_5 (2.5%) exists')
+    t.type(result.latency.p50, 'number', 'latency.p50 (50%) exists')
+    t.type(result.latency.p97_5, 'number', 'latency.p97_5 (97.5%) exists')
+    t.type(result.latency.p99, 'number', 'latency.p99 (99%) exists')
+
+    t.ok(result.requests, 'requests exists')
+    t.type(result.requests.average, 'number', 'requests.average exists')
+    t.type(result.requests.stddev, 'number', 'requests.stddev exists')
+    t.type(result.requests.min, 'number', 'requests.min exists')
+    t.type(result.requests.max, 'number', 'requests.max exists')
+    t.ok(result.requests.total >= result.requests.average * 2 / 100 * 95, 'requests.total exists')
+    t.type(result.requests.sent, 'number', 'sent exists')
+    t.ok(result.requests.sent >= result.requests.total, 'total requests made should be more than or equal to completed requests total')
+    t.type(result.requests.p1, 'number', 'requests.p1 (1%) exists')
+    t.type(result.requests.p2_5, 'number', 'requests.p2_5 (2.5%) exists')
+    t.type(result.requests.p50, 'number', 'requests.p50 (50%) exists')
+    t.type(result.requests.p97_5, 'number', 'requests.p97_5 (97.5%) exists')
+
+    t.ok(result.throughput, 'throughput exists')
+    t.type(result.throughput.average, 'number', 'throughput.average exists')
+    t.type(result.throughput.stddev, 'number', 'throughput.stddev exists')
+    t.type(result.throughput.min, 'number', 'throughput.min exists')
+    t.type(result.throughput.max, 'number', 'throughput.max exists')
+    t.ok(result.throughput.total >= result.throughput.average * 2 / 100 * 95, 'throughput.total exists')
+    t.type(result.throughput.p1, 'number', 'throughput.p1 (1%) exists')
+    t.type(result.throughput.p2_5, 'number', 'throughput.p2_5 (2.5%) exists')
+    t.type(result.throughput.p50, 'number', 'throughput.p50 (50%) exists')
+    t.type(result.throughput.p97_5, 'number', 'throughput.p97_5 (97.5%) exists')
+
+    t.ok(result.start, 'start time exists')
+    t.ok(result.finish, 'finish time exists')
+
+    t.equal(result.errors, 0, 'no errors')
+
+    t.equal(result['1xx'], 0, '1xx codes')
+    t.equal(result['2xx'], result.requests.total, '2xx codes')
+    t.equal(result['3xx'], 0, '3xx codes')
+    t.equal(result['4xx'], 0, '4xx codes')
+    t.equal(result['5xx'], 0, '5xx codes')
+    t.equal(result.non2xx, 0, 'non 2xx codes')
+
+    t.end()
   })
 })
