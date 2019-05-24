@@ -442,7 +442,7 @@ test('throw if connections is greater than amount', (t) => {
   })
 })
 
-test('run', (t) => {
+test('run promise', (t) => {
   run({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
