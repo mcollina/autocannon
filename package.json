@@ -46,6 +46,7 @@
   "dependencies": {
     "chalk": "^2.4.2",
     "cli-table3": "^0.5.1",
+    "clone": "^2.1.2",
     "color-support": "^1.1.1",
     "cross-argv": "^1.0.0",
     "has-async-hooks": "^1.0.0",
@@ -60,7 +61,6 @@
     "progress": "^2.0.3",
     "reinterval": "^1.1.0",
     "retimer": "^2.0.0",
-    "rfdc": "^1.1.4",
     "timestring": "^6.0.0"
   }
 }
