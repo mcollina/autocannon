@@ -10,19 +10,23 @@ test('request iterator should create requests with sensible defaults', (t) => {
 
   const opts = server.address()
 
-  let iterator = new RequestIterator(undefined, opts)
+  let iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer,
     Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
     'request is okay')
 
-  iterator = new RequestIterator([{}], opts)
+  opts.requests = [{}]
+
+  iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer,
     Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
     'request is okay')
 
-  iterator = new RequestIterator([], opts)
+  opts.requests = []
+
+  iterator = new RequestIterator(opts)
 
   t.notOk(iterator.currentRequest, 'request doesn\'t exist')
 })
@@ -33,7 +37,7 @@ test('request iterator should create requests with overwritten defaults', (t) =>
   const opts = server.address()
   opts.method = 'POST'
 
-  let iterator = new RequestIterator(undefined, opts)
+  let iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer,
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
@@ -59,7 +63,9 @@ test('request iterator should create requests with overwritten defaults', (t) =>
   const request1Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world\r\n`)
   const request2Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`)
 
-  let iterator = new RequestIterator(requests, opts)
+  opts.requests = requests
+
+  let iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
   iterator.nextRequest()
@@ -94,7 +100,9 @@ test('request iterator should allow for overwriting the requests passed in, but 
   const request2Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified\r\n`)
   const request3Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhell0 w0rld\r\n`)
 
-  let iterator = new RequestIterator(requests1, opts)
+  opts.requests = requests1
+
+  let iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
   iterator.nextRequest()
@@ -130,7 +138,9 @@ test('request iterator should allow for rebuilding the current request', (t) => 
   const request4Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified\r\n`)
   const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`)
 
-  let iterator = new RequestIterator(requests1, opts)
+  opts.requests = requests1
+
+  let iterator = new RequestIterator(opts)
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
   iterator.setBody('modified')
   t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')
@@ -152,7 +162,7 @@ test('request iterator should not replace any [<id>] tags with generated IDs whe
   opts.body = '[<id>]'
   opts.requests = [{}]
 
-  const iterator = new RequestIterator(opts.requests, opts)
+  const iterator = new RequestIterator(opts)
   const result = iterator.move().toString().trim()
 
   const contentLength = result.split('Content-Length: ')[1].slice(0, 1)
@@ -171,7 +181,7 @@ test('request iterator should replace all [<id>] tags with generated IDs when ca
   opts.requests = [{}]
   opts.idReplacement = true
 
-  const iterator = new RequestIterator(opts.requests, opts)
+  const iterator = new RequestIterator(opts)
   const result = iterator.move().toString().trim()
 
   t.equal(result.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')

@@ -98,6 +98,34 @@ test('http client automatically reconnects', (t) => {
   })
 })
 
+test('http clients should have a different body', (t) => {
+  t.plan(3)
+
+  let clientCnt = 0
+  const clients = []
+  const reqArray = ['John', 'Gabriel', 'Jason']
+  const opts = server.address()
+
+  opts.setupClient = (client) => {
+    client.setBody(JSON.stringify({ name: reqArray[clientCnt] }))
+    clientCnt++
+  }
+
+  for (let i = 0; i < 3; i++) {
+    const client = new Client(opts)
+
+    clients.push(client)
+  }
+
+  for (let i = 0; i < clients.length; i++) {
+    const client = clients[i]
+    const body = JSON.parse(client.requestIterator.currentRequest.body)
+
+    t.equal(body.name, reqArray[i], 'body match')
+    client.destroy()
+  }
+})
+
 test('client supports custom headers', (t) => {
   t.plan(3)
 
