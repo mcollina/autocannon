@@ -417,32 +417,6 @@ test('http client should wait responses', (t) => {
 
   client.on('done', () => {
     t.equal(cnt, opts.rate + 1, 'response count match')
-    t.end()
-  })
-
-  setTimeout(() => {
-    client.destroy()
-  }, 1000)
-})
-
-test('http client should not wait responses', (t) => {
-  t.plan(1)
-
-  let cnt = 0
-  const opts = server.address()
-
-  opts.waitAllResponses = false
-  opts.rate = 1
-
-  const client = new Client(opts)
-
-  client.on('response', () => {
-    cnt++
-  })
-
-  client.on('done', () => {
-    t.equal(cnt, opts.rate, 'response count match')
-    t.end()
   })
 
   setTimeout(() => {
