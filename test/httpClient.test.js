@@ -28,7 +28,7 @@ test('client calls a server twice', (t) => {
 test('client calls a https server twice', (t) => {
   t.plan(4)
 
-  var opts = httpsServer.address()
+  const opts = httpsServer.address()
   opts.protocol = 'https:'
   const client = new Client(opts)
   let count = 0
@@ -45,7 +45,7 @@ test('client calls a https server twice', (t) => {
 test('client calls a tls server without SNI servername twice', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   const client = new Client(opts)
   let count = 0
@@ -62,7 +62,7 @@ test('client calls a tls server without SNI servername twice', (t) => {
 test('client calls a tls server with SNI servername twice', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.servername = 'example.com'
   const client = new Client(opts)
@@ -111,7 +111,7 @@ test('http clients should have a different body', (t) => {
     clientCnt++
   }
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < reqArray.length; i++) {
     const client = new Client(opts)
 
     clients.push(client)
@@ -400,6 +400,56 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
   client.destroy()
 })
 
+test('http client should wait responses', (t) => {
+  t.plan(1)
+
+  let cnt = 0
+  const opts = server.address()
+
+  opts.waitAllResponses = true
+  opts.rate = 1
+
+  const client = new Client(opts)
+
+  client.on('response', () => {
+    cnt++
+  })
+
+  client.on('done', () => {
+    t.equal(cnt, opts.rate + 1, 'response count match')
+    t.end()
+  })
+
+  setTimeout(() => {
+    client.destroy()
+  }, 1000)
+})
+
+test('http client should not wait responses', (t) => {
+  t.plan(1)
+
+  let cnt = 0
+  const opts = server.address()
+
+  opts.waitAllResponses = false
+  opts.rate = 1
+
+  const client = new Client(opts)
+
+  client.on('response', () => {
+    cnt++
+  })
+
+  client.on('done', () => {
+    t.equal(cnt, opts.rate, 'response count match')
+    t.end()
+  })
+
+  setTimeout(() => {
+    client.destroy()
+  }, 1000)
+})
+
 test('client should throw when attempting to modify the request with a pipelining greater than 1', (t) => {
   t.plan(1)
 
@@ -442,6 +492,7 @@ test('client should emit 2 timeouts when no responses are received', (t) => {
 
 test('client should have 2 different requests it iterates over', (t) => {
   t.plan(3)
+
   const opts = server.address()
   opts.method = 'POST'
 
