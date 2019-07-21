@@ -37,3 +37,5 @@ node_modules
 profile-*
 
 .nyc_output
+
+package-lock.json
