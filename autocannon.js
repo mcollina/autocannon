@@ -219,7 +219,7 @@ function runTracker (argv, ondone) {
   function onSigInt () { tracker.stop() }
 
   tracker.on('done', (result) => {
-    process.removeListener(onSigInt)
+    process.removeListener('SIGINT', onSigInt)
     if (ondone) ondone()
     if (argv.json) {
       console.log(JSON.stringify(result))
@@ -228,7 +228,7 @@ function runTracker (argv, ondone) {
 
   tracker.on('error', (err) => {
     if (err) {
-      process.removeListener(onSigInt)
+      process.removeListener('SIGINT', onSigInt)
       throw err
     }
   })
