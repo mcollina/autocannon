@@ -131,11 +131,23 @@ function startTlsServer () {
   return server
 }
 
+function mockTTY () {
+  const mock = fs.createWriteStream('/dev/null')
+  mock.isTTY = true
+  mock.columns = 10
+  mock.rows = 10
+  mock.cursorTo = () => {}
+  mock.clearLine = () => {}
+
+  return mock
+}
+
 module.exports.startServer = startServer
 module.exports.startTimeoutServer = startTimeoutServer
 module.exports.startSocketDestroyingServer = startSocketDestroyingServer
 module.exports.startHttpsServer = startHttpsServer
 module.exports.startTrailerServer = startTrailerServer
 module.exports.startTlsServer = startTlsServer
+module.exports.mockTTY = mockTTY
 
 function noop () {}
