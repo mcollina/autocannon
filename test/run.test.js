@@ -441,7 +441,6 @@ test('tracker should not leak process SIGINT listeners', (t) => {
     title: 'title321'
   })
 
-  process.stderr.isTTY = true
   track(instance, { renderResultsTable: false, outputStream: helper.mockTTY() })
 
   instance.once('tick', () => {
