@@ -216,8 +216,10 @@ function createChannel (onport) {
 
 function runTracker (argv, ondone) {
   const tracker = run(argv)
+  function onSigInt () { tracker.stop() }
 
   tracker.on('done', (result) => {
+    process.removeListener(onSigInt)
     if (ondone) ondone()
     if (argv.json) {
       console.log(JSON.stringify(result))
@@ -226,6 +228,7 @@ function runTracker (argv, ondone) {
 
   tracker.on('error', (err) => {
     if (err) {
+      process.removeListener(onSigInt)
       throw err
     }
   })
@@ -233,9 +236,7 @@ function runTracker (argv, ondone) {
   // if not rendering json, or if std isn't a tty, track progress
   if (!argv.json || !process.stdout.isTTY) track(tracker, argv)
 
-  process.once('SIGINT', () => {
-    tracker.stop()
-  })
+  process.once('SIGINT', onSigInt)
 }
 
 if (require.main === module) {
