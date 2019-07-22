@@ -1,5 +1,6 @@
 'use strict'
 
+const os = require('os')
 const http = require('http')
 const https = require('https')
 const tls = require('tls')
@@ -132,7 +133,8 @@ function startTlsServer () {
 }
 
 function mockTTY () {
-  const mock = fs.createWriteStream('/dev/null')
+  const tempFile = path.join(os.tmpdir(), `autocannon-mock-tty-${Date.now()}`)
+  const mock = fs.createWriteStream(tempFile)
   mock.isTTY = true
   mock.columns = 10
   mock.rows = 10
