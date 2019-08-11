@@ -443,12 +443,15 @@ test('tracker should not leak process SIGINT listeners', (t) => {
 
   track(instance, { renderResultsTable: false, outputStream: helper.mockTTY() })
 
-  instance.once('tick', () => {
+  instance.once('start', () => {
     t.equal(process._events['SIGINT'].length, defaultSigIntListeners + 1, `There should be ${defaultSigIntListeners + 1} SIGINT listeners while the benchmark is in progress. Found: ${process._events['SIGINT'].length}`)
   })
 
-  instance.then(result => {
-    t.equal(process._events['SIGINT'].length, defaultSigIntListeners, `There should be ${defaultSigIntListeners} SIGINT listeners at the end. Found: ${process._events['SIGINT'].length}`)
+  instance.once('done', () => {
+    // makes sure that all the other done listeners have been executed before checking
+    setImmediate(() => {
+      t.equal(process._events['SIGINT'].length, defaultSigIntListeners, `There should be ${defaultSigIntListeners} SIGINT listeners at the end. Found: ${process._events['SIGINT'].length}`)
+    })
   })
 })
 
