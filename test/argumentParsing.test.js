@@ -33,11 +33,11 @@ test('parse argument with multiple headers', (t) => {
 
   t.equal(args.url, 'http://localhost/foo/bar')
   t.strictSame(args.headers, {
-    'header1': 'value1',
-    'header2': 'value2',
-    'header3': 'value3',
-    'header4': 'value4',
-    'header5': 'value5'
+    header1: 'value1',
+    header2: 'value2',
+    header3: 'value3',
+    header4: 'value4',
+    header5: 'value5'
   })
   t.equal(args.method, 'GET')
 })
@@ -56,11 +56,11 @@ test('parse argument with multiple complex headers', (t) => {
 
   t.equal(args.url, 'http://localhost/foo/bar')
   t.strictSame(args.headers, {
-    'header1': 'value1;data=asd',
-    'header2': 'value2;data=asd',
-    'header3': 'value3;data=asd',
-    'header4': 'value4;data=asd',
-    'header5': 'value5;data=asd'
+    header1: 'value1;data=asd',
+    header2: 'value2;data=asd',
+    header3: 'value3;data=asd',
+    header4: 'value4;data=asd',
+    header5: 'value5;data=asd'
   })
   t.equal(args.method, 'GET')
 })
@@ -79,11 +79,11 @@ test('parse argument with multiple headers in standard notation', (t) => {
 
   t.equal(args.url, 'http://localhost/foo/bar')
   t.strictSame(args.headers, {
-    'header1': 'value1',
-    'header2': 'value2',
-    'header3': 'value3',
-    'header4': 'value4',
-    'header5': 'value5'
+    header1: 'value1',
+    header2: 'value2',
+    header3: 'value3',
+    header4: 'value4',
+    header5: 'value5'
   })
   t.equal(args.method, 'GET')
 })
@@ -102,11 +102,11 @@ test('parse argument with multiple complex headers in standard notation', (t) =>
 
   t.equal(args.url, 'http://localhost/foo/bar')
   t.strictSame(args.headers, {
-    'header1': 'value1;data=asd',
-    'header2': 'value2;data=asd',
-    'header3': 'value3;data=asd',
-    'header4': 'value4;data=asd',
-    'header5': 'value5;data=asd'
+    header1: 'value1;data=asd',
+    header2: 'value2;data=asd',
+    header3: 'value3;data=asd',
+    header4: 'value4;data=asd',
+    header5: 'value5;data=asd'
   })
   t.equal(args.method, 'GET')
 })
@@ -120,6 +120,6 @@ test('parse argument with "=" in value header', (t) => {
   ])
 
   t.strictSame(args.headers, {
-    'header1': 'foo=bar'
+    header1: 'foo=bar'
   })
 })

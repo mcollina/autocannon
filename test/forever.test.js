@@ -22,7 +22,7 @@ test('run forever should run until .stop() is called', (t) => {
   t.plan(3)
   let numRuns = 0
 
-  let instance = run({
+  const instance = run({
     url: `http://localhost:${server.address().port}`,
     duration: 0.5,
     forever: true
