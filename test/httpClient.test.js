@@ -412,6 +412,18 @@ test('client should throw when attempting to modify the request with a pipelinin
   client.destroy()
 })
 
+test('client resData length should equal pipelining when greater than 1', (t) => {
+  t.plan(1)
+
+  const opts = server.address()
+  opts.pipelining = 10
+  const client = new Client(opts)
+
+  t.equal(client.resData.length, client.opts.pipelining)
+
+  client.destroy()
+})
+
 test('client should emit a timeout when no response is received', (t) => {
   t.plan(1)
 
