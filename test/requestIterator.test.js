@@ -37,7 +37,7 @@ test('request iterator should create requests with overwritten defaults', (t) =>
   const opts = server.address()
   opts.method = 'POST'
 
-  let iterator = new RequestIterator(opts)
+  const iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer,
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
@@ -65,7 +65,7 @@ test('request iterator should create requests with overwritten defaults', (t) =>
 
   opts.requests = requests
 
-  let iterator = new RequestIterator(opts)
+  const iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
   iterator.nextRequest()
@@ -102,7 +102,7 @@ test('request iterator should allow for overwriting the requests passed in, but 
 
   opts.requests = requests1
 
-  let iterator = new RequestIterator(opts)
+  const iterator = new RequestIterator(opts)
 
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
   iterator.nextRequest()
@@ -140,7 +140,7 @@ test('request iterator should allow for rebuilding the current request', (t) => 
 
   opts.requests = requests1
 
-  let iterator = new RequestIterator(opts)
+  const iterator = new RequestIterator(opts)
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
   iterator.setBody('modified')
   t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')

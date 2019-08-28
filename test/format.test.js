@@ -4,7 +4,7 @@ const test = require('tap').test
 const format = require('../lib/format')
 
 const pairs = {
-  '2': 2,
+  2: 2,
   '2k': 2000,
   '4k': 4042,
   '2300k': 2300000

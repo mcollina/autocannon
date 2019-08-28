@@ -390,7 +390,7 @@ test('tracker will emit reqError with error message on timeout', (t) => {
 
   const server = helper.startTimeoutServer()
 
-  let tracker = run({
+  const tracker = run({
     url: `http://localhost:${server.address().port}`,
     connections: 1,
     duration: 5,
@@ -411,7 +411,7 @@ test('tracker will emit reqError with error message on error', (t) => {
 
   const server = helper.startSocketDestroyingServer()
 
-  let tracker = run({
+  const tracker = run({
     url: `http://localhost:${server.address().port}`,
     connections: 10,
     duration: 15,
