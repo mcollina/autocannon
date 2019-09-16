@@ -141,6 +141,18 @@ test('tracker.stop()', (t) => {
   }, 1000)
 })
 
+test('requests.min should be 0 when there are no successful requests', (t) => {
+  run({
+    url: 'nonexistent',
+    connections: 1,
+    amount: 1
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.requests.min, 0, 'requests.min should be 0')
+    t.end()
+  })
+})
+
 test('run should callback with an error with an invalid connections factor', (t) => {
   t.plan(2)
 
