@@ -129,3 +129,17 @@ test('request builder should add a Content-Length header with value "[<contentLe
     Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 33\r\n\r\n[<id>]\r\n`),
     'request is okay')
 })
+
+test('request builder should allow http basic authentication', (t) => {
+  t.plan(1)
+
+  const opts = server.address()
+  opts.auth = 'username:password'
+
+  const build = RequestBuilder(opts)
+
+  const result = build()
+  t.same(result,
+    Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAuthorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=\r\n\r\n`),
+    'request is okay')
+})
