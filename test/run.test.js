@@ -439,6 +439,23 @@ test('tracker will emit reqError with error message on error', (t) => {
   })
 })
 
+test('tracker will emit tick with current counter value', (t) => {
+  t.plan(1)
+
+  const server = helper.startSocketDestroyingServer()
+
+  const tracker = run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 10,
+    duration: 10
+  })
+
+  tracker.once('tick', (counter) => {
+    t.type(counter, 'number')
+    tracker.stop()
+  })
+})
+
 test('throw if connections is greater than amount', (t) => {
   t.plan(1)
 
