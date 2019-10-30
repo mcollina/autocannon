@@ -451,7 +451,7 @@ test('tracker will emit tick with current counter value', (t) => {
   })
 
   tracker.once('tick', (counter) => {
-    t.type(counter, 'number')
+    t.type(counter, 'object')
     tracker.stop()
   })
 })
