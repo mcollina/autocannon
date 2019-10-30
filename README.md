@@ -278,7 +278,7 @@ Checkout [this example](./samples/track-run.js) to see it in use, as well.
 Because an autocannon instance is an `EventEmitter`, it emits several events. these are below:
 
 * `start`: Emitted once everything has been setup in your autocannon instance and it has started. Useful for if running the instance forever.
-* `tick`: Emitted every second this autocannon is running a benchmark. Useful for displaying stats, etc. Used by the `track` function. The `tick` event propagates the existing `counter` and `bytes` values, which can be used for extended reports.
+* `tick`: Emitted every second this autocannon is running a benchmark. Useful for displaying stats, etc. Used by the `track` function. The `tick` event propagates  an object containing the `counter` and `bytes` values, which can be used for extended reports.
 * `done`: Emitted when the autocannon finishes a benchmark. passes the `results` as an argument to the callback.
 * `response`: Emitted when the autocannons http-client gets a http response from the server. This passes the following arguments to the callback:
     * `client`: The `http-client` itself. Can be used to modify the headers and body the client will send to the server. API below.
