@@ -66,6 +66,10 @@ Available options:
   -b/--body BODY
         The body of the request. 
 	Note: This option needs to be used with the '-H/--headers' option in some frameworks
+  -F/--form FORM
+        Upload a form (multipart/form-data). The form options can be a JSON string like
+        '{ "field_1": { "type": "text", "value": "a text value"}, "field_2": { "type": "file", "path": "path to the file" } }'
+        or a path to a JSON file containing the form options.
   -i/--input FILE
         The body of the request. See '-b/body' for more details.
   -H/--headers K=V
@@ -221,6 +225,7 @@ Start autocannon against the given target.
     * `method`: The http method to use. _OPTIONAL_ `default: 'GET'`.
     * `title`: A `String` to be added to the results for identification. _OPTIONAL_ default: `undefined`.
     * `body`: A `String` or a `Buffer` containing the body of the request. Insert one or more randomly generated IDs into the body by including `[<id>]` where the randomly generated ID should be inserted (Must also set idReplacement to true). This can be useful in soak testing POST endpoints where one or more fields must be unique. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
+    * `form`: A `String` or an `Object` containing the multipart/form-data options or a path to the JSON file containing them
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
     * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.
     * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
