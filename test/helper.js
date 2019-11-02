@@ -131,11 +131,32 @@ function startTlsServer () {
   return server
 }
 
+function startBasicAuthServer () {
+  const server = http.createServer(handle)
+
+  function handle (req, res) {
+    if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
+      res.writeHead(401)
+      return res.end()
+    }
+
+    res.writeHead(200)
+    res.end('hello world')
+  }
+
+  server.listen(0)
+
+  server.unref()
+
+  return server
+}
+
 module.exports.startServer = startServer
 module.exports.startTimeoutServer = startTimeoutServer
 module.exports.startSocketDestroyingServer = startSocketDestroyingServer
 module.exports.startHttpsServer = startHttpsServer
 module.exports.startTrailerServer = startTrailerServer
 module.exports.startTlsServer = startTlsServer
+module.exports.startBasicAuthServer = startBasicAuthServer
 
 function noop () {}

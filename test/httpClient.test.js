@@ -487,3 +487,20 @@ test('client should have 2 different requests it iterates over', (t) => {
     }
   })
 })
+
+test('client supports http basic authentication', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.auth = 'username:password'
+  const client = new Client(opts)
+
+  server.once('request', (req, res) => {
+    t.equal(req.headers.authorization, 'Basic dXNlcm5hbWU6cGFzc3dvcmQ=', 'authorization header matches')
+  })
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    client.destroy()
+  })
+})
