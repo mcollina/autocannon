@@ -5,6 +5,7 @@ const https = require('https')
 const tls = require('tls')
 const fs = require('fs')
 const path = require('path')
+const BusBoy = require('busboy')
 
 function startServer (opts) {
   opts = opts || {}
@@ -131,6 +132,39 @@ function startTlsServer () {
   return server
 }
 
+function startMultipartServer () {
+  const server = http.createServer(handle)
+  const allowed = ['POST', 'PUT']
+  function handle (req, res) {
+    if (allowed.includes(req.method)) {
+      const bboy = new BusBoy({ headers: req.headers })
+      const fileData = []
+      const payload = {}
+      bboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+        payload[fieldname] = {}
+        file.on('data', data => fileData.push(data))
+      })
+      bboy.on('field', (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
+        payload[fieldname] = val
+      })
+      bboy.on('finish', () => {
+        res.statusCode = fileData.length ? 201 : 400
+        res.write(JSON.stringify(payload))
+        res.end()
+      })
+      req.pipe(bboy)
+    } else {
+      res.statusCode = 404
+      res.write(JSON.stringify({}))
+      res.end()
+    }
+  }
+
+  server.listen(0)
+  server.unref()
+
+  return server
+}
 function startBasicAuthServer () {
   const server = http.createServer(handle)
 
@@ -145,7 +179,6 @@ function startBasicAuthServer () {
   }
 
   server.listen(0)
-
   server.unref()
 
   return server
@@ -157,6 +190,7 @@ module.exports.startSocketDestroyingServer = startSocketDestroyingServer
 module.exports.startHttpsServer = startHttpsServer
 module.exports.startTrailerServer = startTrailerServer
 module.exports.startTlsServer = startTlsServer
+module.exports.startMultipartServer = startMultipartServer
 module.exports.startBasicAuthServer = startBasicAuthServer
 
 function noop () {}

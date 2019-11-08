@@ -42,6 +42,7 @@ function parseArguments (argvs) {
       method: 'm',
       headers: ['H', 'header'],
       body: 'b',
+      form: 'F',
       servername: 's',
       bailout: 'B',
       input: 'i',

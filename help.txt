@@ -27,6 +27,10 @@ Available options:
         The title to place in the results for identification.
   -b/--body BODY
         The body of the request.
+  -F/--form FORM
+        Upload a form (multipart/form-data). The form options can be a JSON string like
+        '{ "field_1": { "type": "text", "value": "a text value"}, "field_2": { "type": "file", "path": "path to the file" } }'
+        or a path to a JSON file containing the form options.
   -i/--input FILE
         The body of the request.
   -H/--headers K=V
