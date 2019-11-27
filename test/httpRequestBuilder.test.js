@@ -81,7 +81,7 @@ test('request builder should add a Content-Length header when the body buffer ex
 
   const result = build()
   t.same(result,
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 4\r\n\r\nbody\r\n`),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 4\r\n\r\nbody`),
     'request is okay')
 })
 
@@ -95,7 +95,7 @@ test('request builder should add a Content-Length header when the body buffer ex
 
   const result = build({ body: 'body' })
   t.same(result,
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 4\r\n\r\nbody\r\n`),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 4\r\n\r\nbody`),
     'request is okay')
 })
 
@@ -111,7 +111,7 @@ test('request builder should add a Content-Length header with correct calculated
 
   const result = build()
   t.same(result,
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 33\r\n\r\n[<id>]\r\n`),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 33\r\n\r\n[<id>]`),
     'request is okay')
 })
 
@@ -126,7 +126,7 @@ test('request builder should add a Content-Length header with value "[<contentLe
 
   const result = build({ idReplacement: true })
   t.same(result,
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 33\r\n\r\n[<id>]\r\n`),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 33\r\n\r\n[<id>]`),
     'request is okay')
 })
 
