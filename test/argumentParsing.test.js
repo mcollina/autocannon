@@ -123,3 +123,27 @@ test('parse argument with "=" in value header', (t) => {
     header1: 'foo=bar'
   })
 })
+
+test('parse argument with ":" in value header', (t) => {
+  t.plan(1)
+
+  var args = Autocannon.parseArguments([
+    '-H', 'header1=foo:bar',
+    'http://localhost/foo/bar'
+  ])
+
+  t.strictSame(args.headers, {
+    header1: 'foo:bar'
+  })
+})
+
+test('parse argument not correctly formatted header', (t) => {
+  t.plan(1)
+
+  t.throws(() => {
+    Autocannon.parseArguments([
+      '-H', 'header1',
+      'http://localhost/foo/bar'
+    ])
+  }, /An HTTP header was not correctly formatted/)
+})
