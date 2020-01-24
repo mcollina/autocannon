@@ -187,3 +187,51 @@ test('request iterator should replace all [<id>] tags with generated IDs when ca
   t.equal(result.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
   t.equal(result.slice(-1), '0', 'Generated ID should end with request number')
 })
+
+test('request iterator should properly mutate requests if a setupRequest function is located', (t) => {
+  t.plan(6)
+
+  const opts = server.address()
+  opts.method = 'POST'
+
+  let i = 0
+
+  const requests1 = [
+    {
+      body: 'hello world',
+      setupRequest: req => {
+        req.body += i++
+        return req
+      }
+    },
+    {
+      method: 'POST',
+      body: 'modified',
+      setupRequest: req => {
+        req.method = 'GET'
+        return req
+      }
+    }
+  ]
+
+  const request1Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world0`)
+  const request2Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 9\r\n\r\nmodified1`)
+  const request3Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`)
+  const request4Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 9\r\n\r\nmodified2`)
+  const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`)
+
+  opts.requests = requests1
+
+  const iterator = new RequestIterator(opts)
+  t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
+  iterator.setBody('modified')
+  t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')
+  iterator.nextRequest() // verify it didn't affect the other request
+  t.same(iterator.currentRequest.requestBuffer, request3Res, 'request was okay')
+  iterator.nextRequest()
+  t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')
+  iterator.setHeaders({ header: 'modifiedHeader' })
+  t.same(iterator.currentRequest.requestBuffer, request4Res, 'request was okay')
+  iterator.setRequest() // this should build default request
+  t.same(iterator.currentRequest.requestBuffer, request5Res, 'request was okay')
+})
