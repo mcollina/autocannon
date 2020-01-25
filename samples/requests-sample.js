@@ -37,7 +37,7 @@ function startBench () {
         // this will automatically add the pregenerated auth token
       },
       {
-        method: 'PUT', // this should be a put for modifying secret details
+        method: 'GET', // this should be a put for modifying secret details
         path: '/mySecretDetails',
         headers: { // let submit some json?
           'Content-type': 'application/json; charset=utf-8'
@@ -45,7 +45,11 @@ function startBench () {
         // we need to stringify the json first
         body: JSON.stringify({
           name: 'my new name'
-        })
+        }),
+        setupRequest: reqData => {
+          reqData.method = 'PUT' // we are overriding the method 'GET' to 'PUT' here
+          return reqData
+        }
       }
     ]
   }, finishedBench)
