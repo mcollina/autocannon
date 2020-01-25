@@ -40,3 +40,4 @@ server.js
 appveyor.yml
 .travis.yml
 .github
+.nyc_output
