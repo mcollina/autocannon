@@ -29,8 +29,12 @@ Available options:
         The body of the request.
   -F/--form FORM
         Upload a form (multipart/form-data). The form options can be a JSON string like
-        '{ "field_1": { "type": "text", "value": "a text value"}, "field_2": { "type": "file", "path": "path to the file" } }'
+        '{ "field 1": { "type": "text", "value": "a text value"}, "field 2": { "type": "file", "path": "path to the file" } }'
         or a path to a JSON file containing the form options.
+        When uploading a file the default filename value can be overridden by using the corresponding option:
+        '{ "field name": { "type": "file", "path": "path to the file", "options": { "filename": "myfilename" } } }'
+        Passing the filepath to the form can be done by using the corresponding option:
+        '{ "field name": { "type": "file", "path": "path to the file", "options": { "filepath": "/some/path/myfilename" } } }'
   -i/--input FILE
         The body of the request.
   -H/--headers K=V

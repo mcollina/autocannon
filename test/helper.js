@@ -132,16 +132,20 @@ function startTlsServer () {
   return server
 }
 
-function startMultipartServer () {
+function startMultipartServer (opts = {}, test = () => {}) {
   const server = http.createServer(handle)
   const allowed = ['POST', 'PUT']
   function handle (req, res) {
     if (allowed.includes(req.method)) {
-      const bboy = new BusBoy({ headers: req.headers })
+      const bboy = new BusBoy({ headers: req.headers, ...opts })
       const fileData = []
       const payload = {}
       bboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-        payload[fieldname] = {}
+        payload[fieldname] = {
+          filename,
+          encoding,
+          mimetype
+        }
         file.on('data', data => fileData.push(data))
       })
       bboy.on('field', (fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) => {
@@ -151,6 +155,7 @@ function startMultipartServer () {
         res.statusCode = fileData.length ? 201 : 400
         res.write(JSON.stringify(payload))
         res.end()
+        test(payload)
       })
       req.pipe(bboy)
     } else {

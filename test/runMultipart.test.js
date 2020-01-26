@@ -7,7 +7,6 @@ const { writeFile } = require('fs')
 const { promisify } = require('util')
 const run = require('../lib/run')
 const helper = require('./helper')
-const server = helper.startMultipartServer()
 const writef = promisify(writeFile)
 
 test('run should return an error with invalid form options', async t => {
@@ -43,16 +42,19 @@ test('run should return an error with invalid form options', async t => {
       message: 'Missing key \'value\' in form object for key \'image\''
     },
     {
-      name: 'JSON options missing value in text type',
+      name: 'JSON options with not supported type',
       value: '{ "image": { "type": "random" }}',
       message: 'A \'type\' key with value \'text\' or \'file\' should be specified'
     },
     {
-      name: 'JS Object missing value in text type',
+      name: 'JS Object with not supported type',
       value: { image: { type: 'random' } },
       message: 'A \'type\' key with value \'text\' or \'file\' should be specified'
     }
   ]
+
+  const server = helper.startMultipartServer()
+  t.tearDown(() => server.close())
 
   for (const c of cases) {
     t.test(c.name, async t => {
@@ -76,6 +78,9 @@ test('run should return an error with invalid form options', async t => {
 })
 
 test('run should take form options as a JSON string or a JS Object', async t => {
+  const server = helper.startMultipartServer()
+  t.tearDown(() => server.close())
+
   const form = {
     image: {
       type: 'file',
@@ -131,6 +136,9 @@ test('run should take form options as a JSON string or a JS Object', async t => 
 })
 
 test('run should use a custom method if `options.method` is passed', t => {
+  const server = helper.startMultipartServer()
+  t.tearDown(() => server.close())
+
   const form = {
     image: {
       type: 'file',
@@ -144,6 +152,105 @@ test('run should use a custom method if `options.method` is passed', t => {
   run({
     url: 'http://localhost:' + server.address().port,
     method: 'PUT',
+    connections: 1,
+    amount: 1,
+    form
+  }, (err, res) => {
+    t.equal(null, err)
+    t.equal(0, res.errors, 'result should not have errors')
+    t.equal(1, res['2xx'], 'result status code should be 2xx')
+    t.equal(0, res.non2xx, 'result status code should be 2xx')
+    t.end()
+  })
+})
+
+test('run should set filename', t => {
+  const server = helper.startMultipartServer(null, payload => {
+    t.equal('j5.jpeg', payload.image.filename)
+  })
+  t.tearDown(() => server.close())
+
+  const form = {
+    image: {
+      type: 'file',
+      path: require.resolve('./j5.jpeg')
+    },
+    name: {
+      type: 'text',
+      value: 'j5'
+    }
+  }
+  run({
+    url: 'http://localhost:' + server.address().port,
+    method: 'POST',
+    connections: 1,
+    amount: 1,
+    form
+  }, (err, res) => {
+    t.equal(null, err)
+    t.equal(0, res.errors, 'result should not have errors')
+    t.equal(1, res['2xx'], 'result status code should be 2xx')
+    t.equal(0, res.non2xx, 'result status code should be 2xx')
+    t.end()
+  })
+})
+
+test('run should allow overriding filename', t => {
+  const server = helper.startMultipartServer(null, payload => {
+    t.equal('testfilename.jpeg', payload.image.filename)
+  })
+  t.tearDown(() => server.close())
+
+  const form = {
+    image: {
+      type: 'file',
+      path: require.resolve('./j5.jpeg'),
+      options: {
+        filename: 'testfilename.jpeg'
+      }
+    },
+    name: {
+      type: 'text',
+      value: 'j5'
+    }
+  }
+  run({
+    url: 'http://localhost:' + server.address().port,
+    method: 'POST',
+    connections: 1,
+    amount: 1,
+    form
+  }, (err, res) => {
+    t.equal(null, err)
+    t.equal(0, res.errors, 'result should not have errors')
+    t.equal(1, res['2xx'], 'result status code should be 2xx')
+    t.equal(0, res.non2xx, 'result status code should be 2xx')
+    t.end()
+  })
+})
+
+test('run should allow overriding filename with file path', t => {
+  const server = helper.startMultipartServer({ preservePath: true }, payload => {
+    t.equal('some/path/testfilename.jpeg', payload.image.filename)
+  })
+  t.tearDown(() => server.close())
+
+  const form = {
+    image: {
+      type: 'file',
+      path: require.resolve('./j5.jpeg'),
+      options: {
+        filepath: 'some/path/testfilename.jpeg'
+      }
+    },
+    name: {
+      type: 'text',
+      value: 'j5'
+    }
+  }
+  run({
+    url: 'http://localhost:' + server.address().port,
+    method: 'POST',
     connections: 1,
     amount: 1,
     form
