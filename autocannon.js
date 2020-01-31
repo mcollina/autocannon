@@ -58,6 +58,7 @@ function parseArguments (argvs) {
       idReplacement: 'I',
       socketPath: 'S',
       excludeErrorStats: 'x',
+      expectBody: 'E',
       help: 'h'
     },
     default: {

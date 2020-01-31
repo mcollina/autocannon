@@ -69,6 +69,8 @@ Available options:
         Server name for the SNI (Server Name Indication) TLS extension.
   -x/--excludeErrorStats
         Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
+  -E/--expectBody EXPECTED
+        Ensure the body matches this value. If enabled, mismatches count towards bailout.
   --debug
         Print connection errors to stderr.
   -v/--version

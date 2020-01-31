@@ -64,7 +64,7 @@ Available options:
   -T/--title TITLE
         The title to place in the results for identification.
   -b/--body BODY
-        The body of the request. 
+        The body of the request.
 	Note: This option needs to be used with the '-H/--headers' option in some frameworks
   -F/--form FORM
         Upload a form (multipart/form-data). The form options can be a JSON string like
@@ -108,6 +108,8 @@ Available options:
         Server name for the SNI (Server Name Indication) TLS extension.
   -x/--excludeErrorStats
         Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
+  -E/--expectBody EXPECTED
+        Ensure the body matches this value. If enabled, mismatches count towards bailout.
   -v/--version
         Print the version number.
   -h/--help
@@ -242,6 +244,7 @@ Start autocannon against the given target.
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
     * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: `undefined`.
     * `excludeErrorStats`: A `Boolean` which allows you to disable tracking non 2xx code responses in latency and bytes per second calculations. _OPTIONAL_ default: `false`.
+    * `expectBody`: A `String` representing the expected response body. Each request whose response body is not equal to `expectBody`is counted in `mismatches`. If enabled, mismatches count towards bailout. _OPTIONAL_  
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
     * `results`: The results of the run.
@@ -310,6 +313,7 @@ The results object emitted by `done` and passed to the `autocannon()` callback h
 * `duration`: The amount of time the test took, **in seconds**.
 * `errors`: The number of connection errors (including timeouts) that occurred.
 * `timeouts`: The number of connection timeouts that occurred.
+* `mismatches`: The number of requests with a mismatched body.
 * `start`: A Date object representing when the test started.
 * `finish`: A Date object representing when the test ended.
 * `connections`: The amount of connections used (value of `opts.connections`).
