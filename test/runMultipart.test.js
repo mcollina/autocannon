@@ -78,9 +78,6 @@ test('run should return an error with invalid form options', async t => {
 })
 
 test('run should take form options as a JSON string or a JS Object', async t => {
-  const server = helper.startMultipartServer()
-  t.tearDown(() => server.close())
-
   const form = {
     image: {
       type: 'file',
@@ -114,6 +111,11 @@ test('run should take form options as a JSON string or a JS Object', async t => 
 
   for (const c of cases) {
     t.test(c.name, async t => {
+      const server = helper.startMultipartServer(null, payload => {
+        t.equal('j5', payload.name)
+        t.equal('j5.jpeg', payload.image.filename)
+      })
+      t.tearDown(() => server.close())
       const [err, res] = await new Promise((resolve) => {
         run({
           url: 'http://localhost:' + server.address().port,
@@ -136,7 +138,10 @@ test('run should take form options as a JSON string or a JS Object', async t => 
 })
 
 test('run should use a custom method if `options.method` is passed', t => {
-  const server = helper.startMultipartServer()
+  const server = helper.startMultipartServer(null, payload => {
+    t.equal('j5', payload.name)
+    t.equal('j5.jpeg', payload.image.filename)
+  })
   t.tearDown(() => server.close())
 
   const form = {
@@ -166,6 +171,7 @@ test('run should use a custom method if `options.method` is passed', t => {
 
 test('run should set filename', t => {
   const server = helper.startMultipartServer(null, payload => {
+    t.equal('j5', payload.name)
     t.equal('j5.jpeg', payload.image.filename)
   })
   t.tearDown(() => server.close())
@@ -197,6 +203,7 @@ test('run should set filename', t => {
 
 test('run should allow overriding filename', t => {
   const server = helper.startMultipartServer(null, payload => {
+    t.equal('j5', payload.name)
     t.equal('testfilename.jpeg', payload.image.filename)
   })
   t.tearDown(() => server.close())
@@ -231,6 +238,7 @@ test('run should allow overriding filename', t => {
 
 test('run should allow overriding filename with file path', t => {
   const server = helper.startMultipartServer({ preservePath: true }, payload => {
+    t.equal('j5', payload.name)
     t.equal('some/path/testfilename.jpeg', payload.image.filename)
   })
   t.tearDown(() => server.close())
