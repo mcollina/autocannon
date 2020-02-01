@@ -60,6 +60,7 @@ test('run', (t) => {
     t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
+    t.equal(result.mismatches, 0, 'no mismatches')
 
     t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -123,6 +124,7 @@ test('tracker.stop()', (t) => {
     t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
+    t.equal(result.mismatches, 0, 'no mismatches')
 
     t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -228,6 +230,20 @@ test('run should callback with an error after a bailout', (t) => {
   })
 })
 
+test('run should callback with an error using expectBody and requests', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    requests: [{ body: 'something' }],
+    expectBody: 'hello'
+  }, function (err, result) {
+    t.ok(err, 'expectBody used with requests should cause an error')
+    t.notOk(result, 'results should not exist')
+    t.end()
+  })
+})
+
 test('run should allow users to enter timestrings to be used for duration', (t) => {
   t.plan(3)
 
@@ -257,6 +273,37 @@ test('run should recognise valid urls without http at the start', (t) => {
     t.error(err)
     t.ok(res, 'results should exist')
     t.equal(res.url, 'http://localhost:' + server.address().port, 'url should have http:// added to start')
+    t.end()
+  })
+})
+
+test('run should produce count of mismatches with expectBody set', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    expectBody: 'body will not be this',
+    maxOverallRequests: 10
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.mismatches, 10)
+    t.end()
+  })
+})
+
+test('run should produce 0 mismatches with expectBody set and matches', (t) => {
+  t.plan(2)
+
+  const responseBody = 'hello dave'
+  const server = helper.startServer({ body: responseBody })
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    expectBody: responseBody,
+    maxOverallRequests: 10
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.mismatches, 0)
     t.end()
   })
 })
@@ -435,6 +482,30 @@ test('tracker will emit reqError with error message on error', (t) => {
   tracker.once('reqError', (err) => {
     t.type(err, Error, 'reqError should pass an Error to listener')
     t.ok(err.message, 'err.message should have a value')
+    tracker.stop()
+  })
+})
+
+test('tracker will emit reqMismatch when body does not match expectBody', (t) => {
+  t.plan(2)
+
+  const responseBody = 'hello world'
+  const server = helper.startServer({ body: responseBody })
+
+  const expectBody = 'goodbye world'
+
+  const tracker = run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 10,
+    duration: 15,
+    method: 'GET',
+    body: 'hello',
+    expectBody
+  })
+
+  tracker.once('reqMismatch', (bodyStr) => {
+    t.equal(bodyStr, responseBody)
+    t.notEqual(bodyStr, expectBody)
     tracker.stop()
   })
 })

@@ -20,7 +20,7 @@ function startServer (opts) {
 
   function handle (req, res) {
     res.statusCode = statusCode
-    res.end('hello world')
+    res.end(opts.body || 'hello world')
   }
 
   server.unref()
