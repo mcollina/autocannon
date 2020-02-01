@@ -110,6 +110,7 @@ Available options:
         Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
   -E/--expectBody EXPECTED
         Ensure the body matches this value. If enabled, mismatches count towards bailout.
+        Enabling this option will slow down the load testing.
   -v/--version
         Print the version number.
   -h/--help

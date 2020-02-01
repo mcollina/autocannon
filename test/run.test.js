@@ -60,7 +60,7 @@ test('run', (t) => {
     t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
-    t.equal(result.mismatches, 0, 'no errors')
+    t.equal(result.mismatches, 0, 'no mismatches')
 
     t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -124,7 +124,7 @@ test('tracker.stop()', (t) => {
     t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
-    t.equal(result.mismatches, 0, 'no errors')
+    t.equal(result.mismatches, 0, 'no mismatches')
 
     t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -226,6 +226,20 @@ test('run should callback with an error after a bailout', (t) => {
   }, function (err, result) {
     t.error(err)
     t.ok(result, 'results should not exist')
+    t.end()
+  })
+})
+
+test('run should callback with an error using expectBody and requests', (t) => {
+  t.plan(2)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    requests: [{ body: 'something' }],
+    expectBody: 'hello'
+  }, function (err, result) {
+    t.ok(err, 'expectBody used with requests should cause an error')
+    t.notOk(result, 'results should not exist')
     t.end()
   })
 })
