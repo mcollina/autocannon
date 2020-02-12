@@ -1,5 +1,7 @@
 'use strict'
 
+const os = require('os')
+const path = require('path')
 const test = require('tap').test
 const Client = require('../lib/httpClient')
 const helper = require('./helper')
@@ -344,6 +346,49 @@ test('client supports changing the headers and body together', (t) => {
   client.destroy()
 })
 
+test('client supports changing the headers and body with null values', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.body = 'hello world'
+  opts.method = 'POST'
+
+  const client = new Client(opts)
+
+  t.same(client.getRequestBuffer(),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
+    'request is okay before modifying')
+
+  client.setBody(null)
+  client.setHeaders(null)
+
+  t.same(client.getRequestBuffer(),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
+    'changes updated request')
+  client.destroy()
+})
+
+test('client supports changing the headers and body together with null values', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.body = 'hello world'
+  opts.method = 'POST'
+
+  const client = new Client(opts)
+
+  t.same(client.getRequestBuffer(),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
+    'request is okay before modifying')
+
+  client.setHeadersAndBody(null, null)
+
+  t.same(client.getRequestBuffer(),
+    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
+    'changes updated request')
+  client.destroy()
+})
+
 test('client supports updating the current request object', (t) => {
   t.plan(2)
 
@@ -454,43 +499,48 @@ test('client should emit 2 timeouts when no responses are received', (t) => {
 
 test('client should have 2 different requests it iterates over', (t) => {
   t.plan(3)
+  const server = helper.startServer()
   const opts = server.address()
   opts.method = 'POST'
 
-  opts.requests = [{
-    body: 'hello world'
-  },
-  {
-    method: 'GET',
-    body: 'modified'
-  }
+  const requests = [
+    {
+      body: 'hello world again'
+    },
+    {
+      method: 'GET',
+      body: 'modified'
+    }
   ]
 
   const client = new Client(opts)
   let number = 0
-
+  client.setRequests(requests)
   client.on('response', (statusCode, length) => {
     number++
-    if (number === 1 || number === 3) {
-      t.same(client.getRequestBuffer(),
-        Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`),
-        'body changes updated request')
-
-      if (number === 3) {
+    switch (number) {
+      case 1:
+      case 3:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
+          'request was okay')
+        break
+      case 2:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`),
+          'body changes updated request')
+        break
+      case 4:
         client.destroy()
         t.end()
-      }
-    } else {
-      t.same(client.getRequestBuffer(),
-        Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-        'request was okay')
+        break
     }
   })
 })
 
 test('client supports http basic authentication', (t) => {
   t.plan(2)
-
+  const server = helper.startServer()
   const opts = server.address()
   opts.auth = 'username:password'
   const client = new Client(opts)
@@ -502,5 +552,41 @@ test('client supports http basic authentication', (t) => {
   client.on('response', (statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
     client.destroy()
+    t.end()
+  })
+})
+
+test('should return client instance', (t) => {
+  t.plan(1)
+  const caller = {}
+  const opts = server.address()
+  opts.auth = 'username:password'
+  const client = Client.call(caller, opts)
+
+  t.type(client, Client)
+  client.destroy()
+})
+
+test('client calls twice using socket on secure server', (t) => {
+  t.plan(4)
+  const socketPath = process.platform === 'win32'
+    ? path.join('\\\\?\\pipe', process.cwd(), 'autocannon-' + Date.now())
+    : path.join(os.tmpdir(), 'autocannon-' + Date.now() + '.sock')
+
+  helper.startHttpsServer({ socketPath })
+  const client = new Client({
+    url: 'localhost',
+    protocol: 'https:',
+    socketPath,
+    connections: 1
+  })
+  let count = 0
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    t.ok(length > 'hello world'.length, 'length includes the headers')
+    if (count++ > 0) {
+      client.destroy()
+      t.end()
+    }
   })
 })

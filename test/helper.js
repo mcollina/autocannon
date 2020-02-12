@@ -71,7 +71,7 @@ function startSocketDestroyingServer () {
 }
 
 // this server won't reply to requests
-function startHttpsServer () {
+function startHttpsServer (opts = {}) {
   const options = {
     key: fs.readFileSync(path.join(__dirname, '/key.pem')),
     cert: fs.readFileSync(path.join(__dirname, '/cert.pem')),
@@ -80,7 +80,7 @@ function startHttpsServer () {
 
   const server = https.createServer(options, handle)
 
-  server.listen(0)
+  server.listen(opts.socketPath || 0)
 
   function handle (req, res) {
     res.end('hello world')

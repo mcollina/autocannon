@@ -143,3 +143,17 @@ test('request builder should allow http basic authentication', (t) => {
     Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAuthorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=\r\n\r\n`),
     'request is okay')
 })
+
+test('should throw error if body is not a string or a buffer', (t) => {
+  t.plan(1)
+
+  const opts = server.address()
+
+  const build = RequestBuilder(opts)
+
+  try {
+    build({ body: [] })
+  } catch (error) {
+    t.is(error.message, 'body must be either a string or a buffer')
+  }
+})
