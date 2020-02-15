@@ -673,18 +673,3 @@ test('should handle duration in string format', t => {
     t.pass()
   })
 })
-
-test('should log error on connection error', t => {
-  t.plan(2)
-  console.error = function (obj) {
-    t.type(obj, Error)
-    t.is(obj.code, 'ENOTFOUND')
-  }
-  run({
-    url: 'http://unknownhost',
-    connections: 2,
-    duration: '1',
-    title: 'title321',
-    debug: true
-  })
-})
