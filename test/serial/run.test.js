@@ -9,7 +9,6 @@ test('should log error on connection error', t => {
     t.type(obj, Error)
     t.is(obj.code, 'ENOTFOUND')
     console.error = _error
-    t.end()
   }
   run({
     url: 'http://unknownhost',
