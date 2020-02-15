@@ -283,7 +283,8 @@ test('run should produce count of mismatches with expectBody set', (t) => {
   run({
     url: 'http://localhost:' + server.address().port,
     expectBody: 'body will not be this',
-    maxOverallRequests: 10
+    maxOverallRequests: 10,
+    timeout: 100
   }, function (err, result) {
     t.error(err)
     t.equal(result.mismatches, 10)
@@ -601,5 +602,74 @@ test('run promise', (t) => {
     t.equal(result.non2xx, 0, 'non 2xx codes')
 
     t.end()
+  })
+})
+
+test('should throw if duration is not a number nor a string', t => {
+  t.plan(1)
+  const server = helper.startServer()
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 2,
+    duration: ['foobar'],
+    title: 'title321'
+  })
+    .then((result) => {
+      t.fail()
+    })
+    .catch((err) => {
+      t.is(err.message, 'duration entered was in an invalid format')
+    })
+})
+
+test('should emit error', t => {
+  t.plan(1)
+  const server = helper.startServer()
+  const tracker = run({
+    url: `http://unknownhost:${server.address().port}`,
+    connections: 1,
+    timeout: 100,
+    forever: true,
+    form: {
+      param1: {
+        type: 'string',
+        value: null // this will trigger an error
+      }
+    }
+  })
+
+  tracker.once('error', (error) => {
+    t.is(error.message, 'A \'type\' key with value \'text\' or \'file\' should be specified')
+    t.end()
+  })
+})
+
+test('should throw if timeout is less than zero', t => {
+  t.plan(1)
+  const server = helper.startServer()
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 2,
+    timeout: -1,
+    title: 'title321'
+  })
+    .then((result) => {
+      t.fail()
+    })
+    .catch((err) => {
+      t.is(err.message, 'timeout must be greater than 0')
+    })
+})
+
+test('should handle duration in string format', t => {
+  t.plan(1)
+  const server = helper.startServer()
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 2,
+    duration: '1',
+    title: 'title321'
+  }).then((result) => {
+    t.pass()
   })
 })

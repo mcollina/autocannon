@@ -235,3 +235,37 @@ test('request iterator should properly mutate requests if a setupRequest functio
   iterator.setRequest() // this should build default request
   t.same(iterator.currentRequest.requestBuffer, request5Res, 'request was okay')
 })
+
+test('request iterator should return instance of RequestIterator', t => {
+  t.plan(1)
+  const caller = {}
+  const opts = server.address()
+
+  const iterator = RequestIterator.call(caller, opts)
+  t.type(iterator, RequestIterator)
+})
+
+test('request iterator should return next request buffer', (t) => {
+  t.plan(1)
+
+  const opts = server.address()
+  opts.method = 'POST'
+
+  const requests = [
+    {
+      body: 'hello world'
+    },
+    {
+      method: 'GET',
+      body: 'modified'
+    }
+  ]
+
+  const request2Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`)
+
+  opts.requests = requests
+
+  const iterator = new RequestIterator(opts)
+  const buffer = iterator.nextRequestBuffer()
+  t.same(request2Res, buffer, 'request is okay')
+})
