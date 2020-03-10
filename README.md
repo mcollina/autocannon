@@ -3,8 +3,8 @@
 # autocannon
 
 [![Join the chat at https://gitter.im/mcollina/autocannon](https://badges.gitter.im/mcollina/autocannon.svg)](https://gitter.im/mcollina/autocannon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Travis Build Status](https://travis-ci.org/mcollina/autocannon.svg?branch=master)](https://travis-ci.org/mcollina/autocannon)
-[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/mcollina/autocannon?svg=true)](https://ci.appveyor.com/project/mcollina/autocannon) [![Greenkeeper badge](https://badges.greenkeeper.io/mcollina/autocannon.svg)](https://greenkeeper.io/)
+![Node.js CI](https://github.com/mcollina/autocannon/workflows/Node.js%20CI/badge.svg)
+[![Greenkeeper badge](https://badges.greenkeeper.io/mcollina/autocannon.svg)](https://greenkeeper.io/)
 
 
 ![demo](https://raw.githubusercontent.com/mcollina/autocannon/master/demo.gif)
