@@ -11,7 +11,7 @@ test('should log error on connection error', t => {
   run({
     url: 'http://unknownhost',
     connections: 2,
-    duration: 1,
+    duration: 4,
     title: 'title321',
     debug: true
   })
