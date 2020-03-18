@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/mcollina/autocannon#readme",
   "devDependencies": {
-    "bl": "^4.0.0",
+    "bl": "^4.0.2",
     "busboy": "^0.3.1",
     "pre-commit": "^1.1.2",
     "proxyquire": "^2.1.3",
