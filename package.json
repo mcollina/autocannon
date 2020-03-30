@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "chalk": "^3.0.0",
-    "cli-table3": "^0.5.1",
+    "cli-table3": "^0.6.0",
     "clone": "^2.1.2",
     "color-support": "^1.1.1",
     "cross-argv": "^1.0.0",
