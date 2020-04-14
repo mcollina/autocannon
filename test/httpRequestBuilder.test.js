@@ -144,7 +144,7 @@ test('request builder should allow http basic authentication', (t) => {
     'request is okay')
 })
 
-test('should throw error if body is not a string or a buffer', (t) => {
+test('should throw error if body is not a string or a buffer or an array', (t) => {
   t.plan(1)
 
   const opts = server.address()
@@ -152,8 +152,8 @@ test('should throw error if body is not a string or a buffer', (t) => {
   const build = RequestBuilder(opts)
 
   try {
-    build({ body: [] })
+    build({ body: 1 })
   } catch (error) {
-    t.is(error.message, 'body must be either a string or a buffer')
+    t.is(error.message, 'body must be either a string or a buffer or an array')
   }
 })

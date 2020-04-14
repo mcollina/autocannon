@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "standard && tap --no-esm --no-jsx --timeout 45 test/serial/*.test.js test/*.test.js",
-    "standard:fix": "standard --fix"
+    "standard:fix": "standard --fix",
+    "utest": "tap --no-esm --no-jsx --timeout 45 test/httpRequestBuilder.test.js"
   },
   "pre-commit": [
     "test"
