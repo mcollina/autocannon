@@ -31,6 +31,7 @@ function parseArguments (argvs) {
   const argv = minimist(argvs, {
     boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort', 'debug'],
     alias: {
+      chunkSize: ['k', 'chunk'],
       connections: 'c',
       pipelining: 'p',
       timeout: 't',
@@ -62,6 +63,7 @@ function parseArguments (argvs) {
       help: 'h'
     },
     default: {
+      chunkSize: 0,
       connections: 10,
       timeout: 10,
       pipelining: 1,
