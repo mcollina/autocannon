@@ -15,6 +15,7 @@ const hasAsyncHooks = require('has-async-hooks')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
+const { checkURL, ofURL } = require('./lib/url')
 
 if (typeof URL !== 'function') {
   console.error('autocannon requires the WHATWG URL API, but it is not available. Please upgrade to Node 6.13+.')
@@ -79,7 +80,7 @@ function parseArguments (argvs) {
     '--': true
   })
 
-  argv.url = argv._[0]
+  argv.url = argv._.length > 1 ? argv._ : argv._[0]
 
   if (argv.onPort) {
     argv.spawn = argv['--']
@@ -97,7 +98,7 @@ function parseArguments (argvs) {
     return
   }
 
-  if (!argv.url || argv.help) {
+  if (!checkURL(argv.url) || argv.help) {
     console.error(help)
     return
   }
@@ -106,28 +107,33 @@ function parseArguments (argvs) {
   // this allows doing:
   //     0x --on-port 'autocannon /path' -- node server.js
   if (process.env.PORT) {
-    argv.url = new URL(argv.url, `http://localhost:${process.env.PORT}`).href
+    argv.url = ofURL(argv.url).map(url => new URL(url, `http://localhost:${process.env.PORT}`).href)
   }
   // Add http:// if it's not there and this is not a /path
-  if (argv.url.indexOf('http') !== 0 && argv.url[0] !== '/') {
-    argv.url = `http://${argv.url}`
-  }
+  argv.url = ofURL(argv.url).map(url => {
+    if (url.indexOf('http') !== 0 && url[0] !== '/') {
+      url = `http://${url}`
+    }
+    return url
+  })
 
   // check that the URL is valid.
-  try {
-    // If --on-port is given, it's acceptable to not have a hostname
-    if (argv.onPort) {
-      new URL(argv.url, 'http://localhost') // eslint-disable-line no-new
-    } else {
-      new URL(argv.url) // eslint-disable-line no-new
+  ofURL(argv.url).map(url => {
+    try {
+      // If --on-port is given, it's acceptable to not have a hostname
+      if (argv.onPort) {
+        new URL(url, 'http://localhost') // eslint-disable-line no-new
+      } else {
+        new URL(url) // eslint-disable-line no-new
+      }
+    } catch (err) {
+      console.error(err.message)
+      console.error('')
+      console.error('When targeting a path without a hostname, the PORT environment variable must be available.')
+      console.error('Use a full URL or set the PORT variable.')
+      process.exit(1)
     }
-  } catch (err) {
-    console.error(err.message)
-    console.error('')
-    console.error('When targeting a path without a hostname, the PORT environment variable must be available.')
-    console.error('Use a full URL or set the PORT variable.')
-    process.exit(1)
-  }
+  })
 
   if (argv.input) {
     argv.body = fs.readFileSync(argv.input)
