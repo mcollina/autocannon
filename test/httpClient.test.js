@@ -538,6 +538,98 @@ test('client should have 2 different requests it iterates over', (t) => {
   })
 })
 
+test('client exposes response bodies and statuses', (t) => {
+  const server = helper.startServer({
+    body: ({ method }) => method === 'POST' ? 'hello!' : 'world!'
+  })
+  const opts = server.address()
+  opts.method = 'POST'
+  opts.requests = [
+    {
+      body: 'hello world again',
+      onResponse: (status, body) => responses.push({ status, body })
+    },
+    {
+      method: 'GET',
+      onResponse: (status, body) => responses.push({ status, body })
+    }
+  ]
+  const responses = []
+
+  const client = new Client(opts)
+  let number = 0
+  client.on('response', (statusCode, length) => {
+    number++
+    switch (number) {
+      case 1:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
+          'first request')
+        break
+      case 2:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
+          'second request')
+        t.deepEqual(responses, [{
+          status: 200,
+          body: 'hello!'
+        }, {
+          status: 200,
+          body: 'world!'
+        }])
+        client.destroy()
+        t.end()
+        break
+    }
+  })
+})
+
+test('client keeps context and reset it when looping on requests', (t) => {
+  const server = helper.startServer()
+  const opts = server.address()
+  opts.method = 'POST'
+  let number = 0
+
+  opts.requests = [
+    {
+      body: 'hello world again',
+      onResponse: (status, body, context) => {
+        if (number < 3) {
+          t.deepEqual(context, {}, 'context was supposed to be null')
+          context.previousRes = body
+        }
+      }
+    },
+    {
+      setupRequest: (req, context) => {
+        if (number < 3) {
+          t.deepEqual(context, { previousRes: 'hello world' }, 'context was supposed to contain previous response')
+        }
+        return Object.assign({}, req, { body: context.previousRes })
+      }
+    }
+  ]
+
+  const client = new Client(opts)
+  client.on('response', (statusCode, length) => {
+    number++
+    switch (number) {
+      case 1:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
+          'hard-coded body')
+        break
+      case 2:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
+          'dynamic body')
+        client.destroy()
+        t.end()
+        break
+    }
+  })
+})
+
 test('client supports http basic authentication', (t) => {
   t.plan(2)
   const server = helper.startServer()

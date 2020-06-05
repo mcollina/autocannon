@@ -20,7 +20,7 @@ function startServer (opts) {
 
   function handle (req, res) {
     res.statusCode = statusCode
-    res.end(opts.body || 'hello world')
+    res.end(typeof opts.body === 'function' ? opts.body(req) : (opts.body || 'hello world'))
   }
 
   server.unref()

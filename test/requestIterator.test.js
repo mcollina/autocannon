@@ -163,7 +163,7 @@ test('request iterator should not replace any [<id>] tags with generated IDs whe
   opts.requests = [{}]
 
   const iterator = new RequestIterator(opts)
-  const result = iterator.move().toString().trim()
+  const result = iterator.currentRequest.requestBuffer.toString().trim()
 
   const contentLength = result.split('Content-Length: ')[1].slice(0, 1)
   t.equal(contentLength, '6', 'Content-Length was incorrect')
@@ -182,10 +182,43 @@ test('request iterator should replace all [<id>] tags with generated IDs when ca
   opts.idReplacement = true
 
   const iterator = new RequestIterator(opts)
-  const result = iterator.move().toString().trim()
+  const result = iterator.currentRequest.requestBuffer.toString().trim()
 
   t.equal(result.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
   t.equal(result.slice(-1), '0', 'Generated ID should end with request number')
+})
+
+test('request iterator should invoke onResponse callback when set', (t) => {
+  t.plan(9)
+
+  const opts = server.address()
+  opts.requests = [
+    {
+      onResponse: (status, body, context) => {
+        t.same(status, 200)
+        t.same(body, 'ok')
+        t.deepEqual(context, {})
+      }
+    },
+    {},
+    {
+      onResponse: (status, body, context) => {
+        t.same(status, 201)
+        t.same(body, '')
+        t.deepEqual(context, {})
+      }
+    }
+  ]
+
+  const iterator = new RequestIterator(opts)
+  iterator.recordBody(200, 'ok')
+  iterator.nextRequest()
+  iterator.recordBody(500, 'ignored')
+  iterator.nextRequest()
+  iterator.recordBody(201, '')
+  // will reset the iterator
+  iterator.nextRequest()
+  iterator.recordBody(200, 'ok')
 })
 
 test('request iterator should properly mutate requests if a setupRequest function is located', (t) => {
@@ -196,7 +229,7 @@ test('request iterator should properly mutate requests if a setupRequest functio
 
   let i = 0
 
-  const requests1 = [
+  opts.requests = [
     {
       body: 'hello world',
       setupRequest: req => {
@@ -217,10 +250,9 @@ test('request iterator should properly mutate requests if a setupRequest functio
   const request1Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world0`)
   const request2Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 9\r\n\r\nmodified1`)
   const request3Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`)
-  const request4Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 9\r\n\r\nmodified2`)
-  const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`)
-
-  opts.requests = requests1
+  const request4Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 9\r\n\r\nmodified2`)
+  const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 9\r\n\r\nmodified3`)
+  const request6Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`)
 
   const iterator = new RequestIterator(opts)
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
@@ -229,11 +261,47 @@ test('request iterator should properly mutate requests if a setupRequest functio
   iterator.nextRequest() // verify it didn't affect the other request
   t.same(iterator.currentRequest.requestBuffer, request3Res, 'request was okay')
   iterator.nextRequest()
-  t.same(iterator.currentRequest.requestBuffer, request2Res, 'request was okay')
-  iterator.setHeaders({ header: 'modifiedHeader' })
   t.same(iterator.currentRequest.requestBuffer, request4Res, 'request was okay')
-  iterator.setRequest() // this should build default request
+  iterator.setHeaders({ header: 'modifiedHeader' })
   t.same(iterator.currentRequest.requestBuffer, request5Res, 'request was okay')
+  iterator.setRequest() // this should build default request
+  t.same(iterator.currentRequest.requestBuffer, request6Res, 'request was okay')
+})
+
+test('request iterator should maintain context while looping on requests', (t) => {
+  t.plan(4)
+
+  const opts = server.address()
+  opts.requests = [
+    {
+      setupRequest: (req, context) => {
+        t.deepEqual(context, {}, 'context was supposed to be empty for first request')
+        context.num = 1
+        context.init = true
+        return req
+      }
+    },
+    {
+      setupRequest: (req, context) => {
+        t.deepEqual(context, { num: 1, init: true }, 'context was supposed to be initialized for second request')
+        context.num++
+        return req
+      }
+    },
+    {
+      setupRequest: (req, context) => {
+        t.deepEqual(context, { num: 2, init: true }, 'context was supposed to be initialized for third request')
+        context.num++
+        return req
+      }
+    }
+  ]
+
+  const iterator = new RequestIterator(opts)
+  iterator.nextRequest()
+  iterator.nextRequest()
+  // will reset the iterator
+  iterator.nextRequest()
 })
 
 test('request iterator should return instance of RequestIterator', t => {
