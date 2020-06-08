@@ -240,7 +240,13 @@ Start autocannon against the given target.
     * `connectionRate`: A `Number` stating the rate of requests to make per second from each individual connection. No rate limiting by default. _OPTIONAL_
     * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `connectionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
     * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
-    * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. The `Object`s in this array can have `body`, `headers`, `method`, or `path` attributes, which overwrite those that are passed in this `opts` object. Therefore, the ones in this (`opts`) object take precedence and should be viewed as defaults. Additionally, an optional `setupRequest` `Function` may be provided that will mutate the raw `request` object, e.g. `request.method = 'GET'`. Check the samples folder for an example of how this might be used. _OPTIONAL_.
+    * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. Check the samples folder for an example of how this might be used. _OPTIONAL_. Contained objects can have these attributes:
+       * `body`: When present, will override `opts.body`. _OPTIONAL_.
+       * `headers`: When present, will override `opts.headers`. _OPTIONAL_.
+       * `method`: When present, will override `opts.method`. _OPTIONAL_.
+       * `path`: When present, will override `opts.path`. _OPTIONAL_.
+       * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. _OPTIONAL_.
+       * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) and `context` (Object) parameters. _OPTIONAL_.
     * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
     * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: `undefined`.
@@ -251,6 +257,17 @@ Start autocannon against the given target.
     * `results`: The results of the run.
 
 **Returns** an instance/event emitter for tracking progress, etc. If cb omitted, the return value can also be used as a Promise.
+
+### Customizing sent requests
+
+When running, autocannon will create has many `Client` as desired connections. They will run in parallel, until the benchmark is over (duration or total number of requests).
+Each client will loop over the `requests` array, would it contain one or several requests.
+
+While going through available requests, the client will maintain a `context`: an object you can use in `onResponse` and `setupRequest` functions, to store and read some contextual data.
+Please check the `request-context.js` file in samples.
+
+Note that `context` object will be cleared when restarting to the first available request, ensuring similar runs.
+
 
 ### autocannon.track(instance[, opts])
 
@@ -286,7 +303,7 @@ autocannon.track(instance, {renderProgressBar: false})
 
 Checkout [this example](./samples/track-run.js) to see it in use, as well.
 
-### autocannon events
+### Autocannon events
 
 Because an autocannon instance is an `EventEmitter`, it emits several events. these are below:
 
@@ -301,7 +318,7 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
 * `reqError`: Emitted in the case of a request error e.g. a timeout.
 * `error`: Emitted if there is an error during the setup phase of autocannon.
 
-### results
+### Results
 
 The results object emitted by `done` and passed to the `autocannon()` callback has these properties:
 
