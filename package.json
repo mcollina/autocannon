@@ -7,7 +7,7 @@
     "autocannon": "autocannon.js"
   },
   "scripts": {
-    "test": "standard && tap --no-esm --no-jsx --timeout 45 test/serial/*.test.js test/*.test.js",
+    "test": "standard && tap test/serial/*.test.js test/*.test.js",
     "standard:fix": "standard --fix"
   },
   "pre-commit": [
