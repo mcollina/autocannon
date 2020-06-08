@@ -211,14 +211,14 @@ test('request iterator should invoke onResponse callback when set', (t) => {
   ]
 
   const iterator = new RequestIterator(opts)
-  iterator.recordBody(200, 'ok')
+  iterator.recordBody(iterator.currentRequest, 200, 'ok')
   iterator.nextRequest()
-  iterator.recordBody(500, 'ignored')
+  iterator.recordBody(iterator.currentRequest, 500, 'ignored')
   iterator.nextRequest()
-  iterator.recordBody(201, '')
+  iterator.recordBody(iterator.currentRequest, 201, '')
   // will reset the iterator
   iterator.nextRequest()
-  iterator.recordBody(200, 'ok')
+  iterator.recordBody(iterator.currentRequest, 200, 'ok')
 })
 
 test('request iterator should properly mutate requests if a setupRequest function is located', (t) => {
