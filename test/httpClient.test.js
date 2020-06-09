@@ -12,6 +12,23 @@ const tlsServer = helper.startTlsServer()
 const trailerServer = helper.startTrailerServer()
 const bl = require('bl')
 
+const makeResponseFromBody = ({ server, method, body, headers = {} }) => {
+  const sentHeaders = {
+    Connection: 'keep-alive',
+    ...headers
+  }
+  if (!sentHeaders['Content-Length'] && body) {
+    sentHeaders['Content-Length'] = body.length
+  }
+  return `${method} / HTTP/1.1\r\nHost: localhost:${
+    server.address().port
+  }\r\n${
+    Object.keys(sentHeaders).map(name => `${name}: ${sentHeaders[name]}`).join('\r\n')
+  }\r\n${
+    body ? `\r\n${body}` : '\r\n'
+  }`
+}
+
 test('client calls a server twice', (t) => {
   t.plan(4)
 
@@ -266,15 +283,12 @@ test('client supports changing the body', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-    'request is okay before modifying')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
-  client.setBody('modified')
+  const body = 'modified'
+  client.setBody(body)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`),
-    'body changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, body }), 'body changes updated request')
   client.destroy()
 })
 
@@ -285,17 +299,12 @@ test('client supports changing the headers', (t) => {
   opts.method = 'POST'
 
   const client = new Client(opts)
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
-    'request is okay before modifying')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
-  client.setHeaders({
-    header: 'modified'
-  })
+  const headers = { header: 'modified' }
+  client.setHeaders(headers)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modified\r\n\r\n`),
-    'header changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers }), 'header changes updated request')
   client.destroy()
 })
 
@@ -308,18 +317,14 @@ test('client supports changing the headers and body', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-    'request is okay before modifying')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
-  client.setBody('modified')
-  client.setHeaders({
-    header: 'modifiedHeader'
-  })
+  const body = 'modified'
+  const headers = { header: 'modifiedHeader' }
+  client.setBody(body)
+  client.setHeaders(headers)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified`),
-    'changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
   client.destroy()
 })
 
@@ -332,17 +337,13 @@ test('client supports changing the headers and body together', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-    'request is okay before modifying')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
-  client.setHeadersAndBody({
-    header: 'modifiedHeader'
-  }, 'modified')
+  const body = 'modified'
+  const headers = { header: 'modifiedHeader' }
+  client.setHeadersAndBody(headers, body)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified`),
-    'changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
   client.destroy()
 })
 
@@ -355,16 +356,12 @@ test('client supports changing the headers and body with null values', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-    'request is okay before modifying')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   client.setBody(null)
   client.setHeaders(null)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
-    'changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'changes updated request')
   client.destroy()
 })
 
@@ -377,15 +374,11 @@ test('client supports changing the headers and body together with null values', 
 
   const client = new Client(opts)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-    'request is okay before modifying')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   client.setHeadersAndBody(null, null)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
-    'changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'changes updated request')
   client.destroy()
 })
 
@@ -398,21 +391,18 @@ test('client supports updating the current request object', (t) => {
 
   const client = new Client(opts)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-    'request is okay before modifying')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
-  client.setRequest({
+  const newReq = {
     headers: {
       header: 'modifiedHeader'
     },
     body: 'modified',
     method: 'GET'
-  })
+  }
+  client.setRequest(newReq)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified`),
-    'changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...newReq }), 'changes updated request')
   client.destroy()
 })
 
@@ -422,25 +412,21 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
+  const body = 'modified'
+  const headers = { header: 'modifiedHeader' }
   opts.setupClient = (client) => {
     t.ok(client.setHeadersAndBody, 'client had setHeadersAndBody method')
     t.ok(client.setHeaders, 'client had setHeaders method')
     t.ok(client.setBody, 'client had setBody method')
 
-    client.setHeadersAndBody({
-      header: 'modifiedHeader'
-    }, 'modified')
+    client.setHeadersAndBody(headers, body)
   }
 
   const client = new Client(opts)
 
-  t.same(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified`),
-    'changes updated request')
+  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
 
-  t.notSame(client.getRequestBuffer(),
-    Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-    'changes updated request')
+  t.notSame(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'changes updated request')
 
   client.destroy()
 })
@@ -501,10 +487,10 @@ test('client should have 2 different requests it iterates over', (t) => {
   t.plan(3)
   const server = helper.startServer()
   const opts = server.address()
-  opts.method = 'POST'
 
   const requests = [
     {
+      method: 'POST',
       body: 'hello world again'
     },
     {
@@ -521,14 +507,10 @@ test('client should have 2 different requests it iterates over', (t) => {
     switch (number) {
       case 1:
       case 3:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
-          'request was okay')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[0] }), 'request was okay')
         break
       case 2:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`),
-          'body changes updated request')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[1] }), 'body changes updated request')
         break
       case 4:
         client.destroy()
@@ -543,13 +525,14 @@ test('client exposes response bodies and statuses', (t) => {
     body: ({ method }) => method === 'POST' ? 'hello!' : 'world!'
   })
   const opts = server.address()
-  opts.method = 'POST'
   opts.requests = [
     {
+      method: 'POST',
       body: 'hello world!',
       onResponse: (status, body) => responses.push({ status, body })
     },
     {
+      method: 'POST',
       body: 'hello world again'
     },
     {
@@ -565,27 +548,21 @@ test('client exposes response bodies and statuses', (t) => {
     number++
     switch (number) {
       case 1:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world!`),
-          'first request')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'first request')
         t.deepEqual(responses, [{
           status: 200,
           body: 'hello!'
         }])
         break
       case 2:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
-          'second request')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[1] }), 'second request')
         t.deepEqual(responses, [{
           status: 200,
           body: 'hello!'
         }])
         break
       case 3:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
-          'third request')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[2] }), 'third request')
         t.deepEqual(responses, [{
           status: 200,
           body: 'hello!'
@@ -595,9 +572,7 @@ test('client exposes response bodies and statuses', (t) => {
         }])
         break
       case 4:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world!`),
-          'first request')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'first request')
         t.deepEqual(responses, [{
           status: 200,
           body: 'hello!'
@@ -618,11 +593,12 @@ test('client exposes response bodies and statuses', (t) => {
 test('client keeps context and reset it when looping on requests', (t) => {
   const server = helper.startServer()
   const opts = server.address()
-  opts.method = 'POST'
   let number = 0
+  const expectedResponse = 'hello world'
 
   opts.requests = [
     {
+      method: 'POST',
       body: 'hello world again',
       onResponse: (status, body, context) => {
         if (number < 3) {
@@ -632,9 +608,10 @@ test('client keeps context and reset it when looping on requests', (t) => {
       }
     },
     {
+      method: 'PUT',
       setupRequest: (req, context) => {
         if (number < 3) {
-          t.deepEqual(context, { previousRes: 'hello world' }, 'context was supposed to contain previous response')
+          t.deepEqual(context, { previousRes: expectedResponse }, 'context was supposed to contain previous response')
         }
         return Object.assign({}, req, { body: context.previousRes })
       }
@@ -646,14 +623,10 @@ test('client keeps context and reset it when looping on requests', (t) => {
     number++
     switch (number) {
       case 1:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
-          'hard-coded body')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'hard-coded body')
         break
       case 2:
-        t.same(client.getRequestBuffer(),
-          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`),
-          'dynamic body')
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'PUT', body: expectedResponse }), 'dynamic body')
         client.destroy()
         t.end()
         break
@@ -710,6 +683,86 @@ test('client calls twice using socket on secure server', (t) => {
     if (count++ > 0) {
       client.destroy()
       t.end()
+    }
+  })
+})
+
+test('client emits mistmatch when expectBody doesn\'t match actual body', (t) => {
+  const responses = ['hello...', 'world!']
+  const server = helper.startServer({
+    body: ({ method }) => responses[method === 'POST' ? 0 : 1]
+  })
+  const opts = server.address()
+  opts.requests = [
+    {
+      method: 'POST',
+      body: 'hi there!'
+    },
+    {
+      method: 'GET'
+    }
+  ]
+  opts.expectBody = responses[0]
+
+  const client = new Client(opts)
+  client.on('mismatch', (body) => {
+    // we expect body mismatch on second request
+    t.same(body, responses[1])
+    client.destroy()
+    t.end()
+  })
+})
+
+test('client invokes appropriate onResponse when using pipelining', (t) => {
+  const server = helper.startServer({
+    body: ({ method }) => method
+  })
+  const opts = server.address()
+  opts.pipelining = 2
+  const responses = []
+  const onResponse = (status, body) => responses.push(body)
+  opts.requests = [
+    {
+      method: 'POST',
+      onResponse
+    },
+    {
+      method: 'GET',
+      onResponse
+    },
+    {
+      method: 'PUT',
+      onResponse
+    }
+  ]
+
+  const client = new Client(opts)
+  let number = 0
+  client.on('response', (statusCode, length) => {
+    number++
+    switch (number) {
+      case 1:
+        // 1st & 2nd were sent, receiving 1st
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'GET' }), 'current should be second request')
+        t.deepEqual(responses, ['POST'])
+        break
+      case 2:
+        // 3rd was sent as 1st is finished, receiving 2st
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'PUT' }), 'current should be third request')
+        t.deepEqual(responses, ['POST', 'GET'])
+        break
+      case 3:
+        // 1st was resent, receiving 3st
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'current should be first request')
+        t.deepEqual(responses, ['POST', 'GET', 'PUT'])
+        break
+      case 4:
+        // 2st was resent, receiving 1st
+        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'GET' }), 'current should be second request')
+        t.deepEqual(responses, ['POST', 'GET', 'PUT', 'POST'])
+        client.destroy()
+        t.end()
+        break
     }
   })
 })
