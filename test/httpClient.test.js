@@ -546,8 +546,11 @@ test('client exposes response bodies and statuses', (t) => {
   opts.method = 'POST'
   opts.requests = [
     {
-      body: 'hello world again',
+      body: 'hello world!',
       onResponse: (status, body) => responses.push({ status, body })
+    },
+    {
+      body: 'hello world again'
     },
     {
       method: 'GET',
@@ -563,19 +566,47 @@ test('client exposes response bodies and statuses', (t) => {
     switch (number) {
       case 1:
         t.same(client.getRequestBuffer(),
-          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
+          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world!`),
           'first request')
+        t.deepEqual(responses, [{
+          status: 200,
+          body: 'hello!'
+        }])
         break
       case 2:
         t.same(client.getRequestBuffer(),
-          Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
+          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 17\r\n\r\nhello world again`),
           'second request')
+        t.deepEqual(responses, [{
+          status: 200,
+          body: 'hello!'
+        }])
+        break
+      case 3:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`),
+          'third request')
         t.deepEqual(responses, [{
           status: 200,
           body: 'hello!'
         }, {
           status: 200,
           body: 'world!'
+        }])
+        break
+      case 4:
+        t.same(client.getRequestBuffer(),
+          Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world!`),
+          'first request')
+        t.deepEqual(responses, [{
+          status: 200,
+          body: 'hello!'
+        }, {
+          status: 200,
+          body: 'world!'
+        }, {
+          status: 200,
+          body: 'hello!'
         }])
         client.destroy()
         t.end()
