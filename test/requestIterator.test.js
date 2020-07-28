@@ -173,7 +173,7 @@ test('request iterator should not replace any [<id>] tags with generated IDs whe
 })
 
 test('request iterator should replace all [<id>] tags with generated IDs when calling move with idReplacement enabled', (t) => {
-  t.plan(2)
+  t.plan(4)
 
   const opts = server.address()
   opts.method = 'POST'
@@ -182,10 +182,16 @@ test('request iterator should replace all [<id>] tags with generated IDs when ca
   opts.idReplacement = true
 
   const iterator = new RequestIterator(opts)
-  const result = iterator.currentRequest.requestBuffer.toString().trim()
+  const first = iterator.currentRequest.requestBuffer.toString().trim()
 
-  t.equal(result.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
-  t.equal(result.slice(-1), '0', 'Generated ID should end with request number')
+  t.equal(first.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
+  t.equal(first.slice(-1), '0', 'Generated ID should end with request number')
+
+  iterator.nextRequest()
+  const second = iterator.currentRequest.requestBuffer.toString().trim()
+
+  t.equal(second.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
+  t.equal(second.slice(-1), '1', 'Generated ID should end with a unique request number')
 })
 
 test('request iterator should invoke onResponse callback when set', (t) => {
