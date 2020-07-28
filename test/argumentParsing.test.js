@@ -147,3 +147,14 @@ test('parse argument not correctly formatted header', (t) => {
     ])
   }, /An HTTP header was not correctly formatted/)
 })
+
+test('parse argument with multiple url', (t) => {
+  t.plan(2)
+  var args = Autocannon.parseArguments([
+    'localhost/foo/bar',
+    'http://localhost/baz/qux'
+  ])
+
+  t.equal(args.url[0], 'http://localhost/foo/bar')
+  t.equal(args.url[1], 'http://localhost/baz/qux')
+})
