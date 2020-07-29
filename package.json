@@ -53,7 +53,7 @@
     "cross-argv": "^1.0.0",
     "form-data": "^3.0.0",
     "has-async-hooks": "^1.0.0",
-    "hdr-histogram-js": "^1.1.4",
+    "hdr-histogram-js": "^2.0.0",
     "hdr-histogram-percentiles-obj": "^2.0.0",
     "http-parser-js": "^0.5.2",
     "hyperid": "^2.0.3",
