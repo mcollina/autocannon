@@ -221,7 +221,7 @@ async function foo () {
 Start autocannon against the given target.
 
 * `opts`: Configuration options for the autocannon instance. This can have the following attributes. _REQUIRED_.
-    * `url`: The given target. Can be http or https. _REQUIRED_.
+    * `url`: The given target. Can be http or https. More than one url is allowed, but it is recommended that the number of connections be an integer multiple of the url. _REQUIRED_.
     * `socketPath`: A path to a Unix Domain Socket or a Windows Named Pipe. A `url` is still required in order to send the correct Host header and path. _OPTIONAL_.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. Can be a [timestring](https://www.npmjs.com/package/timestring). _OPTIONAL_ default: `10`.
