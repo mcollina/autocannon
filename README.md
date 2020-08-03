@@ -91,6 +91,8 @@ Available options:
         connection rate will take precedence if both are set.
         NOTE: if using rate limiting and a very large rate is entered which cannot be met,
               Autocannon will do as many requests as possible per second.
+  -C/--correctCoordinatedOmission
+        Correct coordinated omission issue. Can be used in conjunction with 'connectionRate' or 'overallRate'.
   -D/--reconnectRate NUM
         Some number of requests to make before resetting a connections connection to the
         server.
@@ -239,6 +241,7 @@ Start autocannon against the given target.
     * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
     * `connectionRate`: A `Number` stating the rate of requests to make per second from each individual connection. No rate limiting by default. _OPTIONAL_
     * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `connectionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
+    * `correctCoordinatedOmission`: A `Boolean` which allows to correct coordinated omission issue. Can't work if no rate of requests has been specified (`connectionRate` or `overallRate`). _OPTIONAL_ default: `false`.
     * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. Check the samples folder for an example of how this might be used. _OPTIONAL_. Contained objects can have these attributes:
        * `body`: When present, will override `opts.body`. _OPTIONAL_.
