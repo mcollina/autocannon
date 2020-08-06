@@ -90,7 +90,11 @@ Available options:
         The max number of requests to make per second from an all connections.
         connection rate will take precedence if both are set.
         NOTE: if using rate limiting and a very large rate is entered which cannot be met,
-              Autocannon will do as many requests as possible per second.
+              Autocannon will do as many requests as possible per second. Also latency data will be corrected in order to compensate the effects of coordinated omission issue. If you are not familiar with the coordinated omission issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html) or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
+  -C/--ignoreCoordinatedOmission
+        Ignore coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'. 
+        NOTE: it is not recommanded to enable this option. 
+              When the request rate cannot be met because the server is too slow, many request latencies might be missing and Autocannon might report a misleading latency distribution.
   -D/--reconnectRate NUM
         Some number of requests to make before resetting a connections connection to the
         server.
@@ -239,6 +243,7 @@ Start autocannon against the given target.
     * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
     * `connectionRate`: A `Number` stating the rate of requests to make per second from each individual connection. No rate limiting by default. _OPTIONAL_
     * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `connectionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
+    * `ignoreCoordinatedOmission`: A `Boolean` which disable the correction of latencies to compensate the coordinated omission issue. Does not make sense when no rate of requests has been specified (`connectionRate` or `overallRate`). _OPTIONAL_ default: `false`.
     * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. Check the samples folder for an example of how this might be used. _OPTIONAL_. Contained objects can have these attributes:
        * `body`: When present, will override `opts.body`. _OPTIONAL_.

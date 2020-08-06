@@ -41,3 +41,32 @@ test('run should only send the expected number of requests per second', (t) => {
     t.equal(res.requests.average, 10, 'should have sent 10 requests per second on average')
   })
 })
+
+test('run should compensate for coordinated omission when the expected number of requests per second is too high', (t) => {
+  t.plan(2)
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 100,
+    connectionRate: 1000,
+    duration: 1
+  }, (err, res) => {
+    t.error(err)
+    t.notEqual(res.latency.totalCount, res.requests.total, 'should have recorded additionnal latencies')
+  })
+})
+
+test('run should not compensate for coordinated omission when this feature is disabled', (t) => {
+  t.plan(2)
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 100,
+    connectionRate: 1000,
+    ignoreCoordinatedOmission: true,
+    duration: 1
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.latency.totalCount, res.requests.total, 'should not have recorded additionnal latencies')
+  })
+})
