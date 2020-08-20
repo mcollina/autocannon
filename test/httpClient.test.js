@@ -96,6 +96,61 @@ test('client calls a tls server with SNI servername twice', (t) => {
   })
 })
 
+test('client uses SNI servername from URL hostname by default', (t) => {
+  t.plan(4)
+
+  var opts = tlsServer.address()
+  opts.protocol = 'https:'
+  opts.hostname = 'localhost'
+  const client = new Client(opts)
+  let count = 0
+
+  client.on('headers', (response) => {
+    t.equal(response.statusCode, 200, 'status code matches')
+    t.deepEqual(response.headers, ['X-servername', opts.hostname, 'Content-Length', '0'])
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+})
+
+test('client prefers SNI servername from opts over URL hostname', (t) => {
+  t.plan(4)
+
+  var opts = tlsServer.address()
+  opts.protocol = 'https:'
+  opts.hostname = 'localhost'
+  opts.servername = 'example.com'
+  const client = new Client(opts)
+  let count = 0
+
+  client.on('headers', (response) => {
+    t.equal(response.statusCode, 200, 'status code matches')
+    t.deepEqual(response.headers, ['X-servername', opts.servername, 'Content-Length', '0'])
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+})
+
+test('client ignores IP address in hostname-derived SNI servername', (t) => {
+  t.plan(4)
+
+  var opts = tlsServer.address()
+  opts.protocol = 'https:'
+  opts.hostname = opts.address
+  const client = new Client(opts)
+  let count = 0
+
+  client.on('headers', (response) => {
+    t.equal(response.statusCode, 200, 'status code matches')
+    t.deepEqual(response.headers, ['X-servername', '', 'Content-Length', '0'])
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+})
+
 test('http client automatically reconnects', (t) => {
   t.plan(4)
 

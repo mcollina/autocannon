@@ -74,7 +74,7 @@ Available options:
   -f/--forever
         Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -s/--servername
-        Server name for the SNI (Server Name Indication) TLS extension.
+        Server name for the SNI (Server Name Indication) TLS extension. Defaults to the hostname of the URL when it is not an IP address.
   -x/--excludeErrorStats
         Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
   -E/--expectBody EXPECTED

@@ -109,7 +109,7 @@ Available options:
   -f/--forever
         Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -s/--servername
-        Server name for the SNI (Server Name Indication) TLS extension.
+        Server name for the SNI (Server Name Indication) TLS extension. Defaults to the hostname of the URL when it is not an IP address.
   -x/--excludeErrorStats
         Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
   -E/--expectBody EXPECTED
@@ -254,7 +254,7 @@ Start autocannon against the given target.
        * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) and `context` (Object) parameters. _OPTIONAL_.
     * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
-    * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: `undefined`.
+    * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: Defaults to the hostname of the URL when it is not an IP address.
     * `excludeErrorStats`: A `Boolean` which allows you to disable tracking non 2xx code responses in latency and bytes per second calculations. _OPTIONAL_ default: `false`.
     * `expectBody`: A `String` representing the expected response body. Each request whose response body is not equal to `expectBody`is counted in `mismatches`. If enabled, mismatches count towards bailout. _OPTIONAL_  
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.

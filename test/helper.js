@@ -96,20 +96,11 @@ function startTlsServer () {
   const key = fs.readFileSync(path.join(__dirname, '/key.pem'))
   const cert = fs.readFileSync(path.join(__dirname, '/cert.pem'))
   const passphrase = 'test'
-  var servername = ''
 
   const options = {
     key,
     cert,
-    passphrase,
-    SNICallback: function (name, cb) {
-      servername = name
-      cb(null, tls.createSecureContext({
-        key,
-        cert,
-        passphrase
-      }))
-    }
+    passphrase
   }
 
   const server = tls.createServer(options, handle)
@@ -117,6 +108,7 @@ function startTlsServer () {
   server.listen(0)
 
   function handle (socket) {
+    const servername = socket.servername || ''
     socket.on('data', function (data) {
       // Assume this is a http get request and send back the servername in an otherwise empty reponse.
       socket.write('HTTP/1.1 200 OK\nX-servername: ' + servername + '\nContent-Length: 0\n\n')
