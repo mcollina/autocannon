@@ -151,6 +151,24 @@ test('client ignores IP address in hostname-derived SNI servername', (t) => {
   })
 })
 
+test('client ignores falsy SNI servername', (t) => {
+  t.plan(4)
+
+  var opts = tlsServer.address()
+  opts.protocol = 'https:'
+  opts.servername = ''
+  const client = new Client(opts)
+  let count = 0
+
+  client.on('headers', (response) => {
+    t.equal(response.statusCode, 200, 'status code matches')
+    t.deepEqual(response.headers, ['X-servername', '', 'Content-Length', '0'])
+    if (count++ > 0) {
+      client.destroy()
+    }
+  })
+})
+
 test('http client automatically reconnects', (t) => {
   t.plan(4)
 
