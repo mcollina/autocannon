@@ -250,7 +250,7 @@ Start autocannon against the given target.
        * `headers`: When present, will override `opts.headers`. _OPTIONAL_.
        * `method`: When present, will override `opts.method`. _OPTIONAL_.
        * `path`: When present, will override `opts.path`. _OPTIONAL_.
-       * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. _OPTIONAL_.
+       * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. When it returns a falsey value, autocannon will restart from first request. _OPTIONAL_.
        * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) and `context` (Object) parameters. _OPTIONAL_.
     * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`

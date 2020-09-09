@@ -274,6 +274,51 @@ test('request iterator should properly mutate requests if a setupRequest functio
   t.same(iterator.currentRequest.requestBuffer, request6Res, 'request was okay')
 })
 
+test('request iterator should reset when setupRequest returns nothing', (t) => {
+  t.plan(6)
+
+  const opts = server.address()
+  opts.method = 'POST'
+
+  let i = 0
+
+  opts.requests = [
+    {
+      body: 'hello world',
+      setupRequest: req => {
+        req.body += i++
+        return i > 2 ? null : req
+      }
+    },
+    {
+      method: 'GET'
+    }
+  ]
+
+  const request1Res = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world0`
+  const request2Res = `GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`
+  const request3Res = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world1`
+
+  const iterator = new RequestIterator(opts)
+  // first POST, i becomes 1
+  t.same(iterator.currentRequest.requestBuffer.toString(), request1Res, 'request 1 was okay')
+  iterator.nextRequest()
+  // first GET, is is 1
+  t.same(iterator.currentRequest.requestBuffer.toString(), request2Res, 'request 2 was okay')
+  iterator.nextRequest()
+  // second POST, is becomes 2
+  t.same(iterator.currentRequest.requestBuffer.toString(), request3Res, 'request 3 was okay')
+  iterator.nextRequest()
+  // second GET, is is 2
+  t.same(iterator.currentRequest.requestBuffer.toString(), request2Res, 'request 4 was okay')
+  iterator.nextRequest()
+  // third POST: because is was 2, pipeline is reset. no GET, and we reuse latest POST
+  t.same(iterator.currentRequest.requestBuffer.toString(), request3Res, 'request 5 was okay')
+  iterator.nextRequest()
+  // first POST: is is higher than 2, we keep reseting pipeline, and reusing request body
+  t.same(iterator.currentRequest.requestBuffer.toString(), request3Res, 'request 6 was okay')
+})
+
 test('request iterator should maintain context while looping on requests', (t) => {
   t.plan(4)
 
