@@ -342,6 +342,7 @@ The results object emitted by `done` and passed to the `autocannon()` callback h
 * `connections`: The amount of connections used (value of `opts.connections`).
 * `pipelining`: The number of pipelined requests used per connection (value of `opts.pipelining`).
 * `non2xx`: The number of non-2xx response status codes received.
+* `resets`: How many times the requests pipeline was reset due to `setupRequest` returning a falsey value.
 
 The histogram objects for `requests`, `latency` and `throughput` are [hdr-histogram-percentiles-obj](https://github.com/thekemkid/hdr-histogram-percentiles-obj) objects and have this shape:
 
@@ -371,6 +372,7 @@ The events a `Client` can emit are listed here:
     * `statusCode`: The http status code of the response.
     * `resBytes`: The response byte length.
     * `responseTime`: The time taken to get a response for the initiating the request.
+* `reset`: Emitted when the requests pipeline was reset due to `setupRequest` returning a falsey value.
 
 Example using the autocannon events and the client API and events:
 
