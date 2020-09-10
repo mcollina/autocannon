@@ -61,6 +61,7 @@ test('run', (t) => {
 
     t.equal(result.errors, 0, 'no errors')
     t.equal(result.mismatches, 0, 'no mismatches')
+    t.equal(result.resets, 0, 'no resets')
 
     t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -593,6 +594,7 @@ test('run promise', (t) => {
     t.ok(result.finish, 'finish time exists')
 
     t.equal(result.errors, 0, 'no errors')
+    t.equal(result.resets, 0, 'no resets')
 
     t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -671,5 +673,27 @@ test('should handle duration in string format', t => {
     title: 'title321'
   }).then((result) => {
     t.pass()
+  })
+})
+
+test('should count resets', t => {
+  t.plan(1)
+  const server = helper.startServer()
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 1,
+    amount: 10,
+    requests: [
+      { method: 'GET' },
+      {
+        method: 'GET',
+        // falsey result will reset
+        setupRequest: () => {}
+      },
+      { method: 'GET' }
+    ]
+  }).then((result) => {
+    t.is(result.resets, 5)
+    t.end()
   })
 })

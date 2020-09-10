@@ -67,3 +67,30 @@ test('should log mismatches', t => {
   })
   t.pass()
 })
+
+test('should log resets', t => {
+  const server = helper.startServer()
+  const instance = autocannon({
+    url: `http://localhost:${server.address().port}`,
+    connections: 1,
+    amount: 10,
+    requests: [
+      { method: 'GET' },
+      {
+        method: 'GET',
+        // falsey result will reset
+        setupRequest: () => {}
+      },
+      { method: 'GET' }
+    ]
+  }, console.log)
+
+  setTimeout(() => {
+    instance.stop()
+    t.end()
+  }, 2000)
+  autocannon.track(instance, {
+    renderProgressBar: true
+  })
+  t.pass()
+})

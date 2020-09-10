@@ -593,6 +593,39 @@ test('client should have 2 different requests it iterates over', (t) => {
   })
 })
 
+test('client should emit reset when request iterator has reset', (t) => {
+  t.plan(1)
+  const server = helper.startServer()
+  const opts = server.address()
+
+  const requests = [
+    {
+      method: 'POST',
+      body: 'hello world again'
+    },
+    {
+      method: 'POST',
+      body: 'modified',
+      // falsey result will reset
+      setupRequest: () => {}
+    },
+    {
+      method: 'POST',
+      body: 'never used'
+    }
+  ]
+
+  const client = new Client(opts)
+  client.setRequests(requests)
+  client.on('reset', () => {
+    client.destroy()
+    t.end()
+  })
+  client.on('response', () => {
+    t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[0] }), 'first request was okay')
+  })
+})
+
 test('client exposes response bodies and statuses', (t) => {
   const server = helper.startServer({
     body: ({ method }) => method === 'POST' ? 'hello!' : 'world!'
