@@ -626,6 +626,20 @@ test('client should emit reset when request iterator has reset', (t) => {
   })
 })
 
+test('client should stop when first setupRequest() fails', (t) => {
+  t.plan(1)
+  const server = helper.startServer()
+  const opts = server.address()
+
+  const client = new Client(opts)
+  t.throws(
+    () => client.setRequests([{ method: 'GET', setupRequest: () => {} }]),
+    'First setupRequest() failed did not returned valid request. Stopping'
+  )
+  client.destroy()
+  t.end()
+})
+
 test('client exposes response bodies and statuses', (t) => {
   const server = helper.startServer({
     body: ({ method }) => method === 'POST' ? 'hello!' : 'world!'

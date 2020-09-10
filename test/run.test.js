@@ -685,15 +685,15 @@ test('should count resets', t => {
     amount: 10,
     requests: [
       { method: 'GET' },
+      { method: 'PUT' },
       {
-        method: 'GET',
+        method: 'POST',
         // falsey result will reset
         setupRequest: () => {}
-      },
-      { method: 'GET' }
+      }
     ]
   }).then((result) => {
-    t.is(result.resets, 5)
+    t.is(result.resets, 4)
     t.end()
   })
 })

@@ -275,7 +275,7 @@ test('request iterator should properly mutate requests if a setupRequest functio
 })
 
 test('request iterator should reset when setupRequest returns nothing', (t) => {
-  t.plan(6)
+  t.plan(12)
 
   const opts = server.address()
   opts.method = 'POST'
@@ -283,40 +283,60 @@ test('request iterator should reset when setupRequest returns nothing', (t) => {
   let i = 0
 
   opts.requests = [
+    { method: 'GET' },
     {
       body: 'hello world',
-      setupRequest: req => {
-        req.body += i++
-        return i > 2 ? null : req
-      }
+      setupRequest: req => ++i >= 2 ? null : req
     },
-    {
-      method: 'GET'
-    }
+    { method: 'PUT' }
   ]
 
-  const request1Res = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world0`
-  const request2Res = `GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`
-  const request3Res = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 12\r\n\r\nhello world1`
+  const requestGET = `GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`
+  const requestPUT = `PUT / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`
+  const requestPOST = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`
 
   const iterator = new RequestIterator(opts)
+  t.is(iterator.reseted, false)
+  // first GET, i is 0
+  t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 1 was okay')
+  iterator.nextRequest()
   // first POST, i becomes 1
-  t.same(iterator.currentRequest.requestBuffer.toString(), request1Res, 'request 1 was okay')
+  t.is(iterator.reseted, false)
+  t.same(iterator.currentRequest.requestBuffer.toString(), requestPOST, 'request 2 was okay')
   iterator.nextRequest()
-  // first GET, is is 1
-  t.same(iterator.currentRequest.requestBuffer.toString(), request2Res, 'request 2 was okay')
+  // first PUT, i is 1
+  t.is(iterator.reseted, false)
+  t.same(iterator.currentRequest.requestBuffer.toString(), requestPUT, 'request 3 was okay')
   iterator.nextRequest()
-  // second POST, is becomes 2
-  t.same(iterator.currentRequest.requestBuffer.toString(), request3Res, 'request 3 was okay')
+  // second GET, i is 1
+  t.is(iterator.reseted, false)
+  t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 4 was okay')
   iterator.nextRequest()
-  // second GET, is is 2
-  t.same(iterator.currentRequest.requestBuffer.toString(), request2Res, 'request 4 was okay')
+  // second POST, i becomes 2, pipeline is reset
+  t.is(iterator.reseted, true)
+  t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 5 was okay')
   iterator.nextRequest()
-  // third POST: because is was 2, pipeline is reset. no GET, and we reuse latest POST
-  t.same(iterator.currentRequest.requestBuffer.toString(), request3Res, 'request 5 was okay')
-  iterator.nextRequest()
-  // first POST: is is higher than 2, we keep reseting pipeline, and reusing request body
-  t.same(iterator.currentRequest.requestBuffer.toString(), request3Res, 'request 6 was okay')
+  // third POST, i becomes 3, pipeline is reset
+  t.is(iterator.reseted, true)
+  t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 6 was okay')
+})
+
+test('request iterator should throw when first setupRequest returns nothing', (t) => {
+  t.plan(4)
+
+  const opts = server.address()
+  opts.method = 'POST'
+
+  let i = 0
+  opts.requests = [{ body: 'hello world', setupRequest: req => ++i > 1 ? null : req }]
+  const requestPOST = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`
+
+  const iterator = new RequestIterator(opts)
+  t.is(iterator.reseted, false)
+  // first POST, i is 0
+  t.same(iterator.currentRequest.requestBuffer.toString(), requestPOST, 'request 1 was okay')
+  t.throws(() => iterator.nextRequest(), 'First setupRequest() failed did not returned valid request. Stopping')
+  t.is(iterator.reseted, false)
 })
 
 test('request iterator should maintain context while looping on requests', (t) => {
