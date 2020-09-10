@@ -296,28 +296,28 @@ test('request iterator should reset when setupRequest returns nothing', (t) => {
   const requestPOST = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`
 
   const iterator = new RequestIterator(opts)
-  t.is(iterator.reseted, false)
+  t.is(iterator.resetted, false)
   // first GET, i is 0
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 1 was okay')
   iterator.nextRequest()
   // first POST, i becomes 1
-  t.is(iterator.reseted, false)
+  t.is(iterator.resetted, false)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestPOST, 'request 2 was okay')
   iterator.nextRequest()
   // first PUT, i is 1
-  t.is(iterator.reseted, false)
+  t.is(iterator.resetted, false)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestPUT, 'request 3 was okay')
   iterator.nextRequest()
   // second GET, i is 1
-  t.is(iterator.reseted, false)
+  t.is(iterator.resetted, false)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 4 was okay')
   iterator.nextRequest()
   // second POST, i becomes 2, pipeline is reset
-  t.is(iterator.reseted, true)
+  t.is(iterator.resetted, true)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 5 was okay')
   iterator.nextRequest()
   // third POST, i becomes 3, pipeline is reset
-  t.is(iterator.reseted, true)
+  t.is(iterator.resetted, true)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 6 was okay')
 })
 
@@ -332,11 +332,11 @@ test('request iterator should throw when first setupRequest returns nothing', (t
   const requestPOST = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`
 
   const iterator = new RequestIterator(opts)
-  t.is(iterator.reseted, false)
+  t.is(iterator.resetted, false)
   // first POST, i is 0
   t.same(iterator.currentRequest.requestBuffer.toString(), requestPOST, 'request 1 was okay')
   t.throws(() => iterator.nextRequest(), 'First setupRequest() failed did not returned valid request. Stopping')
-  t.is(iterator.reseted, false)
+  t.is(iterator.resetted, false)
 })
 
 test('request iterator should maintain context while looping on requests', (t) => {
