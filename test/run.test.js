@@ -697,3 +697,87 @@ test('should count resets', t => {
     t.end()
   })
 })
+
+test('should parse HAR file', (t) => {
+  t.plan(6)
+
+  run({
+    url: 'https://httpbin.org',
+    duration: 1,
+    har: require.resolve('./fixtures/httpbin-get.har')
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    t.ok(res['2xx'] > 0)
+    t.equal(res.url, 'https://httpbin.org')
+    t.end()
+  })
+})
+
+test('should use HAR file with additional headers', (t) => {
+  t.plan(6 + 2) // header check done as many times as sent requests
+
+  run({
+    url: 'https://httpbin.org',
+    connections: 1,
+    amount: 2,
+    headers: { 'X-CUSTOM': 'my-own-value' },
+    har: require.resolve('./fixtures/httpbin-simple-get.har')
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    t.ok(res['2xx'] > 0)
+    t.equal(res.url, 'https://httpbin.org')
+    t.end()
+  }).on('response', (client) => {
+    t.equal(client.requestIterator.currentRequest.headers['X-CUSTOM'], 'my-own-value', 'X-CUSTOM was not sent to server')
+  })
+})
+
+test('should not overide method or body with HAR file', (t) => {
+  t.plan(6 + 4) // method and body checks done as many times as sent requests
+
+  run({
+    url: 'https://httpbin.org',
+    connections: 1,
+    amount: 2,
+    method: 'POST',
+    body: 'my-custom-body',
+    har: require.resolve('./fixtures/httpbin-simple-get.har')
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    t.ok(res['2xx'] > 0)
+    t.equal(res.url, 'https://httpbin.org')
+    t.end()
+  }).on('response', (client) => {
+    t.equal(client.requestIterator.currentRequest.method, 'GET', 'Method was not mean to be overidden')
+    t.equal(client.requestIterator.currentRequest.body, undefined, 'Body was not mean to be overidden')
+  })
+})
+
+test('should only keep requests from HAR file for the proper domain', (t) => {
+  t.plan(6)
+
+  run({
+    url: 'https://httpbin.org',
+    connections: 1,
+    amount: 4,
+    har: require.resolve('./fixtures/multi-domains.har')
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    // if the github request is fired, it'll fail with 4xx status
+    t.equal(res['2xx'], 4)
+    t.equal(res.url, 'https://httpbin.org')
+    t.end()
+  })
+})
