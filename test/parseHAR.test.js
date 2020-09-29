@@ -56,7 +56,7 @@ test('should report HAR with empty entries', (t) => {
   t.end()
 })
 
-test('should parse and return GET entries', (t) => {
+test('should synchronously parse and return GET entries', (t) => {
   t.plan(1)
 
   t.strictSame(parseHARSync(require.resolve('./fixtures/httpbin-get.har')), [{
@@ -90,6 +90,45 @@ test('should parse and return GET entries', (t) => {
     }
   }])
   t.end()
+})
+
+test('should asynchronously parse and return GET entries', (t) => {
+  t.plan(2)
+
+  parseHAR(require.resolve('./fixtures/httpbin-get.har'), (err, data) => {
+    t.error(err)
+    t.strictSame(data, [{
+      method: 'GET',
+      origin: 'https://httpbin.org',
+      path: '/get',
+      headers: {
+        Host: 'httpbin.org',
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0',
+        Accept: '*/*',
+        'Accept-Language': 'fr,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        Referer: 'https://httpbin.org/',
+        DNT: '1',
+        Connection: 'keep-alive'
+      }
+    }, {
+      method: 'GET',
+      origin: 'https://httpbin.org',
+      path: '/get?from=10&size=20&sort=+name',
+      headers: {
+        Host: 'httpbin.org',
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0',
+        Accept: '*/*',
+        'Accept-Language': 'fr,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br',
+        Referer: 'https://httpbin.org/',
+        DNT: '1',
+        Connection: 'keep-alive',
+        TE: 'Trailers'
+      }
+    }])
+    t.end()
+  })
 })
 
 test('should parse and return POST entries', (t) => {
