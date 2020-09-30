@@ -178,7 +178,7 @@
             },
             {
               "name": "Referer",
-              "value": "https://httpbin.org/"
+              "value": "https://github.com/"
             },
             {
               "name": "Content-Type",
@@ -186,7 +186,7 @@
             },
             {
               "name": "Origin",
-              "value": "https://httpbin.org"
+              "value": "https://github.com"
             },
             {
               "name": "Content-Length",

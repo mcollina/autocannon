@@ -156,6 +156,14 @@ function parseArguments (argvs) {
     }, {})
   }
 
+  if (argv.har) {
+    try {
+      argv.har = JSON.parse(fs.readFileSync(argv.har))
+    } catch (err) {
+      throw new Error(`Failed to load HAR file content: ${err.message}`)
+    }
+  }
+
   return argv
 }
 

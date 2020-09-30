@@ -181,6 +181,14 @@ function startBasicAuthServer () {
   return server
 }
 
+function customizeHAR (fixturePath, replaced, domain) {
+  const har = JSON.parse(JSON.stringify(require(fixturePath)))
+  for (const entry of har.log.entries) {
+    entry.request.url = entry.request.url.replace(replaced, domain)
+  }
+  return har
+}
+
 module.exports.startServer = startServer
 module.exports.startTimeoutServer = startTimeoutServer
 module.exports.startSocketDestroyingServer = startSocketDestroyingServer
@@ -189,5 +197,6 @@ module.exports.startTrailerServer = startTrailerServer
 module.exports.startTlsServer = startTlsServer
 module.exports.startMultipartServer = startMultipartServer
 module.exports.startBasicAuthServer = startBasicAuthServer
+module.exports.customizeHAR = customizeHAR
 
 function noop () {}
