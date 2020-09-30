@@ -130,7 +130,8 @@ test('should throw on unknown HAR file', (t) => {
     .pipe(split())
     .on('data', line => lines.push(line))
     .on('end', () => {
-      t.ok(lines.join('\n').includes('Error: Failed to load HAR file content: ENOENT'), `Unexpected output:\n${lines.join('\n')}`)
+      const output = lines.join('\n')
+      t.ok(output.includes('Error: Failed to load HAR file content: ENOENT'), `Unexpected output:\n${output}`)
       t.end()
     })
 })
@@ -158,7 +159,40 @@ test('should throw on invalid HAR file', (t) => {
     .pipe(split())
     .on('data', line => lines.push(line))
     .on('end', () => {
-      t.ok(lines.join('\n').includes('Error: Failed to load HAR file content: Unexpected token'), `Unexpected output:\n${lines.join('\n')}`)
+      const output = lines.join('\n')
+      t.ok(output.includes('Error: Failed to load HAR file content: Unexpected token'), `Unexpected output:\n${output}`)
+      t.end()
+    })
+})
+
+test('should write warning about unused HAR requests', (t) => {
+  t.plan(1)
+
+  const server = helper.startServer()
+  const url = `http://localhost:${server.address().port}`
+  const harPath = path.join(os.tmpdir(), 'autocannon-test.har')
+  const har = helper.customizeHAR('./fixtures/multi-domains.json', 'https://httpbin.org', url)
+  fs.writeFileSync(harPath, JSON.stringify(har))
+
+  const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-a', 4, '-c', 1, '--har', harPath, url], {
+    cwd: __dirname,
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false
+  })
+
+  t.tearDown(() => {
+    child.kill()
+  })
+
+  const lines = []
+  child
+    .stderr
+    .pipe(split())
+    .on('data', line => lines.push(line))
+    .on('end', () => {
+      const output = lines.join('\n')
+      t.ok(output.includes(`Warning: skipping requests to 'https://github.com' as the target is ${url}`), `Unexpected output:\n${output}`)
       t.end()
     })
 })

@@ -16,6 +16,7 @@ const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
 const { checkURL, ofURL } = require('./lib/url')
+const { parseHAR } = require('./lib/parseHAR')
 
 if (typeof URL !== 'function') {
   console.error('autocannon requires the WHATWG URL API, but it is not available. Please upgrade to Node 6.13+.')
@@ -159,6 +160,14 @@ function parseArguments (argvs) {
   if (argv.har) {
     try {
       argv.har = JSON.parse(fs.readFileSync(argv.har))
+      // warn users about skipped HAR requests
+      const requestsByOrigin = parseHAR(argv.har)
+      const allowed = ofURL(argv.url, true).map(url => new URL(url).origin)
+      for (const [origin] of requestsByOrigin) {
+        if (!allowed.includes(origin)) {
+          console.error(`Warning: skipping requests to '${origin}' as the target is ${allowed.join(', ')}`)
+        }
+      }
     } catch (err) {
       throw new Error(`Failed to load HAR file content: ${err.message}`)
     }

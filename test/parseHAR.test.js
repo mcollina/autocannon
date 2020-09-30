@@ -99,6 +99,40 @@ test('should parse and return GET entries', (t) => {
   t.end()
 })
 
+test('should throw on HAR with invalid entries', (t) => {
+  t.plan(2)
+
+  t.throws(() => parseHAR({
+    log: {
+      entries: ['invalid']
+    }
+  }), /Could not parse HAR content: invalid request in entry #1/)
+  t.throws(() => parseHAR({
+    log: {
+      entries: [{ request: { headers: [], url: 'http://localhost' } }, { request: null }]
+    }
+  }), /Could not parse HAR content: invalid request in entry #2/)
+
+  t.end()
+})
+
+test('should throw on HAR with invalid headers', (t) => {
+  t.plan(2)
+  const url = 'http://localhost'
+
+  t.throws(() => parseHAR({
+    log: {
+      entries: [{ request: { headers: [], url } }, { request: { headers: ['foo'], url } }]
+    }
+  }), /Could not parse HAR content: invalid name or value in header #1 of entry #2/)
+  t.throws(() => parseHAR({
+    log: {
+      entries: [{ request: { headers: null } }]
+    }
+  }), /Could not parse HAR content: invalid headers array in entry #1/)
+  t.end()
+})
+
 test('should parse and return POST entries', (t) => {
   t.plan(1)
 
