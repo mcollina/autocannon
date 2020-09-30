@@ -697,3 +697,132 @@ test('should count resets', t => {
     t.end()
   })
 })
+
+test('should use request from HAR', (t) => {
+  t.plan(6)
+  const server = helper.startServer()
+  const url = `http://localhost:${server.address().port}`
+  const har = helper.customizeHAR('./fixtures/httpbin-get.json', 'https://httpbin.org', url)
+
+  run({
+    url,
+    duration: 1,
+    har
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    t.ok(res['2xx'] > 0)
+    t.equal(res.url, url)
+    t.end()
+  })
+})
+
+test('should use extend headers of HAR requests', (t) => {
+  t.plan(6 + 2) // header check done as many times as sent requests
+  const server = helper.startServer()
+  const url = `http://localhost:${server.address().port}`
+  const har = helper.customizeHAR('./fixtures/httpbin-simple-get.json', 'https://httpbin.org', url)
+
+  run({
+    url,
+    connections: 1,
+    amount: 2,
+    headers: { 'X-CUSTOM': 'my-own-value' },
+    har
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    t.ok(res['2xx'] > 0)
+    t.equal(res.url, url)
+    t.end()
+  }).on('response', (client) => {
+    t.equal(client.requestIterator.currentRequest.headers['X-CUSTOM'], 'my-own-value', 'X-CUSTOM was not sent to server')
+  })
+})
+
+test('should not override method or body of HAR requests', (t) => {
+  t.plan(6 + 4) // method and body checks done as many times as sent requests
+  const server = helper.startServer()
+  const url = `http://localhost:${server.address().port}`
+  const har = helper.customizeHAR('./fixtures/httpbin-simple-get.json', 'https://httpbin.org', url)
+
+  run({
+    url,
+    connections: 1,
+    amount: 2,
+    method: 'POST',
+    body: 'my-custom-body',
+    har
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    t.ok(res['2xx'] > 0)
+    t.equal(res.url, url)
+    t.end()
+  }).on('response', (client) => {
+    t.equal(client.requestIterator.currentRequest.method, 'GET', 'Method was not mean to be overidden')
+    t.equal(client.requestIterator.currentRequest.body, undefined, 'Body was not mean to be overidden')
+  })
+})
+
+test('should ignore HAR requests targetting a different domain', (t) => {
+  t.plan(6)
+  const server = helper.startServer()
+  const url = `http://localhost:${server.address().port}`
+  const har = helper.customizeHAR('./fixtures/multi-domains.json', 'https://httpbin.org', url)
+
+  run({
+    url,
+    connections: 1,
+    amount: 4,
+    har
+  }, (err, res) => {
+    t.error(err)
+    t.ok(res, 'results should exist')
+    t.equal(res.errors, 0)
+    t.equal(res.timeouts, 0)
+    // if the github request is fired, it'll fail with 4xx status
+    t.equal(res['2xx'], 4)
+    t.equal(res.url, url)
+    t.end()
+  })
+})
+
+test('should throw on invalid HAR', (t) => {
+  t.plan(1)
+
+  run({
+    url: `http://localhost:${server.address().port}`,
+    connections: 1,
+    amount: 4,
+    har: {
+      log: {
+        version: '1.2',
+        creator: {
+          name: 'Firefox',
+          version: '80.0.1'
+        },
+        pages: [
+          {
+            startedDateTime: '2020-09-28T16:43:28.987+02:00',
+            id: 'page_1',
+            title: 'mcollina/autocannon: fast HTTP/1.1 benchmarking tool written in Node.js',
+            pageTimings: {
+              onContentLoad: 1234,
+              onLoad: 1952
+            }
+          }
+        ]
+      }
+    }
+  }, (err, res) => {
+    t.match(err, /Could not parse HAR content: no entries found/)
+    t.end()
+  })
+})

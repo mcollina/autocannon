@@ -78,6 +78,10 @@ Available options:
         The body of the request. See '-b/body' for more details.
   -H/--headers K=V
         The request headers.
+  --har FILE
+        When provided, Autocannon will use requests from the HAR file. 
+        CAUTION: you have to to specify one (or more) domain using URL option: only the HAR requests to the same domains will be considered.
+        NOTE: you can still add extra headers with -H/--headers but -m/--method, -F/--form, -i/--input -b/--body will be ignored.
   -B/--bailout NUM
         The number of failures before initiating a bailout.
   -M/--maxConnectionRequests NUM
@@ -246,12 +250,13 @@ Start autocannon against the given target.
     * `ignoreCoordinatedOmission`: A `Boolean` which disable the correction of latencies to compensate the coordinated omission issue. Does not make sense when no rate of requests has been specified (`connectionRate` or `overallRate`). _OPTIONAL_ default: `false`.
     * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. Check the samples folder for an example of how this might be used. _OPTIONAL_. Contained objects can have these attributes:
-       * `body`: When present, will override `opts.body`. _OPTIONAL_.
-       * `headers`: When present, will override `opts.headers`. _OPTIONAL_.
-       * `method`: When present, will override `opts.method`. _OPTIONAL_.
-       * `path`: When present, will override `opts.path`. _OPTIONAL_.
-       * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. When it returns a falsey value, autocannon will restart from first request. _OPTIONAL_.
-       * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) and `context` (Object) parameters. _OPTIONAL_.
+       * `body`: When present, will override `opts.body`. _OPTIONAL_
+       * `headers`: When present, will override `opts.headers`. _OPTIONAL_
+       * `method`: When present, will override `opts.method`. _OPTIONAL_
+       * `path`: When present, will override `opts.path`. _OPTIONAL_
+       * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. When it returns a falsey value, autocannon will restart from first request. _OPTIONAL_
+       * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) and `context` (Object) parameters. _OPTIONAL_
+    * `har`: an `Object` of parsed [HAR](https://w3c.github.io/web-performance/specs/HAR/Overview.html) content. Autocannon will extra and use `entries.request`: `requests`, `method`, `form` and `body` options will be ignored. _NOTE_: you must ensure that entries are targeting the same domain as `url` option. _OPTIONAL_
     * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
     * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: Defaults to the hostname of the URL when it is not an IP address.
