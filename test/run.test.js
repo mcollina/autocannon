@@ -698,6 +698,35 @@ test('should count resets', t => {
   })
 })
 
+test('should get onResponse callback invoked even when there is no body', t => {
+  t.plan(4)
+  const server = helper.startServer({ responses: [{ statusCode: 200, body: 'ok' }, { statusCode: 204 }] })
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 1,
+    amount: 2,
+    requests: [
+      {
+        method: 'GET',
+        onResponse (status, body) {
+          t.same(status, 200)
+          t.same(body, 'ok')
+        }
+      },
+      {
+        method: 'GET',
+        onResponse (status, body) {
+          t.same(status, 204)
+          t.same(body, undefined)
+        }
+      }
+    ]
+  }).then((result) => {
+    t.end()
+  })
+})
+
 test('should use request from HAR', (t) => {
   t.plan(6)
   const server = helper.startServer()
