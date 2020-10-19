@@ -10,17 +10,33 @@ const BusBoy = require('busboy')
 function startServer (opts) {
   opts = opts || {}
 
-  const statusCode = opts.statusCode || 200
+  if (!Array.isArray(opts.responses)) {
+    opts.responses = []
+  }
+
+  const fixedStatusCode = opts.statusCode || 200
   const server = http.createServer(handle)
   server.autocannonConnects = 0
+  server.autocannonRequests = 0
 
   server.on('connection', () => { server.autocannonConnects++ })
 
   server.listen(opts.socketPath || 0)
 
   function handle (req, res) {
+    let { statusCode, body } = opts.responses[server.autocannonRequests] || {}
+    server.autocannonRequests++
+
+    if (!statusCode) {
+      statusCode = fixedStatusCode
+    }
+
+    if (!body) {
+      body = opts.body || 'hello world'
+    }
+
     res.statusCode = statusCode
-    res.end(typeof opts.body === 'function' ? opts.body(req) : (opts.body || 'hello world'))
+    res.end(typeof body === 'function' ? body(req) : body)
   }
 
   server.unref()

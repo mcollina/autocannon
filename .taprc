@@ -2,5 +2,5 @@ esm: false
 ts: false
 jsx: false
 flow: false
-timeout: 45
+timeout: 60
 coverage: true
