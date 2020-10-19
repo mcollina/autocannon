@@ -698,11 +698,11 @@ test('should count resets', t => {
   })
 })
 
-test('should get onResponse callback invoked even when there is no body', t => {
+test('should get onResponse callback invoked even when there is no body', async t => {
   t.plan(4)
   const server = helper.startServer({ responses: [{ statusCode: 200, body: 'ok' }, { statusCode: 204 }] })
 
-  run({
+  await run({
     url: 'http://localhost:' + server.address().port,
     connections: 1,
     amount: 2,
@@ -722,9 +722,9 @@ test('should get onResponse callback invoked even when there is no body', t => {
         }
       }
     ]
-  }).then((result) => {
-    t.end()
   })
+
+  t.end()
 })
 
 test('should use request from HAR', (t) => {
