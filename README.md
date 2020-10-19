@@ -11,7 +11,7 @@
 
 A HTTP/1.1 benchmarking tool written in node, greatly inspired by [wrk][wrk]
 and [wrk2][wrk2], with support for HTTP pipelining and HTTPS.
-On _my_ box, *autocannon* can produce more load than `wrk` and `wrk2`.
+On _my_ box, *autocannon* can produce more load than `wrk` and `wrk2`, see [limitations](#limitations) for more details.
 
 * [Installation](#install)
 * [Usage](#usage)
@@ -415,6 +415,29 @@ function handleResults(result) {
   // ...
 }
 ```
+
+<a name="limitations"></a>
+## Limitations
+
+Autocannon is written in JavaScript for the Node.js runtime and it is CPU-bound.
+We have verified that it yields comparable results with `wrk` when benchmarking Node.js
+applicatiions using the `http` module.
+Nevertheless, it uses significant more CPU than other tools that compiles to a binary such as `wrk`.
+Autocannon can saturate the CPU, e.g. the autocannon process reaches 100%: in those cases
+we recommend to use `wrk`.
+
+As an example, let's consider a run with 1000 connections on a server
+with 4 cores with hyperhtreading:
+
+* `wrk` uses 2 threads (by default) and an auxiliary one to collect the
+  metrics with a total load of the CPU of 20% + 20% + 40%.
+* `autocannon` uses a single thread at 80% CPU load.
+
+Both saturates a Node.js process at around 41k req/sec, however
+`autocannon` can saturate sooner because it is single threaded.
+
+Note that `wrk` does not support HTTP/1.1 pipelining. As a result, `autocannon` can create
+more load on the server than wrk for each open connection.
 
 <a name="acknowledgements"></a>
 ## Acknowledgements
