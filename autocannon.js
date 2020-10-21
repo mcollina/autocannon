@@ -12,9 +12,12 @@ const URL = require('url').URL
 const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
+const { Worker, isMainThread } = require('worker_threads')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
+const printResult = require('./lib/printResult')
+const aggregateResult = require('./lib/aggregateResult')
 const { checkURL, ofURL } = require('./lib/url')
 const { parseHAR } = require('./lib/parseHAR')
 
@@ -240,7 +243,38 @@ function createChannel (onport) {
   return { socketPath, server }
 }
 
+const numWorkers = 2 // Math.max(Math.floor(os.cpus().length * 0.75), 1)
+
 function runTracker (argv, ondone) {
+  if (argv.useWorkers && isMainThread) {
+    const workers = []
+    const results = []
+
+    const opts = {
+      ...argv,
+      amount: argv.amount / numWorkers,
+      a: argv.a / numWorkers,
+      connections: argv.connections / numWorkers,
+      c: argv.c / numWorkers
+    }
+
+    for (let i = 0; i < numWorkers; i++) {
+      const w = new Worker(path.resolve(__dirname, './lib/worker.js'), { workerData: { opts } })
+
+      w.on('message', (data) => {
+        results.push(data)
+
+        if (results.length === workers.length) {
+          printResult(aggregateResult(results, argv), argv)
+        }
+      })
+
+      workers.push(w)
+    }
+
+    return
+  }
+
   const tracker = run(argv)
 
   tracker.on('done', (result) => {

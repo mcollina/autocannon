@@ -40,3 +40,5 @@ package-lock.json
 profile-*
 
 .nyc_output
+
+.vscode
