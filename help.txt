@@ -57,7 +57,7 @@ Available options:
               or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
   -C/--ignoreCoordinatedOmission
         Ignore coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'. 
-        NOTE: it is not recommanded to enable this option. 
+        NOTE: it is not recommended to enable this option. 
               When the request rate cannot be met because the server is too slow, 
               many request latencies might be missing and Autocannon might report a misleading latency distribution.
   -D/--reconnectRate NUM
