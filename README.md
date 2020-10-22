@@ -97,7 +97,7 @@ Available options:
               Autocannon will do as many requests as possible per second. Also latency data will be corrected in order to compensate the effects of coordinated omission issue. If you are not familiar with the coordinated omission issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html) or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
   -C/--ignoreCoordinatedOmission
         Ignore coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'. 
-        NOTE: it is not recommanded to enable this option. 
+        NOTE: it is not recommended to enable this option. 
               When the request rate cannot be met because the server is too slow, many request latencies might be missing and Autocannon might report a misleading latency distribution.
   -D/--reconnectRate NUM
         Some number of requests to make before resetting a connections connection to the
@@ -421,13 +421,13 @@ function handleResults(result) {
 
 Autocannon is written in JavaScript for the Node.js runtime and it is CPU-bound.
 We have verified that it yields comparable results with `wrk` when benchmarking Node.js
-applicatiions using the `http` module.
+applications using the `http` module.
 Nevertheless, it uses significant more CPU than other tools that compiles to a binary such as `wrk`.
 Autocannon can saturate the CPU, e.g. the autocannon process reaches 100%: in those cases
 we recommend to use `wrk`.
 
 As an example, let's consider a run with 1000 connections on a server
-with 4 cores with hyperhtreading:
+with 4 cores with hyperthreading:
 
 * `wrk` uses 2 threads (by default) and an auxiliary one to collect the
   metrics with a total load of the CPU of 20% + 20% + 40%.
