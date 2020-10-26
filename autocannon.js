@@ -243,7 +243,21 @@ function createChannel (onport) {
   return { socketPath, server }
 }
 
-const numWorkers = 2 // Math.max(Math.floor(os.cpus().length * 0.75), 1)
+function handleFinish (results, opts) {
+  const result = aggregateResult(results, opts)
+
+  if (opts.json) {
+    console.log(JSON.stringify(result))
+  }
+
+  // the code below this `if` just renders the results table...
+  // if the user doesn't want to render the table, we can just return early
+  if (opts.renderResultsTable === false) return
+
+  printResult(result, opts)
+}
+
+const numWorkers = Math.max(Math.floor(os.cpus().length * 0.75), 1)
 
 function runTracker (argv, ondone) {
   if (argv.useWorkers && isMainThread) {
@@ -252,11 +266,11 @@ function runTracker (argv, ondone) {
 
     const opts = {
       ...argv,
-      amount: argv.amount / numWorkers,
-      a: argv.a / numWorkers,
-      connections: argv.connections / numWorkers,
-      c: argv.c / numWorkers
+      amount: Math.floor(argv.amount / numWorkers),
+      connections: Math.floor(argv.connections / numWorkers)
     }
+    opts.a = argv.amount
+    opts.c = argv.connections
 
     for (let i = 0; i < numWorkers; i++) {
       const w = new Worker(path.resolve(__dirname, './lib/worker.js'), { workerData: { opts } })
@@ -265,7 +279,7 @@ function runTracker (argv, ondone) {
         results.push(data)
 
         if (results.length === workers.length) {
-          printResult(aggregateResult(results, argv), argv)
+          handleFinish(results, argv)
         }
       })
 
@@ -279,9 +293,8 @@ function runTracker (argv, ondone) {
 
   tracker.on('done', (result) => {
     if (ondone) ondone()
-    if (argv.json) {
-      console.log(JSON.stringify(result))
-    }
+
+    handleFinish([result], argv)
   })
 
   tracker.on('error', (err) => {
