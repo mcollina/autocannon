@@ -12,12 +12,13 @@ const URL = require('url').URL
 const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
-const { Worker, isMainThread } = require('worker_threads')
+const { isMainThread } = require('worker_threads')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
 const printResult = require('./lib/printResult')
 const aggregateResult = require('./lib/aggregateResult')
+const initWorkers = require('./lib/manager')
 const { checkURL, ofURL } = require('./lib/url')
 const { parseHAR } = require('./lib/parseHAR')
 
@@ -257,36 +258,11 @@ function handleFinish (results, opts) {
   printResult(result, opts)
 }
 
-const numWorkers = Math.max(Math.floor(os.cpus().length * 0.75), 1)
-
 function runTracker (argv, ondone) {
   if (argv.useWorkers && isMainThread) {
-    const workers = []
-    const results = []
-
-    const opts = {
-      ...argv,
-      amount: Math.floor(argv.amount / numWorkers),
-      connections: Math.floor(argv.connections / numWorkers)
-    }
-    opts.a = argv.amount
-    opts.c = argv.connections
-
-    for (let i = 0; i < numWorkers; i++) {
-      const w = new Worker(path.resolve(__dirname, './lib/worker.js'), { workerData: { opts } })
-
-      w.on('message', (data) => {
-        results.push(data)
-
-        if (results.length === workers.length) {
-          handleFinish(results, argv)
-        }
-      })
-
-      workers.push(w)
-    }
-
-    return
+    return initWorkers(argv, (results) => {
+      handleFinish(results, argv)
+    })
   }
 
   const tracker = run(argv)
