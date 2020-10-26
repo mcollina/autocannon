@@ -12,13 +12,9 @@ const URL = require('url').URL
 const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
-const { isMainThread } = require('worker_threads')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
-const printResult = require('./lib/printResult')
-const aggregateResult = require('./lib/aggregateResult')
-const initWorkers = require('./lib/manager')
 const { checkURL, ofURL } = require('./lib/url')
 const { parseHAR } = require('./lib/parseHAR')
 
@@ -81,8 +77,7 @@ function parseArguments (argvs) {
       method: 'GET',
       idReplacement: false,
       excludeErrorStats: false,
-      debug: false,
-      internal: true
+      debug: false
     },
     '--': true
   })
@@ -245,33 +240,17 @@ function createChannel (onport) {
   return { socketPath, server }
 }
 
-function handleFinish (results, opts) {
-  const result = aggregateResult(results, opts)
-
-  if (opts.json) {
-    console.log(JSON.stringify(result))
-  }
-
-  // the code below this `if` just renders the results table...
-  // if the user doesn't want to render the table, we can just return early
-  if (opts.renderResultsTable === false) return
-
-  printResult(result, opts)
-}
-
 function runTracker (argv, ondone) {
-  if (argv.useWorkers && isMainThread) {
-    return initWorkers(argv, (results) => {
-      handleFinish(results, argv)
-    })
-  }
-
   const tracker = run(argv)
+
+  // While using workers, tracking is handled in manager.js
+  if (argv.useWorkers) return
 
   tracker.on('done', (result) => {
     if (ondone) ondone()
-
-    handleFinish([result], argv)
+    if (argv.json) {
+      console.log(JSON.stringify(result))
+    }
   })
 
   tracker.on('error', (err) => {
