@@ -13,6 +13,7 @@ test('should run benchmark against server', (t) => {
     /Running 1s test @ .*$/,
     /10 connections.*$/,
     /$/,
+    /$/,
     /.*/,
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
     /.*/,
@@ -62,6 +63,7 @@ test('should parse HAR file and run requests', (t) => {
   const lines = [
     /Running \d+ requests test @ .*$/,
     /1 connections.*$/,
+    /$/,
     /$/,
     /.*/,
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,

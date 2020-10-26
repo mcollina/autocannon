@@ -13,6 +13,7 @@ const lines = [
   /Running 1s test @ http:\/\/example.com\/foo \([^)]*\)$/,
   /10 connections.*$/,
   /$/,
+  /$/,
   /.*/,
   /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
   /.*/,
