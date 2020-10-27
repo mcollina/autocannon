@@ -6,7 +6,10 @@ const path = require('path')
 const fs = require('fs')
 const os = require('os')
 const childProcess = require('child_process')
+const semver = require('semver')
 const helper = require('./helper')
+
+const hasWorkerSupport = semver.gte(process.versions.node, '11.7.0')
 
 test('should run benchmark against server', (t) => {
   const lines = [
@@ -197,4 +200,56 @@ test('should write warning about unused HAR requests', (t) => {
       t.ok(output.includes(`Warning: skipping requests to 'https://github.com' as the target is ${url}`), `Unexpected output:\n${output}`)
       t.end()
     })
+})
+
+test('run with workers', { skip: !hasWorkerSupport }, (t) => {
+  const lines = [
+    /Running 1s test @ .*$/,
+    /10 connections.*$/,
+    /$/,
+    /$/,
+    /.*/,
+    /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
+    /.*/,
+    /Latency.*$/,
+    /$/,
+    /.*/,
+    /Stat.*1%.*2\.5%.*50%.*97\.5%.*Avg.*Stdev.*Min.*$/,
+    /.*/,
+    /Req\/Sec.*$/,
+    /.*/,
+    /Bytes\/Sec.*$/,
+    /.*/,
+    /$/,
+    /Req\/Bytes counts sampled once per second.*$/,
+    /$/,
+    /.* requests in ([0-9]|\.)+s, .* read/
+  ]
+
+  t.plan(lines.length * 2)
+
+  const server = helper.startServer()
+  const url = 'http://localhost:' + server.address().port
+
+  const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', url, '--useWorkers'], {
+    cwd: __dirname,
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false
+  })
+
+  t.tearDown(() => {
+    child.kill()
+  })
+
+  child
+    .stderr
+    .pipe(split())
+    .on('data', (line) => {
+      const regexp = lines.shift()
+      console.log('comparing', regexp, 'with', line)
+      t.ok(regexp, 'we are expecting this line')
+      t.ok(regexp.test(line), 'line matches ' + regexp)
+    })
+    .on('end', t.end)
 })
