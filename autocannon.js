@@ -15,6 +15,7 @@ const hasAsyncHooks = require('has-async-hooks')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const run = require('./lib/run')
 const track = require('./lib/progressTracker')
+const runTracker = require('./lib/runTracker')
 const { checkURL, ofURL } = require('./lib/url')
 const { parseHAR } = require('./lib/parseHAR')
 
@@ -240,33 +241,6 @@ function createChannel (onport) {
   })
 
   return { socketPath, server }
-}
-
-function runTracker (argv, ondone) {
-  const tracker = run(argv)
-
-  // While using workers, tracking is handled in manager.js
-  if (argv.useWorkers) return
-
-  tracker.on('done', (result) => {
-    if (ondone) ondone()
-    if (argv.json) {
-      console.log(JSON.stringify(result))
-    }
-  })
-
-  tracker.on('error', (err) => {
-    if (err) {
-      throw err
-    }
-  })
-
-  // if not rendering json, or if std isn't a tty, track progress
-  if (!argv.json || !process.stdout.isTTY) track(tracker, argv)
-
-  process.once('SIGINT', () => {
-    tracker.stop()
-  })
 }
 
 if (require.main === module) {
