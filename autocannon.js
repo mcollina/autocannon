@@ -77,7 +77,8 @@ function parseArguments (argvs) {
       method: 'GET',
       idReplacement: false,
       excludeErrorStats: false,
-      debug: false
+      debug: false,
+      useWorkers: false
     },
     '--': true
   })

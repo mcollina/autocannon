@@ -206,6 +206,7 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
   const lines = [
     /Running 1s test @ .*$/,
     /10 connections.*$/,
+    /4 workers.*$/,
     /$/,
     /$/,
     /.*/,
@@ -231,7 +232,7 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
   const server = helper.startServer()
   const url = 'http://localhost:' + server.address().port
 
-  const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', url, '--useWorkers'], {
+  const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', url, '--useWorkers', '4'], {
     cwd: __dirname,
     env: process.env,
     stdio: ['ignore', 'pipe', 'pipe'],
