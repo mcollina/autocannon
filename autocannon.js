@@ -62,6 +62,7 @@ function parseArguments (argvs) {
       socketPath: 'S',
       excludeErrorStats: 'x',
       expectBody: 'E',
+      useWorkers: 'W',
       help: 'h'
     },
     default: {

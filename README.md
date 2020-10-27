@@ -53,6 +53,8 @@ Available options:
         The amount of requests to make before exiting the benchmark. If set, duration is ignored.
   -S/--socketPath
         A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
+  -W/--useWorkers
+        Number of worker threads to use to fire requests.
   --on-port
         Start the command listed after -- on the command line. When it starts listening on a port,
         start sending requests to that port. A URL is still required in order to send requests to
@@ -79,7 +81,7 @@ Available options:
   -H/--headers K=V
         The request headers.
   --har FILE
-        When provided, Autocannon will use requests from the HAR file. 
+        When provided, Autocannon will use requests from the HAR file.
         CAUTION: you have to to specify one (or more) domain using URL option: only the HAR requests to the same domains will be considered.
         NOTE: you can still add extra headers with -H/--headers but -m/--method, -F/--form, -i/--input -b/--body will be ignored.
   -B/--bailout NUM
@@ -96,8 +98,8 @@ Available options:
         NOTE: if using rate limiting and a very large rate is entered which cannot be met,
               Autocannon will do as many requests as possible per second. Also latency data will be corrected in order to compensate the effects of coordinated omission issue. If you are not familiar with the coordinated omission issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html) or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
   -C/--ignoreCoordinatedOmission
-        Ignore coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'. 
-        NOTE: it is not recommended to enable this option. 
+        Ignore coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'.
+        NOTE: it is not recommended to enable this option.
               When the request rate cannot be met because the server is too slow, many request latencies might be missing and Autocannon might report a misleading latency distribution.
   -D/--reconnectRate NUM
         Some number of requests to make before resetting a connections connection to the
@@ -231,6 +233,7 @@ Start autocannon against the given target.
 * `opts`: Configuration options for the autocannon instance. This can have the following attributes. _REQUIRED_.
     * `url`: The given target. Can be http or https. More than one url is allowed, but it is recommended that the number of connections be an integer multiple of the url. _REQUIRED_.
     * `socketPath`: A path to a Unix Domain Socket or a Windows Named Pipe. A `url` is still required in order to send the correct Host header and path. _OPTIONAL_.
+    * `useWorkers`: Number of worker threads to use to fire requests.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. Can be a [timestring](https://www.npmjs.com/package/timestring). _OPTIONAL_ default: `10`.
     * `amount`: A `Number` stating the amount of requests to make before ending the test. This overrides duration and takes precedence, so the test won't end until the amount of requests needed to be completed are completed. _OPTIONAL_.
@@ -261,7 +264,7 @@ Start autocannon against the given target.
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
     * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: Defaults to the hostname of the URL when it is not an IP address.
     * `excludeErrorStats`: A `Boolean` which allows you to disable tracking non 2xx code responses in latency and bytes per second calculations. _OPTIONAL_ default: `false`.
-    * `expectBody`: A `String` representing the expected response body. Each request whose response body is not equal to `expectBody`is counted in `mismatches`. If enabled, mismatches count towards bailout. _OPTIONAL_  
+    * `expectBody`: A `String` representing the expected response body. Each request whose response body is not equal to `expectBody`is counted in `mismatches`. If enabled, mismatches count towards bailout. _OPTIONAL_
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
     * `results`: The results of the run.
