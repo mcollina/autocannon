@@ -208,7 +208,6 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     /10 connections.*$/,
     /4 workers.*$/,
     /$/,
-    /$/,
     /.*/,
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
     /.*/,
@@ -248,7 +247,6 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      console.log('comparing', regexp, 'with', line)
       t.ok(regexp, 'we are expecting this line')
       t.ok(regexp.test(line), 'line matches ' + regexp)
     })
