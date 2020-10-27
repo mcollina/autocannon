@@ -13,8 +13,6 @@ function handle (req, res) {
 
 function startBench () {
   const instance = autocannon({
-    connections: 100,
-    duration: 2,
     url: 'http://localhost:' + server.address().port
   }, finishedBench)
 
