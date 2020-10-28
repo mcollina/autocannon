@@ -11,7 +11,6 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     /Running 1s test @ .*$/,
     /10 connections.*$/,
     /$/,
-    /$/,
     /.*/,
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
     /.*/,
