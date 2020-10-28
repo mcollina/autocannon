@@ -856,7 +856,7 @@ test('should throw on invalid HAR', (t) => {
   })
 })
 
-test('with numWorkers', t => {
+test('with workers', t => {
   t.plan(3)
 
   t.test('should error when using setupClient', t => {
@@ -864,7 +864,7 @@ test('with numWorkers', t => {
     const server = helper.startServer()
     run({
       url: 'http://localhost:' + server.address().port,
-      numWorkers: 2,
+      workers: 2,
       setupClient: c => c
     }).catch((err) => {
       t.equal(err.message, 'Can not use setupClient option while using workers')
@@ -877,7 +877,7 @@ test('with numWorkers', t => {
     const server = helper.startServer()
     run({
       url: 'http://localhost:' + server.address().port,
-      numWorkers: 2,
+      workers: 2,
       requests: [{ setupRequest: () => {} }]
     }).catch((err) => {
       t.equal(err.message, 'Can not use setupRequest/onResponse options while using workers')
@@ -890,7 +890,7 @@ test('with numWorkers', t => {
     const server = helper.startServer()
     run({
       url: 'http://localhost:' + server.address().port,
-      numWorkers: 2,
+      workers: 2,
       requests: [{ onResponse: () => {} }]
     }).catch((err) => {
       t.equal(err.message, 'Can not use setupRequest/onResponse options while using workers')

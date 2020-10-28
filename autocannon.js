@@ -63,7 +63,7 @@ function parseArguments (argvs) {
       socketPath: 'S',
       excludeErrorStats: 'x',
       expectBody: 'E',
-      numWorkers: 'w',
+      workers: 'w',
       help: 'h'
     },
     default: {
@@ -80,7 +80,7 @@ function parseArguments (argvs) {
       idReplacement: false,
       excludeErrorStats: false,
       debug: false,
-      numWorkers: 0
+      workers: 0
     },
     '--': true
   })

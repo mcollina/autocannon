@@ -16,7 +16,7 @@ function startBench () {
     connections: 100,
     duration: 2,
     url: 'http://localhost:' + server.address().port,
-    numWorkers: 2
+    workers: 2
   }, finishedBench)
 
   // this is used to kill the instance on CTRL-C

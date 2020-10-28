@@ -15,7 +15,7 @@ Available options:
         The amount of requests to make before exiting the benchmark. If set, duration is ignored.
   -S/--socketPath
         A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
-  -w/--numWorkers
+  -w/--workers
         Number of worker threads to use to fire requests.
   --on-port
         Start the command listed after -- on the command line. When it starts listening on a port,
