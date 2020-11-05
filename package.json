@@ -48,7 +48,6 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "cli-spinner": "^0.2.10",
     "cli-table3": "^0.6.0",
     "clone": "^2.1.2",
     "color-support": "^1.1.1",
@@ -62,6 +61,7 @@
     "manage-path": "^2.0.0",
     "minimist": "^1.2.0",
     "on-net-listen": "^1.1.1",
+    "ora": "^5.1.0",
     "pretty-bytes": "^5.4.1",
     "progress": "^2.0.3",
     "reinterval": "^1.1.0",
