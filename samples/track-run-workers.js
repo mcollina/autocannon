@@ -13,10 +13,11 @@ function handle (req, res) {
 
 function startBench () {
   const instance = autocannon({
-    url: 'http://localhost:' + server.address().port
+    connections: 100,
+    duration: 2,
+    url: 'http://localhost:' + server.address().port,
+    workers: 2
   }, finishedBench)
-
-  autocannon.track(instance)
 
   // this is used to kill the instance on CTRL-C
   process.once('SIGINT', () => {
