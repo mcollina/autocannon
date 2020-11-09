@@ -1,14 +1,14 @@
 'use strict'
 
 const test = require('tap').test
-const run = require('../lib/run')
+const initJob = require('../lib/init')
 const helper = require('./helper')
 const server = helper.startServer()
 
 test('running with forever set to true and passing in a callback should cause an error to be returned in the callback', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: `http://localhost:${server.address().port}`,
     forever: true
   }, (err, res) => {
@@ -22,7 +22,7 @@ test('run forever should run until .stop() is called', (t) => {
   t.plan(3)
   let numRuns = 0
 
-  const instance = run({
+  const instance = initJob({
     url: `http://localhost:${server.address().port}`,
     duration: 0.5,
     forever: true

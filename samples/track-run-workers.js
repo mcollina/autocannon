@@ -19,6 +19,8 @@ function startBench () {
     workers: 2
   }, finishedBench)
 
+  autocannon.track(instance)
+
   // this is used to kill the instance on CTRL-C
   process.once('SIGINT', () => {
     instance.stop()

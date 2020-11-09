@@ -5,9 +5,10 @@ const { tmpdir } = require('os')
 const { join } = require('path')
 const { writeFile } = require('fs')
 const { promisify } = require('util')
-const run = require('../lib/run')
+const initJob = require('../lib/init')
 const helper = require('./helper')
 const writef = promisify(writeFile)
+const hasWorkerSupport = require('./utils/has-worker-support')
 
 test('run should return an error with invalid form options', async t => {
   const cases = [
@@ -59,7 +60,7 @@ test('run should return an error with invalid form options', async t => {
   for (const c of cases) {
     t.test(c.name, async t => {
       const [err] = await new Promise((resolve) => {
-        run({
+        initJob({
           url: 'http://localhost:' + server.address().port,
           connections: 1,
           amount: 1,
@@ -108,20 +109,22 @@ test('run should take form options as a JSON string or a JS Object', async t => 
       value: form
     }
   ]
+  const allCases = [...cases, ...cases.map(c => ({ ...c, workers: true }))]
 
-  for (const c of cases) {
-    t.test(c.name, async t => {
+  for (const c of allCases) {
+    t.test(c.name, { skip: c.workers && !hasWorkerSupport }, async t => {
       const server = helper.startMultipartServer(null, payload => {
         t.equal('j5', payload.name)
         t.equal('j5.jpeg', payload.image.filename)
       })
       t.tearDown(() => server.close())
       const [err, res] = await new Promise((resolve) => {
-        run({
+        initJob({
           url: 'http://localhost:' + server.address().port,
           connections: 1,
           amount: 1,
-          form: c.value
+          form: c.value,
+          workers: c.workers ? 1 : undefined // use only one worker coz we're checking for 1 req
         }, (err, res) => {
           resolve([err, res])
         })
@@ -154,7 +157,7 @@ test('run should use a custom method if `options.method` is passed', t => {
       value: 'j5'
     }
   }
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     method: 'PUT',
     connections: 1,
@@ -186,7 +189,7 @@ test('run should set filename', t => {
       value: 'j5'
     }
   }
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     method: 'POST',
     connections: 1,
@@ -221,7 +224,7 @@ test('run should allow overriding filename', t => {
       value: 'j5'
     }
   }
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     method: 'POST',
     connections: 1,
@@ -256,7 +259,7 @@ test('run should allow overriding filename with file path', t => {
       value: 'j5'
     }
   }
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     method: 'POST',
     connections: 1,

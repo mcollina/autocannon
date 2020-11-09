@@ -1,5 +1,5 @@
 const test = require('tap').test
-const run = require('../lib/run')
+const initJob = require('../lib/init')
 const helper = require('./helper')
 
 const server1 = helper.startServer({ body: 'from server1' })
@@ -9,7 +9,7 @@ const server3 = helper.startServer({ body: 'from server3' })
 test('should receive the message from different server', (t) => {
   t.plan(3)
 
-  const instance = run({
+  const instance = initJob({
     url: [
       server1,
       server2,

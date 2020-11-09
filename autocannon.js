@@ -13,10 +13,9 @@ const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
-const run = require('./lib/run')
 const printResult = require('./lib/printResult')
+const initJob = require('./lib/init')
 const track = require('./lib/progressTracker')
-const runTracker = require('./lib/runTracker')
 const { checkURL, ofURL } = require('./lib/url')
 const { parseHAR } = require('./lib/parseHAR')
 
@@ -25,7 +24,7 @@ if (typeof URL !== 'function') {
   process.exit(1)
 }
 
-module.exports = run
+module.exports = initJob
 module.exports.track = track
 
 module.exports.start = start
@@ -178,6 +177,10 @@ function parseArguments (argvs) {
     }
   }
 
+  // This is to distinguish down the line whether it is
+  // run via command-line or programatically
+  argv[Symbol.for('internal')] = true
+
   return argv
 }
 
@@ -199,7 +202,7 @@ function start (argv) {
         onPort: false,
         url: url
       })
-      runTracker(opts, () => {
+      initJob(opts, () => {
         proc.kill('SIGINT')
         server.close()
       })
@@ -220,7 +223,7 @@ function start (argv) {
       })
     })
   } else {
-    runTracker(argv)
+    initJob(argv)
   }
 }
 

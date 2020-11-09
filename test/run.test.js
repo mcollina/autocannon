@@ -3,13 +3,13 @@
 const os = require('os')
 const path = require('path')
 const test = require('tap').test
-const run = require('../lib/run')
+const initJob = require('../lib/init')
 const defaultOptions = require('../lib/defaultOptions')
 const helper = require('./helper')
 const server = helper.startServer()
 
-test('run', (t) => {
-  run({
+test('init', (t) => {
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: 2,
@@ -75,7 +75,7 @@ test('run', (t) => {
 })
 
 test('tracker.stop()', (t) => {
-  const tracker = run({
+  const tracker = initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: 2
@@ -145,7 +145,7 @@ test('tracker.stop()', (t) => {
 })
 
 test('requests.min should be 0 when there are no successful requests', (t) => {
-  run({
+  initJob({
     url: 'nonexistent',
     connections: 1,
     amount: 1
@@ -159,7 +159,7 @@ test('requests.min should be 0 when there are no successful requests', (t) => {
 test('run should callback with an error with an invalid connections factor', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: -1
   }, function (err, result) {
@@ -172,7 +172,7 @@ test('run should callback with an error with an invalid connections factor', (t)
 test('run should callback with an error with an invalid pipelining factor', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     pipelining: -1
   }, function (err, result) {
@@ -185,7 +185,7 @@ test('run should callback with an error with an invalid pipelining factor', (t) 
 test('run should callback with an error with an invalid bailout', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     bailout: -1
   }, function (err, result) {
@@ -198,7 +198,7 @@ test('run should callback with an error with an invalid bailout', (t) => {
 test('run should callback with an error with an invalid duration', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     duration: -1
   }, function (err, result) {
@@ -211,7 +211,7 @@ test('run should callback with an error with an invalid duration', (t) => {
 test('run should callback with an error when no url is passed in', (t) => {
   t.plan(2)
 
-  run({}, function (err, result) {
+  initJob({}, function (err, result) {
     t.ok(err, 'no url should cause an error')
     t.notOk(result, 'results should not exist')
     t.end()
@@ -221,7 +221,7 @@ test('run should callback with an error when no url is passed in', (t) => {
 test('run should callback with an error after a bailout', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: 'http://localhost:4', // 4 = first unassigned port: https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
     bailout: 1
   }, function (err, result) {
@@ -234,7 +234,7 @@ test('run should callback with an error after a bailout', (t) => {
 test('run should callback with an error using expectBody and requests', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     requests: [{ body: 'something' }],
     expectBody: 'hello'
@@ -248,7 +248,7 @@ test('run should callback with an error using expectBody and requests', (t) => {
 test('run should allow users to enter timestrings to be used for duration', (t) => {
   t.plan(3)
 
-  const instance = run({
+  const instance = initJob({
     url: 'http://localhost:' + server.address().port,
     duration: '10m'
   }, function (err, result) {
@@ -267,7 +267,7 @@ test('run should allow users to enter timestrings to be used for duration', (t) 
 test('run should recognise valid urls without http at the start', (t) => {
   t.plan(3)
 
-  run({
+  initJob({
     url: 'localhost:' + server.address().port,
     duration: 1
   }, (err, res) => {
@@ -281,7 +281,7 @@ test('run should recognise valid urls without http at the start', (t) => {
 test('run should produce count of mismatches with expectBody set', (t) => {
   t.plan(2)
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     expectBody: 'body will not be this',
     maxOverallRequests: 10,
@@ -299,7 +299,7 @@ test('run should produce 0 mismatches with expectBody set and matches', (t) => {
   const responseBody = 'hello dave'
   const server = helper.startServer({ body: responseBody })
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     expectBody: responseBody,
     maxOverallRequests: 10
@@ -319,7 +319,7 @@ test('run should accept a unix socket/windows pipe', (t) => {
 
   helper.startServer({ socketPath })
 
-  run({
+  initJob({
     url: 'localhost',
     socketPath,
     connections: 2,
@@ -352,7 +352,7 @@ for (let i = 1; i <= 5; i++) {
   test(`run should count all ${i}xx status codes`, (t) => {
     const server = helper.startServer({ statusCode: i * 100 + 2 })
 
-    run({
+    initJob({
       url: `http://localhost:${server.address().port}`,
       connections: 2,
       duration: 2
@@ -391,7 +391,7 @@ for (let i = 1; i <= 5; i++) {
 
 test('run should not modify default options', (t) => {
   const origin = Object.assign({}, defaultOptions)
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: 2
@@ -405,7 +405,7 @@ test('run should not modify default options', (t) => {
 test('run will exclude non 2xx stats from latency and throughput averages if excludeErrorStats is true', (t) => {
   const server = helper.startServer({ statusCode: 404 })
 
-  run({
+  initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 2,
     duration: 2,
@@ -451,7 +451,7 @@ test('tracker will emit reqError with error message on timeout', (t) => {
 
   const server = helper.startTimeoutServer()
 
-  const tracker = run({
+  const tracker = initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 1,
     duration: 5,
@@ -472,7 +472,7 @@ test('tracker will emit reqError with error message on error', (t) => {
 
   const server = helper.startSocketDestroyingServer()
 
-  const tracker = run({
+  const tracker = initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 10,
     duration: 15,
@@ -496,7 +496,7 @@ test('tracker will emit reqMismatch when body does not match expectBody', (t) =>
 
   const expectBody = 'goodbye world'
 
-  const tracker = run({
+  const tracker = initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 10,
     duration: 15,
@@ -517,7 +517,7 @@ test('tracker will emit tick with current counter value', (t) => {
 
   const server = helper.startSocketDestroyingServer()
 
-  const tracker = run({
+  const tracker = initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 10,
     duration: 10
@@ -535,7 +535,7 @@ test('throw if connections is greater than amount', (t) => {
   const server = helper.startSocketDestroyingServer()
 
   t.throws(function () {
-    run({
+    initJob({
       url: `http://localhost:${server.address().port}`,
       connections: 10,
       amount: 1,
@@ -545,7 +545,7 @@ test('throw if connections is greater than amount', (t) => {
 })
 
 test('run promise', (t) => {
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: 2,
@@ -610,7 +610,7 @@ test('run promise', (t) => {
 test('should throw if duration is not a number nor a string', t => {
   t.plan(1)
   const server = helper.startServer()
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: ['foobar'],
@@ -627,7 +627,7 @@ test('should throw if duration is not a number nor a string', t => {
 test('should emit error', t => {
   t.plan(1)
   const server = helper.startServer()
-  const tracker = run({
+  const tracker = initJob({
     url: `http://unknownhost:${server.address().port}`,
     connections: 1,
     timeout: 100,
@@ -649,7 +649,7 @@ test('should emit error', t => {
 test('should throw if timeout is less than zero', t => {
   t.plan(1)
   const server = helper.startServer()
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     timeout: -1,
@@ -666,7 +666,7 @@ test('should throw if timeout is less than zero', t => {
 test('should handle duration in string format', t => {
   t.plan(1)
   const server = helper.startServer()
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 2,
     duration: '1',
@@ -679,7 +679,7 @@ test('should handle duration in string format', t => {
 test('should count resets', t => {
   t.plan(1)
   const server = helper.startServer()
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 1,
     amount: 10,
@@ -702,7 +702,7 @@ test('should get onResponse callback invoked even when there is no body', async 
   t.plan(4)
   const server = helper.startServer({ responses: [{ statusCode: 200, body: 'ok' }, { statusCode: 204 }] })
 
-  await run({
+  await initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 1,
     amount: 2,
@@ -733,7 +733,7 @@ test('should use request from HAR', (t) => {
   const url = `http://localhost:${server.address().port}`
   const har = helper.customizeHAR('./fixtures/httpbin-get.json', 'https://httpbin.org', url)
 
-  run({
+  initJob({
     url,
     duration: 1,
     har
@@ -754,7 +754,7 @@ test('should use extend headers of HAR requests', (t) => {
   const url = `http://localhost:${server.address().port}`
   const har = helper.customizeHAR('./fixtures/httpbin-simple-get.json', 'https://httpbin.org', url)
 
-  run({
+  initJob({
     url,
     connections: 1,
     amount: 2,
@@ -779,7 +779,7 @@ test('should not override method or body of HAR requests', (t) => {
   const url = `http://localhost:${server.address().port}`
   const har = helper.customizeHAR('./fixtures/httpbin-simple-get.json', 'https://httpbin.org', url)
 
-  run({
+  initJob({
     url,
     connections: 1,
     amount: 2,
@@ -806,7 +806,7 @@ test('should ignore HAR requests targetting a different domain', (t) => {
   const url = `http://localhost:${server.address().port}`
   const har = helper.customizeHAR('./fixtures/multi-domains.json', 'https://httpbin.org', url)
 
-  run({
+  initJob({
     url,
     connections: 1,
     amount: 4,
@@ -826,7 +826,7 @@ test('should ignore HAR requests targetting a different domain', (t) => {
 test('should throw on invalid HAR', (t) => {
   t.plan(1)
 
-  run({
+  initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 1,
     amount: 4,
@@ -853,48 +853,5 @@ test('should throw on invalid HAR', (t) => {
   }, (err, res) => {
     t.match(err, /Could not parse HAR content: no entries found/)
     t.end()
-  })
-})
-
-test('with workers', t => {
-  t.plan(3)
-
-  t.test('should error when using setupClient', t => {
-    t.plan(1)
-    const server = helper.startServer()
-    run({
-      url: 'http://localhost:' + server.address().port,
-      workers: 2,
-      setupClient: c => c
-    }).catch((err) => {
-      t.equal(err.message, 'Can not use setupClient option while using workers')
-      t.end()
-    })
-  })
-
-  t.test('should error when using request[x].setupRequest', t => {
-    t.plan(1)
-    const server = helper.startServer()
-    run({
-      url: 'http://localhost:' + server.address().port,
-      workers: 2,
-      requests: [{ setupRequest: () => {} }]
-    }).catch((err) => {
-      t.equal(err.message, 'Can not use setupRequest/onResponse options while using workers')
-      t.end()
-    })
-  })
-
-  t.test('should error when using request[x].onResponse', t => {
-    t.plan(1)
-    const server = helper.startServer()
-    run({
-      url: 'http://localhost:' + server.address().port,
-      workers: 2,
-      requests: [{ onResponse: () => {} }]
-    }).catch((err) => {
-      t.equal(err.message, 'Can not use setupRequest/onResponse options while using workers')
-      t.end()
-    })
   })
 })
