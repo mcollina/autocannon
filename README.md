@@ -316,6 +316,16 @@ autocannon.track(instance, {renderProgressBar: false})
 
 Checkout [this example](./samples/track-run.js) to see it in use, as well.
 
+### autocannon.printResult(resultObject[, opts])
+
+Print the result tables to the terminal, programmatically.
+
+* `resultObject`: The result object of autocannon. _REQUIRED_.
+* `opts`: Configuration options for printing the tables. This can have the following attibutes. _OPTIONAL_.
+    * `outputStream`: The stream to output to. default: `process.stderr`.
+    * `renderResultsTable`: A truthy value to enable the rendering of the results table. default: `true`.
+    * `renderLatencyTable`: A truthy value to enable the rendering of the latency table. default: `false`.
+
 ### Autocannon events
 
 Because an autocannon instance is an `EventEmitter`, it emits several events. these are below:
