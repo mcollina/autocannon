@@ -718,7 +718,7 @@ test('should get onResponse callback invoked even when there is no body', async 
         method: 'GET',
         onResponse (status, body) {
           t.same(status, 204)
-          t.same(body, undefined)
+          t.same(body, '')
         }
       }
     ]
