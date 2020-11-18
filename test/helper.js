@@ -107,7 +107,7 @@ function startHttpsServer (opts = {}) {
   return server
 }
 
-// this server will echo the SNI Server Name in a HTTP header
+// this server will echo the SNI Server Name and emailAddress from the client certificate in a HTTP header
 function startTlsServer () {
   const key = fs.readFileSync(path.join(__dirname, '/key.pem'))
   const cert = fs.readFileSync(path.join(__dirname, '/cert.pem'))
@@ -116,7 +116,9 @@ function startTlsServer () {
   const options = {
     key,
     cert,
-    passphrase
+    passphrase,
+    requestCert: true,
+    rejectUnauthorized: false
   }
 
   const server = tls.createServer(options, handle)
@@ -125,9 +127,16 @@ function startTlsServer () {
 
   function handle (socket) {
     const servername = socket.servername || ''
+    const certificate = socket.getPeerCertificate()
+    const email = (certificate && certificate.subject && certificate.subject.emailAddress) || ''
     socket.on('data', function (data) {
       // Assume this is a http get request and send back the servername in an otherwise empty reponse.
-      socket.write('HTTP/1.1 200 OK\nX-servername: ' + servername + '\nContent-Length: 0\n\n')
+      socket.write('HTTP/1.1 200 OK\n')
+      socket.write('X-servername: ' + servername + '\n')
+      if (email) {
+        socket.write('X-email: ' + email + '\n')
+      }
+      socket.write('Content-Length: 0\n\n')
       socket.setEncoding('utf8')
       socket.pipe(socket)
     })
