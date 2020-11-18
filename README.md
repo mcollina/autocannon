@@ -224,6 +224,47 @@ async function foo () {
 
 ```
 
+<a name="workers"></a>
+#### Workers
+
+```js
+'use strict'
+
+const autocannon = require('autocannon')
+
+autocannon({
+  url: 'http://localhost:3000',
+  connections: 10, //default
+  pipelining: 1, // default
+  duration: 10, // default
+  workers: 4
+}, console.log)
+```
+
+**NOTE:** When in workers mode, you need to pass in an absolute file path to all the options that accept a `function`. This is because a function passed in to the main process can not be cloned and passed to the worker. So instead, it needs a file that it can `require`. The options with this behaviour are shown in the below example
+
+```js
+'use strict'
+
+const autocannon = require('autocannon')
+
+autocannon({
+  // ...
+  workers: 4,
+  setupClient: '/full/path/to/setup-client.js',
+  requests: [
+    {
+      // ...
+      onResponse: '/full/path/to/on-response.js'
+    },
+    {
+      // ...
+      setupRequest: '/full/path/to/setup-request.js'
+    }
+  ]
+}, console.log)
+```
+
 ## API
 
 ### autocannon(opts[, cb])
@@ -245,7 +286,7 @@ Start autocannon against the given target.
     * `body`: A `String` or a `Buffer` containing the body of the request. Insert one or more randomly generated IDs into the body by including `[<id>]` where the randomly generated ID should be inserted (Must also set idReplacement to true). This can be useful in soak testing POST endpoints where one or more fields must be unique. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `form`: A `String` or an `Object` containing the multipart/form-data options or a path to the JSON file containing them
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
-    * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`.
+    * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`. When using `workers`, you need to supply a file path that default exports a function instead (Check out [workers](#workers) section for more details).
     * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
     * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
     * `connectionRate`: A `Number` stating the rate of requests to make per second from each individual connection. No rate limiting by default. _OPTIONAL_
@@ -257,8 +298,8 @@ Start autocannon against the given target.
        * `headers`: When present, will override `opts.headers`. _OPTIONAL_
        * `method`: When present, will override `opts.method`. _OPTIONAL_
        * `path`: When present, will override `opts.path`. _OPTIONAL_
-       * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. When it returns a falsey value, autocannon will restart from first request. _OPTIONAL_
-       * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) and `context` (Object) parameters. _OPTIONAL_
+       * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. When it returns a falsey value, autocannon will restart from first request. When using `workers`, you need to supply a file path that default exports a function instead (Check out [workers](#workers) section for more details) _OPTIONAL_
+       * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) and `context` (Object) parameters. When using `workers`, you need to supply a file path that default exports a function instead (Check out [workers](#workers) section for more details) _OPTIONAL_
     * `har`: an `Object` of parsed [HAR](https://w3c.github.io/web-performance/specs/HAR/Overview.html) content. Autocannon will extra and use `entries.request`: `requests`, `method`, `form` and `body` options will be ignored. _NOTE_: you must ensure that entries are targeting the same domain as `url` option. _OPTIONAL_
     * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
     * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
