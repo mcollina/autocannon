@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = (req, context) => ({
   ...req,
   path: `/user/${context.user.id}`,
