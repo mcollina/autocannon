@@ -6,7 +6,7 @@ const Autocannon = require('../autocannon')
 test('parse argument', (t) => {
   t.plan(4)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'X-Http-Method-Override=GET',
     '-m', 'POST',
     '-b', 'the body',
@@ -22,7 +22,7 @@ test('parse argument', (t) => {
 test('parse argument with multiple headers', (t) => {
   t.plan(3)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'header1=value1',
     '-H', 'header2=value2',
     '-H', 'header3=value3',
@@ -45,7 +45,7 @@ test('parse argument with multiple headers', (t) => {
 test('parse argument with multiple complex headers', (t) => {
   t.plan(3)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'header1=value1;data=asd',
     '-H', 'header2=value2;data=asd',
     '-H', 'header3=value3;data=asd',
@@ -68,7 +68,7 @@ test('parse argument with multiple complex headers', (t) => {
 test('parse argument with multiple headers in standard notation', (t) => {
   t.plan(3)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'header1: value1',
     '-H', 'header2: value2',
     '-H', 'header3: value3',
@@ -91,7 +91,7 @@ test('parse argument with multiple headers in standard notation', (t) => {
 test('parse argument with multiple complex headers in standard notation', (t) => {
   t.plan(3)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'header1: value1;data=asd',
     '-H', 'header2: value2;data=asd',
     '-H', 'header3: value3;data=asd',
@@ -114,7 +114,7 @@ test('parse argument with multiple complex headers in standard notation', (t) =>
 test('parse argument with "=" in value header', (t) => {
   t.plan(1)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'header1=foo=bar',
     'http://localhost/foo/bar'
   ])
@@ -127,7 +127,7 @@ test('parse argument with "=" in value header', (t) => {
 test('parse argument with ":" in value header', (t) => {
   t.plan(1)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'header1=foo:bar',
     'http://localhost/foo/bar'
   ])
@@ -150,7 +150,7 @@ test('parse argument not correctly formatted header', (t) => {
 
 test('parse argument with multiple url', (t) => {
   t.plan(2)
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     'localhost/foo/bar',
     'http://localhost/baz/qux'
   ])

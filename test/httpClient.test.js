@@ -48,7 +48,7 @@ test('client calls a server twice', (t) => {
 test('client calls a https server twice', (t) => {
   t.plan(4)
 
-  var opts = httpsServer.address()
+  const opts = httpsServer.address()
   opts.protocol = 'https:'
   const client = new Client(opts)
   let count = 0
@@ -65,7 +65,7 @@ test('client calls a https server twice', (t) => {
 test('client calls a tls server without SNI servername twice', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   const client = new Client(opts)
   let count = 0
@@ -82,7 +82,7 @@ test('client calls a tls server without SNI servername twice', (t) => {
 test('client calls a tls server with SNI servername twice', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.servername = 'example.com'
   const client = new Client(opts)
@@ -100,7 +100,7 @@ test('client calls a tls server with SNI servername twice', (t) => {
 test('client uses SNI servername from URL hostname by default', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.hostname = 'localhost'
   const client = new Client(opts)
@@ -118,7 +118,7 @@ test('client uses SNI servername from URL hostname by default', (t) => {
 test('client prefers SNI servername from opts over URL hostname', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.hostname = 'localhost'
   opts.servername = 'example.com'
@@ -137,7 +137,7 @@ test('client prefers SNI servername from opts over URL hostname', (t) => {
 test('client ignores IP address in hostname-derived SNI servername', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.hostname = opts.address
   const client = new Client(opts)
@@ -155,7 +155,7 @@ test('client ignores IP address in hostname-derived SNI servername', (t) => {
 test('client ignores falsy SNI servername', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.servername = ''
   const client = new Client(opts)
