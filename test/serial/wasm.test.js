@@ -1,13 +1,13 @@
 'use strict'
 
 const test = require('tap').test
-const run = require('../../lib/run')
+const initJob = require('../../lib/init')
 const helper = require('../helper')
 
 test('should clean up HdrHistogram WASM memory at each run', async (t) => {
   const server = helper.startServer()
   const runTwentyTimes = (resolve, reject, numberOfRuns = 0) => {
-    run({
+    initJob({
       url: 'http://localhost:' + server.address().port,
       connections: 1,
       amount: 1

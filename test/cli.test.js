@@ -6,10 +6,8 @@ const path = require('path')
 const fs = require('fs')
 const os = require('os')
 const childProcess = require('child_process')
-const semver = require('semver')
 const helper = require('./helper')
-
-const hasWorkerSupport = semver.gte(process.versions.node, '11.7.0')
+const hasWorkerSupport = require('./utils/has-worker-support')
 
 test('should run benchmark against server', (t) => {
   const lines = [

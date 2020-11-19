@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('tap').test
-const run = require('../lib/run')
+const initJob = require('../lib/init')
 const helper = require('./helper')
 const timeoutServer = helper.startTimeoutServer()
 const server = helper.startServer()
@@ -11,7 +11,7 @@ test('run should only send the expected number of requests', (t) => {
 
   let done = false
 
-  run({
+  initJob({
     url: `http://localhost:${server.address().port}`,
     duration: 1,
     connections: 100,
@@ -27,7 +27,7 @@ test('run should only send the expected number of requests', (t) => {
     t.notOk(done)
   }, 1000)
 
-  run({
+  initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 2,
     maxConnectionRequests: 10
@@ -37,7 +37,7 @@ test('run should only send the expected number of requests', (t) => {
     t.equal(res.requests.sent, 20, 'totalRequests should match the expected amount')
   })
 
-  run({
+  initJob({
     url: `http://localhost:${server.address().port}`,
     connections: 2,
     maxOverallRequests: 10
@@ -51,7 +51,7 @@ test('run should only send the expected number of requests', (t) => {
 test('should shutdown after all amounts timeout', (t) => {
   t.plan(5)
 
-  run({
+  initJob({
     url: `http://localhost:${timeoutServer.address().port}`,
     amount: 10,
     timeout: 2,
@@ -69,7 +69,7 @@ test('should reconnect twice to the server with a reset rate of 10 for 20 connec
   t.plan(3)
   const testServer = helper.startServer()
 
-  run({
+  initJob({
     url: 'localhost:' + testServer.address().port,
     connections: 1,
     amount: 20,

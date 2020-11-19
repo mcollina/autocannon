@@ -1,6 +1,6 @@
 'use strict'
 const test = require('tap').test
-const run = require('../../lib/run')
+const initJob = require('../../lib/init')
 
 test('should log error on connection error', t => {
   t.plan(1)
@@ -8,7 +8,7 @@ test('should log error on connection error', t => {
     t.type(obj, Error)
     console.error = () => {}
   }
-  run({
+  initJob({
     url: 'http://unknownhost',
     connections: 2,
     duration: 5,
