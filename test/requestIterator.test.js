@@ -408,3 +408,30 @@ test('request iterator should return next request buffer', (t) => {
   const buffer = iterator.nextRequestBuffer()
   t.same(request2Res, buffer, 'request is okay')
 })
+
+test('request iterator should initialize context from options', (t) => {
+  t.plan(3)
+
+  const opts = server.address()
+  opts.initialContext = { foo: 'bar' }
+  opts.requests = [
+    {
+      setupRequest: (req, context) => {
+        t.deepEqual(context, { foo: 'bar' }, 'context should be initialized from opts')
+        context.baz = 'qux'
+        return req
+      }
+    },
+    {
+      setupRequest: (req, context) => {
+        t.deepEqual(context, { foo: 'bar', baz: 'qux' }, 'context should contain updated data')
+        return req
+      }
+    }
+  ]
+
+  const iterator = new RequestIterator(opts)
+  iterator.nextRequest()
+  // will reset and reinit context
+  iterator.nextRequest()
+})

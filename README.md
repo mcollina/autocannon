@@ -286,6 +286,7 @@ Start autocannon against the given target.
     * `body`: A `String` or a `Buffer` containing the body of the request. Insert one or more randomly generated IDs into the body by including `[<id>]` where the randomly generated ID should be inserted (Must also set idReplacement to true). This can be useful in soak testing POST endpoints where one or more fields must be unique. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `form`: A `String` or an `Object` containing the multipart/form-data options or a path to the JSON file containing them
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
+    * `initialContext`: An object that you'd like to initialize your context with. Checkout [an example of initializing context](./samples/init-context.js). _OPTIONAL_
     * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`. When using `workers`, you need to supply a file path that default exports a function instead (Check out [workers](#workers) section for more details).
     * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
     * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
@@ -321,7 +322,7 @@ Each client will loop over the `requests` array, would it contain one or several
 While going through available requests, the client will maintain a `context`: an object you can use in `onResponse` and `setupRequest` functions, to store and read some contextual data.
 Please check the `request-context.js` file in samples.
 
-Note that `context` object will be cleared when restarting to the first available request, ensuring similar runs.
+Note that `context` object will be reset to `initialContext` (or `{}` it is not provided) when restarting to the first available request, ensuring similar runs.
 
 
 ### autocannon.track(instance[, opts])
