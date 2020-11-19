@@ -245,6 +245,23 @@ test('run should callback with an error using expectBody and requests', (t) => {
   })
 })
 
+test('run should handle context correctly', (t) => {
+  t.plan(1)
+
+  run({
+    url: 'http://localhost:' + server.address().port,
+    connections: 1,
+    amount: 1,
+    initialContext: { init: 'context' },
+    requests: [{
+      setupRequest: (req, context) => {
+        t.deepEqual(context, { init: 'context' }, 'context should be initialized from opts')
+        return req
+      }
+    }]
+  })
+})
+
 test('run should allow users to enter timestrings to be used for duration', (t) => {
   t.plan(3)
 
