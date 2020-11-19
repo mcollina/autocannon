@@ -6,7 +6,7 @@ const Autocannon = require('../autocannon')
 test('debug works', (t) => {
   t.plan(5)
 
-  var args = Autocannon.parseArguments([
+  const args = Autocannon.parseArguments([
     '-H', 'X-Http-Method-Override=GET',
     '-m', 'POST',
     '-b', 'the body',
