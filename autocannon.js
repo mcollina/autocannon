@@ -139,6 +139,8 @@ function parseArguments (argvs) {
       console.error('Use a full URL or set the PORT variable.')
       process.exit(1)
     }
+
+    return null // to make linter happy
   })
 
   if (argv.input) {

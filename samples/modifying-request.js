@@ -30,7 +30,7 @@ function startBench () {
   // modify the headers on future requests
   // this wipes any existing headers out with the new ones
   instance.on('response', function (client, statusCode, returnBytes, responseTime) {
-    var newHeaders = {}
+    const newHeaders = {}
     newHeaders[`header${headers++}`] = `headerValue${headers++}`
     client.setHeaders(newHeaders)
   })
