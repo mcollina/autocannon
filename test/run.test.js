@@ -248,7 +248,7 @@ test('run should callback with an error using expectBody and requests', (t) => {
 test('run should handle context correctly', (t) => {
   t.plan(1)
 
-  run({
+  initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 1,
     amount: 1,

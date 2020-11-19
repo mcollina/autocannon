@@ -174,7 +174,7 @@ test('client ignores falsy SNI servername', (t) => {
 test('client passes through tlsOptions to connect', (t) => {
   t.plan(4)
 
-  var opts = tlsServer.address()
+  const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.tlsOptions = {
     key: fs.readFileSync(path.join(__dirname, '/key.pem')),
