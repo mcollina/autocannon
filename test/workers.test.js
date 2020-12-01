@@ -5,6 +5,75 @@ const test = require('tap').test
 const http = require('http')
 const initJob = require('../lib/init')
 const hasWorkerSupport = require('./utils/has-worker-support')
+const helper = require('./helper')
+const server = helper.startServer()
+
+test('init with workers', { skip: !hasWorkerSupport }, (t) => {
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    connections: 3,
+    workers: 3,
+    amount: 6,
+    title: 'with-workers'
+  }, function (err, result) {
+    t.error(err)
+
+    t.ok(result.workers === 3, 'correct worker count')
+    t.equal(result.title, 'with-workers', 'title should be what was passed in')
+    t.equal(result.connections, 3, 'connections is the same')
+    t.equal(result.pipelining, 1, 'pipelining is the default')
+
+    t.ok(result.latency, 'latency exists')
+    t.type(result.latency.average, 'number', 'latency.average exists')
+    t.type(result.latency.stddev, 'number', 'latency.stddev exists')
+    t.ok(result.latency.min >= 0, 'latency.min exists')
+    t.type(result.latency.max, 'number', 'latency.max exists')
+    t.type(result.latency.p2_5, 'number', 'latency.p2_5 (2.5%) exists')
+    t.type(result.latency.p50, 'number', 'latency.p50 (50%) exists')
+    t.type(result.latency.p97_5, 'number', 'latency.p97_5 (97.5%) exists')
+    t.type(result.latency.p99, 'number', 'latency.p99 (99%) exists')
+
+    t.ok(result.requests, 'requests exists')
+    t.type(result.requests.average, 'number', 'requests.average exists')
+    t.type(result.requests.stddev, 'number', 'requests.stddev exists')
+    t.type(result.requests.min, 'number', 'requests.min exists')
+    t.type(result.requests.max, 'number', 'requests.max exists')
+    t.ok(result.requests.total === 6, 'requests.total exists')
+    t.type(result.requests.sent, 'number', 'sent exists')
+    t.ok(result.requests.sent >= result.requests.total, 'total requests made should be more than or equal to completed requests total')
+    t.type(result.requests.p1, 'number', 'requests.p1 (1%) exists')
+    t.type(result.requests.p2_5, 'number', 'requests.p2_5 (2.5%) exists')
+    t.type(result.requests.p50, 'number', 'requests.p50 (50%) exists')
+    t.type(result.requests.p97_5, 'number', 'requests.p97_5 (97.5%) exists')
+
+    t.ok(result.throughput, 'throughput exists')
+    t.type(result.throughput.average, 'number', 'throughput.average exists')
+    t.type(result.throughput.stddev, 'number', 'throughput.stddev exists')
+    t.type(result.throughput.min, 'number', 'throughput.min exists')
+    t.type(result.throughput.max, 'number', 'throughput.max exists')
+    t.type(result.throughput.total, 'number', 'throughput.total exists')
+    t.type(result.throughput.p1, 'number', 'throughput.p1 (1%) exists')
+    t.type(result.throughput.p2_5, 'number', 'throughput.p2_5 (2.5%) exists')
+    t.type(result.throughput.p50, 'number', 'throughput.p50 (50%) exists')
+    t.type(result.throughput.p97_5, 'number', 'throughput.p97_5 (97.5%) exists')
+
+    t.ok(result.start, 'start time exists')
+    t.ok(result.finish, 'finish time exists')
+
+    t.equal(result.errors, 0, 'no errors')
+    t.equal(result.mismatches, 0, 'no mismatches')
+    t.equal(result.resets, 0, 'no resets')
+
+    t.equal(result['1xx'], 0, '1xx codes')
+    t.equal(result['2xx'], result.requests.total, '2xx codes')
+    t.equal(result['3xx'], 0, '3xx codes')
+    t.equal(result['4xx'], 0, '4xx codes')
+    t.equal(result['5xx'], 0, '5xx codes')
+    t.equal(result.non2xx, 0, 'non 2xx codes')
+
+    t.end()
+  })
+})
 
 test('setupRequest and onResponse work with workers', { skip: !hasWorkerSupport }, (t) => {
   const server = http.createServer((req, res) => {
