@@ -2,7 +2,6 @@
 
 # autocannon
 
-[![Join the chat at https://gitter.im/mcollina/autocannon](https://badges.gitter.im/mcollina/autocannon.svg)](https://gitter.im/mcollina/autocannon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ![Node.js CI](https://github.com/mcollina/autocannon/workflows/Node.js%20CI/badge.svg)
 
 ![demo](https://raw.githubusercontent.com/mcollina/autocannon/master/demo.gif)
