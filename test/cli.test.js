@@ -205,6 +205,7 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     /4 workers.*$/,
     /$/,
     /.*/,
+    /.*/, // spinner text is shown even though it's supposed to be cleared
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
     /.*/,
     /Latency.*$/,

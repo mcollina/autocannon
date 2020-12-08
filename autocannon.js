@@ -204,9 +204,13 @@ function start (argv) {
         onPort: false,
         url: url
       })
-      initJob(opts, () => {
+      const tracker = initJob(opts, () => {
         proc.kill('SIGINT')
         server.close()
+      })
+
+      process.once('SIGINT', () => {
+        tracker.stop()
       })
     })
 
