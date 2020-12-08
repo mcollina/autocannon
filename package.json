@@ -7,7 +7,7 @@
     "autocannon": "autocannon.js"
   },
   "scripts": {
-    "test": "standard && tap test/serial/*.test.js test/*.test.js -t 900",
+    "test": "standard && tap test/serial/*.test.js test/*.test.js",
     "standard:fix": "standard --fix"
   },
   "pre-commit": [
