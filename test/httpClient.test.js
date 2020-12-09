@@ -563,7 +563,7 @@ test('client should emit a timeout when no response is received', (t) => {
     t.ok(1, 'timeout should have happened')
   })
 
-  setTimeout(() => client.destroy(), 1500)
+  setTimeout(() => client.destroy(), 1800)
 })
 
 test('client should emit 2 timeouts when no responses are received', (t) => {
@@ -577,7 +577,7 @@ test('client should emit 2 timeouts when no responses are received', (t) => {
     t.ok(1, 'timeout should have happened')
   })
 
-  setTimeout(() => client.destroy(), 2500)
+  setTimeout(() => client.destroy(), 2800)
 })
 
 test('client should have 2 different requests it iterates over', (t) => {
