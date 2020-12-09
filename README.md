@@ -505,6 +505,11 @@ Logo and identity designed by Cosmic Fox Design: https://www.behance.net/cosmicf
 
 If you are using autocannon or you have any questions, let us know: [Gitter](https://gitter.im/mcollina/autocannon)
 
+### Contributors
+
+- [Glen Keane](mailto:glenkeane.94@gmail.com) | [Github](https://github.com/GlenTiki)
+- [Salman Mitha](mailto:salmanmitha@gmail.com) | [Github](https://github.com/salmanm) | [NPM](https://www.npmjs.com/~salmanm)
+
 ## License
 
 Copyright [Matteo Collina](https://github.com/mcollina) and other contributors, Licensed under [MIT](./LICENSE).
