@@ -577,7 +577,13 @@ test('client should emit 2 timeouts when no responses are received', (t) => {
     t.ok(1, 'timeout should have happened')
   })
 
-  setTimeout(() => client.destroy(), 2800)
+  let count = 0
+  const timer = setInterval(() => console.log('TICKING', count++), 200)
+
+  setTimeout(() => {
+    client.destroy()
+    clearInterval(timer)
+  }, 2800)
 })
 
 test('client should have 2 different requests it iterates over', (t) => {
