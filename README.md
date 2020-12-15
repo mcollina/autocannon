@@ -45,7 +45,7 @@ Available options:
   -p/--pipelining NUM
         The number of pipelined requests to use. default: 1.
   -d/--duration SEC
-        The number of seconds to run the autocannnon. default: 10.
+        The number of seconds to run the autocannon. default: 10.
   -a/--amount NUM
         The amount of requests to make before exiting the benchmark. If set, duration is ignored.
   -S/--socketPath
