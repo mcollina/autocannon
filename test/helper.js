@@ -36,7 +36,13 @@ function startServer (opts) {
     }
 
     res.statusCode = statusCode
-    res.end(typeof body === 'function' ? body(req) : body)
+    const reply = () => res.end(typeof body === 'function' ? body(req) : body)
+
+    if (opts.delayResponse) {
+      setTimeout(reply, opts.delayResponse)
+    } else {
+      reply()
+    }
   }
 
   server.unref()
