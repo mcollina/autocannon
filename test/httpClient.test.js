@@ -63,6 +63,25 @@ test('client calls a https server twice', (t) => {
   })
 })
 
+test('client calculates correct duration when using pipelining', (t) => {
+  t.plan(4)
+
+  const lazyServer = helper.startServer({ delayResponse: 500 })
+  const opts = lazyServer.address()
+  opts.pipelining = 2
+  const client = new Client(opts)
+  let count = 0
+
+  client.on('response', (statusCode, length, duration) => {
+    t.equal(statusCode, 200, 'status code matches')
+    t.ok(duration > 500 && duration < 600)
+
+    if (++count === 2) {
+      client.destroy()
+    }
+  })
+})
+
 test('client calls a tls server without SNI servername twice', (t) => {
   t.plan(4)
 
@@ -891,17 +910,17 @@ test('client invokes appropriate onResponse when using pipelining', (t) => {
         t.deepEqual(responses, ['POST'])
         break
       case 2:
-        // 3rd was sent as 1st is finished, receiving 2st
+        // 3rd was sent as 1st is finished, receiving 2nd
         t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'PUT' }), 'current should be third request')
         t.deepEqual(responses, ['POST', 'GET'])
         break
       case 3:
-        // 1st was resent, receiving 3st
+        // 1st was resent, receiving 3rd
         t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'current should be first request')
         t.deepEqual(responses, ['POST', 'GET', 'PUT'])
         break
       case 4:
-        // 2st was resent, receiving 1st
+        // 2nd was resent, receiving 1st
         t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'GET' }), 'current should be second request')
         t.deepEqual(responses, ['POST', 'GET', 'PUT', 'POST'])
         client.destroy()
