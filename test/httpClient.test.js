@@ -74,7 +74,7 @@ test('client calculates correct duration when using pipelining', (t) => {
 
   client.on('response', (statusCode, length, duration) => {
     t.equal(statusCode, 200, 'status code matches')
-    t.ok(duration > 500 && duration < 600)
+    t.ok(duration > 500 && duration < 800)
 
     if (++count === 2) {
       client.destroy()
