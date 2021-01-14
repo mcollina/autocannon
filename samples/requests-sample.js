@@ -1,7 +1,7 @@
 'use strict'
 
 const http = require('http')
-const autocannon = require('autocannon')
+const autocannon = require('../autocannon')
 
 const server = http.createServer(handle)
 
