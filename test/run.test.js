@@ -375,7 +375,7 @@ for (let i = 1; i <= 5; i++) {
       duration: 2
     }, (err, result) => {
       t.error(err)
-
+      console.log('-----', result)
       t.ok(result[`${i}xx`], `${i}xx status codes recorded`)
 
       t.ok(result.latency, 'latency exists')
