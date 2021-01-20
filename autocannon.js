@@ -229,7 +229,9 @@ function start (argv) {
       })
     })
   } else {
-    initJob(argv)
+    initJob(argv).catch((err) => {
+      console.error(err.message)
+    })
   }
 }
 

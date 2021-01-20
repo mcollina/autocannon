@@ -8,7 +8,7 @@ const { promisify } = require('util')
 const initJob = require('../lib/init')
 const helper = require('./helper')
 const writef = promisify(writeFile)
-const hasWorkerSupport = require('./utils/has-worker-support')
+const { hasWorkerSupport } = require('../lib/util')
 
 test('run should return an error with invalid form options', async t => {
   const cases = [

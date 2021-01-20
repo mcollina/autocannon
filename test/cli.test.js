@@ -7,7 +7,7 @@ const fs = require('fs')
 const os = require('os')
 const childProcess = require('child_process')
 const helper = require('./helper')
-const hasWorkerSupport = require('./utils/has-worker-support')
+const { hasWorkerSupport } = require('../lib/util')
 
 test('should run benchmark against server', (t) => {
   const lines = [
