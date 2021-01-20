@@ -4,9 +4,27 @@ const path = require('path')
 const test = require('tap').test
 const http = require('http')
 const initJob = require('../lib/init')
-const hasWorkerSupport = require('./utils/has-worker-support')
+const { hasWorkerSupport } = require('../lib/util')
 const helper = require('./helper')
 const server = helper.startServer()
+
+test('returns error when no worker support was found', (t) => {
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    connections: 3,
+    workers: 3,
+    amount: 6,
+    title: 'with-workers'
+  }, function (err, result) {
+    if (hasWorkerSupport) {
+      t.error(err)
+    } else {
+      t.equal(err.message, 'Please use node >= 11.7.0 for workers support')
+    }
+
+    t.end()
+  })
+})
 
 test('init with workers', { skip: !hasWorkerSupport }, (t) => {
   initJob({
