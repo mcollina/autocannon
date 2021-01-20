@@ -366,7 +366,7 @@ test('run should accept a unix socket/windows pipe', (t) => {
 })
 
 for (let i = 1; i <= 5; i++) {
-  test(`run should count all ${i}xx status codes`, (t) => {
+  test(`run should count all ${i}xx status codes`, { skip: true }, (t) => {
     const server = helper.startServer({ statusCode: i * 100 + 2 })
 
     initJob({
