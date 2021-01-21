@@ -3,12 +3,10 @@
 const os = require('os')
 const path = require('path')
 const test = require('tap').test
-const semver = require('semver')
 const initJob = require('../lib/init')
 const defaultOptions = require('../lib/defaultOptions')
 const helper = require('./helper')
 const server = helper.startServer()
-const isNode15 = semver.gte(process.versions.node, '15.0.0')
 
 test('init', (t) => {
   initJob({
@@ -368,8 +366,7 @@ test('run should accept a unix socket/windows pipe', (t) => {
 })
 
 for (let i = 1; i <= 5; i++) {
-  // TODO we should not skip those tests
-  test(`run should count all ${i}xx status codes`, { skip: isNode15 }, (t) => {
+  test(`run should count all ${i}xx status codes`, (t) => {
     const server = helper.startServer({ statusCode: i * 100 + 2 })
 
     initJob({
