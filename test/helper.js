@@ -36,7 +36,10 @@ function startServer (opts) {
     }
 
     res.statusCode = statusCode
-    const reply = () => res.end(typeof body === 'function' ? body(req) : body)
+    const reply = () => {
+      const bodyToWrite = typeof body === 'function' ? body(req) : body
+      res.end(statusCode < 200 ? undefined : bodyToWrite)
+    }
 
     if (opts.delayResponse) {
       setTimeout(reply, opts.delayResponse)
