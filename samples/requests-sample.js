@@ -1,7 +1,7 @@
 'use strict'
 
 const http = require('http')
-const autocannon = require('autocannon')
+const autocannon = require('../autocannon')
 
 const server = http.createServer(handle)
 
@@ -24,6 +24,7 @@ function startBench () {
     },
     requests: [
       {
+        title: '1-',
         method: 'POST', // this should be a post for logging in
         path: '/login',
         body: 'valid login details',
@@ -33,10 +34,12 @@ function startBench () {
         headers: {}
       },
       {
+        title: '2-',
         path: '/mySecretDetails'
         // this will automatically add the pregenerated auth token
       },
       {
+        title: '3-',
         method: 'GET', // this should be a put for modifying secret details
         path: '/mySecretDetails',
         headers: { // let submit some json?
@@ -55,6 +58,7 @@ function startBench () {
   }, finishedBench)
 
   function finishedBench (err, res) {
-    console.log('finished bench', err, res)
+    console.log('finished bench', err)
+    console.dir(res, { depth: 4 })
   }
 }
