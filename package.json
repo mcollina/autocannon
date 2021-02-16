@@ -52,7 +52,7 @@
     "clone": "^2.1.2",
     "color-support": "^1.1.1",
     "cross-argv": "^1.0.0",
-    "form-data": "^3.0.0",
+    "form-data": "^4.0.0",
     "has-async-hooks": "^1.0.0",
     "hdr-histogram-js": "^2.0.1",
     "hdr-histogram-percentiles-obj": "^3.0.0",
