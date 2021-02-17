@@ -136,7 +136,7 @@ test('request iterator should allow for rebuilding the current request', (t) => 
   const request2Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`)
   const request3Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`)
   const request4Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 8\r\n\r\nmodified`)
-  const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`)
+  const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\n\r\n`)
 
   opts.requests = requests1
 
@@ -258,7 +258,7 @@ test('request iterator should properly mutate requests if a setupRequest functio
   const request3Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 8\r\n\r\nmodified`)
   const request4Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 9\r\n\r\nmodified2`)
   const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\nContent-Length: 9\r\n\r\nmodified3`)
-  const request6Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\n\r\n`)
+  const request6Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nheader: modifiedHeader\r\n\r\n`)
 
   const iterator = new RequestIterator(opts)
   t.same(iterator.currentRequest.requestBuffer, request1Res, 'request was okay')
@@ -434,4 +434,50 @@ test('request iterator should initialize context from options', (t) => {
   iterator.nextRequest()
   // will reset and reinit context
   iterator.nextRequest()
+})
+
+test('request iterator should use the same headers when set', (t) => {
+  t.plan(6)
+
+  const opts = server.address()
+  opts.method = 'POST'
+
+  let i = 0
+
+  opts.requests = [
+    {
+      body: 'hello world',
+      setupRequest: req => {
+        req.body += i++
+        return req
+      }
+    },
+    {
+      method: 'POST',
+      body: 'modified',
+      setupRequest: req => {
+        req.method = 'GET'
+        return req
+      }
+    }
+  ]
+
+  const request1Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAccess-Control-Allow-Credentials: true\r\nContent-Length: 12\r\n\r\nhello world1`)
+  const request2Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAccess-Control-Allow-Credentials: true\r\nContent-Length: 12\r\n\r\nhello world1`)
+  const request3Res = Buffer.from(`GET / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAccess-Control-Allow-Credentials: true\r\nContent-Length: 8\r\n\r\nmodified`)
+  const request4Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAccess-Control-Allow-Credentials: true\r\nContent-Length: 12\r\n\r\nhello world2`)
+  const request5Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAccess-Control-Allow-Credentials: true\r\nContent-Length: 12\r\n\r\nhello world2`)
+  const request6Res = Buffer.from(`POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nAccess-Control-Allow-Credentials: true\r\n\r\n`)
+
+  const iterator = new RequestIterator(opts)
+  iterator.setHeaders({ 'Access-Control-Allow-Credentials': 'true' })
+  t.same(iterator.currentRequest.requestBuffer, request1Res, iterator.currentRequest.requestBuffer.toString())
+  t.same(iterator.currentRequest.requestBuffer, request2Res, iterator.currentRequest.requestBuffer.toString())
+  iterator.nextRequest()
+  t.same(iterator.currentRequest.requestBuffer, request3Res, iterator.currentRequest.requestBuffer.toString())
+  iterator.nextRequest()
+  t.same(iterator.currentRequest.requestBuffer, request4Res, iterator.currentRequest.requestBuffer.toString())
+  t.same(iterator.currentRequest.requestBuffer, request5Res, iterator.currentRequest.requestBuffer.toString())
+  iterator.setRequest()
+  t.same(iterator.currentRequest.requestBuffer, request6Res, iterator.currentRequest.requestBuffer.toString())
 })
