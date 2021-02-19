@@ -313,7 +313,7 @@ Start autocannon against the given target.
 
 ### Customizing sent requests
 
-When running, autocannon will create has many `Client` as desired connections. They will run in parallel, until the benchmark is over (duration or total number of requests).
+When running, autocannon will create as many `Client` objects as desired connections. They will run in parallel, until the benchmark is over (duration or total number of requests).
 Each client will loop over the `requests` array, would it contain one or several requests.
 
 While going through available requests, the client will maintain a `context`: an object you can use in `onResponse` and `setupRequest` functions, to store and read some contextual data.
