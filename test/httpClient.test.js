@@ -66,7 +66,8 @@ test('client calls a https server twice', (t) => {
 test('client calculates correct duration when using pipelining', (t) => {
   t.plan(4)
 
-  const lazyServer = helper.startServer({ delayResponse: 500 })
+  const delayResponse = 500
+  const lazyServer = helper.startServer({ delayResponse })
   const opts = lazyServer.address()
   opts.pipelining = 2
   const client = new Client(opts)
@@ -74,7 +75,7 @@ test('client calculates correct duration when using pipelining', (t) => {
 
   client.on('response', (statusCode, length, duration) => {
     t.equal(statusCode, 200, 'status code matches')
-    t.ok(duration > 500 && duration < 800)
+    t.ok(duration > delayResponse, `Expected response delay > ${delayResponse}ms but got ${duration}ms`)
 
     if (++count === 2) {
       client.destroy()
