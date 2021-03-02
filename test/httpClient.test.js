@@ -581,9 +581,8 @@ test('client should emit a timeout when no response is received', (t) => {
 
   client.on('timeout', () => {
     t.ok(1, 'timeout should have happened')
+    client.destroy()
   })
-
-  setTimeout(() => client.destroy(), 1800)
 })
 
 test('client should emit 2 timeouts when no responses are received', (t) => {
@@ -592,12 +591,13 @@ test('client should emit 2 timeouts when no responses are received', (t) => {
   const opts = timeoutServer.address()
   opts.timeout = 1
   const client = new Client(opts)
-
+  let count = 0
   client.on('timeout', () => {
     t.ok(1, 'timeout should have happened')
+    if (count++ > 0) {
+      client.destroy()
+    }
   })
-
-  setTimeout(() => client.destroy(), 2800)
 })
 
 test('client should have 2 different requests it iterates over', (t) => {
