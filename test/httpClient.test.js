@@ -581,9 +581,7 @@ test('client should emit a timeout when no response is received', (t) => {
 
   client.on('timeout', () => {
     t.ok(1, 'timeout should have happened')
-
-    // client.destroy must be done async to ensure the correct internal timer is destroyed instead of the one that triggered this timeout
-    setTimeout(() => client.destroy())
+    client.destroy()
   })
 })
 
@@ -597,8 +595,7 @@ test('client should emit 2 timeouts when no responses are received', (t) => {
   client.on('timeout', () => {
     t.ok(1, 'timeout should have happened')
     if (count++ > 0) {
-      // client.destroy must be done async to ensure the correct internal timer is destroyed instead of the one that triggered this timeout
-      setTimeout(() => client.destroy())
+      client.destroy()
     }
   })
 })
