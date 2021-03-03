@@ -76,7 +76,6 @@ test('client calculates correct duration when using pipelining', (t) => {
 
   client.on('response', (statusCode, length, duration) => {
     t.equal(statusCode, 200, 'status code matches')
-
     t.ok(duration > delayResponse, `Expected response delay > ${delayResponse}ms but got ${duration}ms`)
 
     const hrduration = process.hrtime(startTime)
@@ -566,7 +565,7 @@ test('client should throw when attempting to modify the request with a pipelinin
   client.destroy()
 })
 
-test('client pipelined requests cound should equal pipelining when greater than 1', (t) => {
+test('client pipelined requests count should equal pipelining when greater than 1', (t) => {
   t.plan(1)
 
   const opts = server.address()
