@@ -17,7 +17,6 @@ test('PipelinedRequestsQueue measures time precisely', (t) => {
     // An extra millisecond is added just in case there is soem rounding error between hrtime and Date.now()
     const measuredDuration = Date.now() - start + 1
     t.ok(data.duration > delay, `Calculated duration ${data.duration} should not be less than the induced delay ${delay}`)
-    console.log(delay, data.duration, measuredDuration)
     t.ok(data.duration <= measuredDuration, `Calculated duration ${data.duration} should be less than the measured time ${measuredDuration}`)
   }, delay)
 })
