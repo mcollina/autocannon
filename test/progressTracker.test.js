@@ -2,8 +2,12 @@
 
 const helper = require('./helper')
 const test = require('tap').test
+const { defaultMaxListeners } = require('events')
+const sinon = require('sinon')
 const progressTracker = require('../lib/progressTracker')
 const autocannon = require('../autocannon')
+const { hasWorkerSupport } = require('../lib/util')
+
 test('progress tracker should throw if no instance is provided', t => {
   t.plan(1)
   try {
@@ -93,4 +97,25 @@ test('should log resets', t => {
     renderProgressBar: true
   })
   t.pass()
+})
+
+test(`should not emit warnings when using >= ${defaultMaxListeners} workers`, { skip: !hasWorkerSupport }, t => {
+  const server = helper.startServer()
+
+  const instance = autocannon({
+    url: `http://localhost:${server.address().port}`,
+    workers: defaultMaxListeners,
+    duration: 1
+  })
+
+  setTimeout(() => {
+    instance.stop()
+    t.false(emitWarningSpy.called)
+    emitWarningSpy.restore()
+    t.end()
+  }, 2000)
+
+  const emitWarningSpy = sinon.spy(process, 'emitWarning')
+
+  autocannon.track(instance)
 })

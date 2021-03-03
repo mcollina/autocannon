@@ -42,12 +42,14 @@
     "busboy": "^0.3.1",
     "pre-commit": "^1.1.2",
     "proxyquire": "^2.1.3",
+    "sinon": "^9.2.4",
     "split2": "^3.2.2",
     "standard": "^16.0.3",
     "tap": "^14.10.8"
   },
   "dependencies": {
     "chalk": "^4.1.0",
+    "char-spinner": "^1.0.1",
     "cli-table3": "^0.6.0",
     "clone": "^2.1.2",
     "color-support": "^1.1.1",
@@ -61,7 +63,6 @@
     "manage-path": "^2.0.0",
     "minimist": "^1.2.0",
     "on-net-listen": "^1.1.1",
-    "ora": "^5.1.0",
     "pretty-bytes": "^5.4.1",
     "progress": "^2.0.3",
     "reinterval": "^1.1.0",
