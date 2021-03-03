@@ -64,18 +64,23 @@ test('client calls a https server twice', (t) => {
 })
 
 test('client calculates correct duration when using pipelining', (t) => {
-  t.plan(4)
+  t.plan(6)
 
   const delayResponse = 500
   const lazyServer = helper.startServer({ delayResponse })
   const opts = lazyServer.address()
   opts.pipelining = 2
+  const startTime = process.hrtime()
   const client = new Client(opts)
   let count = 0
 
   client.on('response', (statusCode, length, duration) => {
     t.equal(statusCode, 200, 'status code matches')
     t.ok(duration > delayResponse, `Expected response delay > ${delayResponse}ms but got ${duration}ms`)
+
+    const hrduration = process.hrtime(startTime)
+    const maxExpectedDuration = hrduration[0] * 1e3 + hrduration[1] / 1e6
+    t.ok(duration < maxExpectedDuration, `Expected response delay < ${maxExpectedDuration}ms but got ${duration}ms`)
 
     if (++count === 2) {
       client.destroy()
@@ -560,14 +565,14 @@ test('client should throw when attempting to modify the request with a pipelinin
   client.destroy()
 })
 
-test('client resData length should equal pipelining when greater than 1', (t) => {
+test('client pipelined requests count should equal pipelining when greater than 1', (t) => {
   t.plan(1)
 
   const opts = server.address()
   opts.pipelining = 10
   const client = new Client(opts)
 
-  t.equal(client.resData.length, client.opts.pipelining)
+  t.equal(client.pipelinedRequests.size(), client.opts.pipelining)
 
   client.destroy()
 })
