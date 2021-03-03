@@ -9,15 +9,16 @@ test('PipelinedRequestsQueue measures time precisely', (t) => {
   const delay = 42
   const queue = new PipelinedRequestsQueue()
 
-  const start = Date.now()
+  const startTime = process.hrtime()
   queue.insertRequest()
   setTimeout(() => {
     const data = queue.terminateRequest()
-    // Measure the duration with the imprecise Date.now()  as opposed to hrtime
-    // An extra millisecond is added just in case there is soem rounding error between hrtime and Date.now()
-    const measuredDuration = Date.now() - start + 1
+
     t.ok(data.duration > delay, `Calculated duration ${data.duration} should not be less than the induced delay ${delay}`)
-    t.ok(data.duration <= measuredDuration, `Calculated duration ${data.duration} should be less than the measured time ${measuredDuration}`)
+
+    const hrduration = process.hrtime(startTime)
+    const maxExpectedDuration = Math.ceil(hrduration[0] * 1e3 + hrduration[1] / 1e6)
+    t.ok(data.duration <= maxExpectedDuration, `Calculated duration ${data.duration} should be less than the max expected duration ${maxExpectedDuration}`)
   }, delay)
 })
 
