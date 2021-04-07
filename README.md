@@ -122,6 +122,10 @@ Available options:
   -E/--expectBody EXPECTED
         Ensure the body matches this value. If enabled, mismatches count towards bailout.
         Enabling this option will slow down the load testing.
+  --renderStatusCodes
+        Print status codes and their respective statistics.
+  --debug
+        Print connection errors to stderr.        
   -v/--version
         Print the version number.
   -h/--help
