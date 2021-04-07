@@ -31,7 +31,6 @@ module.exports.track = track
 module.exports.start = start
 module.exports.printResult = printResult
 module.exports.parseArguments = parseArguments
-console.log('ddddddddddddddddd')
 const alias = {
   connections: 'c',
   pipelining: 'p',
