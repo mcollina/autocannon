@@ -61,7 +61,6 @@
     "http-parser-js": "^0.5.2",
     "hyperid": "^2.0.3",
     "manage-path": "^2.0.0",
-    "minimist": "^1.2.0",
     "on-net-listen": "^1.1.1",
     "pretty-bytes": "^5.4.1",
     "progress": "^2.0.3",
