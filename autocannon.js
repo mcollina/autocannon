@@ -54,6 +54,7 @@ const alias = {
   ignoreCoordinatedOmission: 'C',
   reconnectRate: 'D',
   renderProgressBar: 'progress',
+  renderStatusCodes: 'statusCodes',
   title: 'T',
   version: 'v',
   forever: 'f',
@@ -74,6 +75,7 @@ const defaults = {
   reconnectRate: 0,
   renderLatencyTable: false,
   renderProgressBar: true,
+  renderStatusCodes: false,
   json: false,
   forever: false,
   method: 'GET',
@@ -85,7 +87,7 @@ const defaults = {
 
 function parseArguments (argvs) {
   let argv = subarg(argvs, {
-    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort', 'debug', 'ignoreCoordinatedOmission'],
+    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'renderStatusCodes', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort', 'debug', 'ignoreCoordinatedOmission'],
     alias,
     default: defaults,
     '--': true
