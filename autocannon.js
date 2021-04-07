@@ -103,6 +103,7 @@ function parseArguments (argvs) {
   if (argv.n) {
     argv.renderProgressBar = false
     argv.renderResultsTable = false
+    argv.renderStatusCodes = false
   }
 
   if (argv.version) {
