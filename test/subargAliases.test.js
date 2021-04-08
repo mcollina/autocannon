@@ -21,7 +21,6 @@ test('generateSubArgAliases Should generate warmup aliases', (t) => {
   t.equal(result.duration, 2)
   t.equal(result.warmup.connections, 3)
   t.equal(result.warmup.duration, 4)
-  t.end()
 })
 
 test('generateSubArgAliases should not process aliases that are not defined in subargAliases.js', (t) => {
@@ -42,5 +41,4 @@ test('generateSubArgAliases should not process aliases that are not defined in s
   t.equal(result.warmup.c, 3)
   t.equal(result.warmup.T, 'A title')
   t.equal(Object.keys(result.warmup).length, 3)
-  t.end()
 })

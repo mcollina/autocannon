@@ -882,7 +882,6 @@ test('should run when no callback is passed in', (t) => {
     duration: 1
   })
   t.resolveMatch(tracker, { connections: 1 }, 'The main tracker should resolve')
-  t.end()
 })
 
 test('Should run a warmup if one is passed in', (t) => {
@@ -898,7 +897,6 @@ test('Should run a warmup if one is passed in', (t) => {
     }
   })
   t.resolves(tracker, 'The main tracker should resolve')
-  t.end()
 })
 
 test('The warmup should not pollute the main result set', (t) => {
@@ -917,6 +915,5 @@ test('The warmup should not pollute the main result set', (t) => {
     t.equal(result.connections, 3, 'connections should equal the main connections and not the warmup connections')
     t.ok(result.duration >= 1, 'duration should equal the main duration and not the warmup duration')
     t.type(result.warmup, 'object')
-    t.end()
   })
 })
