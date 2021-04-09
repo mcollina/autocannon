@@ -52,6 +52,10 @@ Available options:
         A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
   -w/--workers
         Number of worker threads to use to fire requests.
+  -W/--warmup
+       Use a warm up interval before starting sampling.
+       This enables startup processes to finish and traffic to normalize before sampling begins
+       use -c and -d sub args e.g. `--warmpup [ -c 1 -d 3 ]`
   --on-port
         Start the command listed after -- on the command line. When it starts listening on a port,
         start sending requests to that port. A URL is still required in order to send requests to
@@ -118,6 +122,10 @@ Available options:
   -E/--expectBody EXPECTED
         Ensure the body matches this value. If enabled, mismatches count towards bailout.
         Enabling this option will slow down the load testing.
+  --renderStatusCodes
+        Print status codes and their respective statistics.
+  --debug
+        Print connection errors to stderr.        
   -v/--version
         Print the version number.
   -h/--help

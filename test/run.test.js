@@ -872,3 +872,48 @@ test('should throw on invalid HAR', (t) => {
     t.end()
   })
 })
+
+test('should run when no callback is passed in', (t) => {
+  t.plan(1)
+
+  const tracker = initJob({
+    url: 'http://localhost:' + server.address().port,
+    connections: 1,
+    duration: 1
+  })
+  t.resolveMatch(tracker, { connections: 1 }, 'The main tracker should resolve')
+})
+
+test('Should run a warmup if one is passed in', (t) => {
+  t.plan(1)
+
+  const tracker = initJob({
+    url: 'http://localhost:' + server.address().port,
+    connections: 1,
+    duration: 1,
+    warmup: {
+      connections: 1,
+      duration: 1
+    }
+  })
+  t.resolves(tracker, 'The main tracker should resolve')
+})
+
+test('The warmup should not pollute the main result set', (t) => {
+  t.plan(3)
+
+  const tracker = initJob({
+    url: 'http://localhost:' + server.address().port,
+    connections: 3,
+    duration: 1,
+    warmup: {
+      connections: 4,
+      duration: 2
+    }
+  })
+  tracker.then((result) => {
+    t.equal(result.connections, 3, 'connections should equal the main connections and not the warmup connections')
+    t.ok(result.duration >= 1, 'duration should equal the main duration and not the warmup duration')
+    t.type(result.warmup, 'object')
+  })
+})

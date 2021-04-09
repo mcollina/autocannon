@@ -3,7 +3,6 @@
 'use strict'
 
 const crossArgv = require('cross-argv')
-const minimist = require('minimist')
 const fs = require('fs')
 const os = require('os')
 const net = require('net')
@@ -12,10 +11,12 @@ const URL = require('url').URL
 const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
+const subarg = require('subarg')
 const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const printResult = require('./lib/printResult')
 const initJob = require('./lib/init')
 const track = require('./lib/progressTracker')
+const generateSubArgAliases = require('./lib/subargAliases')
 const { checkURL, ofURL } = require('./lib/url')
 const { parseHAR } = require('./lib/parseHAR')
 
@@ -30,63 +31,69 @@ module.exports.track = track
 module.exports.start = start
 module.exports.printResult = printResult
 module.exports.parseArguments = parseArguments
+const alias = {
+  connections: 'c',
+  pipelining: 'p',
+  timeout: 't',
+  duration: 'd',
+  amount: 'a',
+  json: 'j',
+  renderLatencyTable: ['l', 'latency'],
+  onPort: 'on-port',
+  method: 'm',
+  headers: ['H', 'header'],
+  body: 'b',
+  form: 'F',
+  servername: 's',
+  bailout: 'B',
+  input: 'i',
+  maxConnectionRequests: 'M',
+  maxOverallRequests: 'O',
+  connectionRate: 'r',
+  overallRate: 'R',
+  ignoreCoordinatedOmission: 'C',
+  reconnectRate: 'D',
+  renderProgressBar: 'progress',
+  renderStatusCodes: 'statusCodes',
+  title: 'T',
+  version: 'v',
+  forever: 'f',
+  idReplacement: 'I',
+  socketPath: 'S',
+  excludeErrorStats: 'x',
+  expectBody: 'E',
+  workers: 'w',
+  warmup: 'W',
+  help: 'h'
+}
+
+const defaults = {
+  connections: 10,
+  timeout: 10,
+  pipelining: 1,
+  duration: 10,
+  reconnectRate: 0,
+  renderLatencyTable: false,
+  renderProgressBar: true,
+  renderStatusCodes: false,
+  json: false,
+  forever: false,
+  method: 'GET',
+  idReplacement: false,
+  excludeErrorStats: false,
+  debug: false,
+  workers: 0
+}
 
 function parseArguments (argvs) {
-  const argv = minimist(argvs, {
+  let argv = subarg(argvs, {
     boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'renderStatusCodes', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort', 'debug', 'ignoreCoordinatedOmission'],
-    alias: {
-      connections: 'c',
-      pipelining: 'p',
-      timeout: 't',
-      duration: 'd',
-      amount: 'a',
-      json: 'j',
-      renderLatencyTable: ['l', 'latency'],
-      onPort: 'on-port',
-      method: 'm',
-      headers: ['H', 'header'],
-      body: 'b',
-      form: 'F',
-      servername: 's',
-      bailout: 'B',
-      input: 'i',
-      maxConnectionRequests: 'M',
-      maxOverallRequests: 'O',
-      connectionRate: 'r',
-      overallRate: 'R',
-      ignoreCoordinatedOmission: 'C',
-      reconnectRate: 'D',
-      renderProgressBar: 'progress',
-      renderStatusCodes: 'statusCodes',
-      title: 'T',
-      version: 'v',
-      forever: 'f',
-      idReplacement: 'I',
-      socketPath: 'S',
-      excludeErrorStats: 'x',
-      expectBody: 'E',
-      workers: 'w',
-      help: 'h'
-    },
-    default: {
-      connections: 10,
-      timeout: 10,
-      pipelining: 1,
-      duration: 10,
-      reconnectRate: 0,
-      renderLatencyTable: false,
-      renderProgressBar: true,
-      renderStatusCodes: false,
-      json: false,
-      forever: false,
-      method: 'GET',
-      idReplacement: false,
-      excludeErrorStats: false,
-      debug: false,
-      workers: 0
-    },
+    alias,
+    default: defaults,
     '--': true
   })
+  // subarg does not convert aliases in sub arguments
+  argv = generateSubArgAliases(argv)
 
   argv.url = argv._.length > 1 ? argv._ : argv._[0]
 
@@ -183,7 +190,7 @@ function parseArguments (argvs) {
   }
 
   // This is to distinguish down the line whether it is
-  // run via command-line or programatically
+  // run via command-line or programmatically
   argv[Symbol.for('internal')] = true
 
   return argv

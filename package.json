@@ -61,13 +61,13 @@
     "http-parser-js": "^0.5.2",
     "hyperid": "^2.0.3",
     "manage-path": "^2.0.0",
-    "minimist": "^1.2.0",
     "on-net-listen": "^1.1.1",
     "pretty-bytes": "^5.4.1",
     "progress": "^2.0.3",
     "reinterval": "^1.1.0",
     "retimer": "^3.0.0",
     "semver": "^7.3.2",
+    "subarg": "^1.0.0",
     "timestring": "^6.0.0"
   }
 }
