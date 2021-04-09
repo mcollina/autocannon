@@ -38,7 +38,7 @@ if (!win) {
 }
 
 t.autoend(false)
-t.tearDown(function () {
+t.teardown(function () {
   child.kill()
 })
 

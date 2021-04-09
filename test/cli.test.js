@@ -44,7 +44,7 @@ test('should run benchmark against server', (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 
@@ -97,7 +97,7 @@ test('should parse HAR file and run requests', (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 
@@ -121,7 +121,7 @@ test('should throw on unknown HAR file', (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 
@@ -150,7 +150,7 @@ test('should throw on invalid HAR file', (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 
@@ -182,7 +182,7 @@ test('should write warning about unused HAR requests', (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 
@@ -234,7 +234,7 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 

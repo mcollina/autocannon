@@ -34,7 +34,7 @@ test('should stdout (print) the result', (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 

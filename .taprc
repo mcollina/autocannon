@@ -1,6 +1,8 @@
-esm: false
 ts: false
 jsx: false
 flow: false
 timeout: 900
-coverage: true
+branches: 89
+functions: 94
+lines: 95
+statements: 94

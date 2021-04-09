@@ -43,7 +43,7 @@ const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), 
   detached: false
 })
 
-t.tearDown(() => {
+t.teardown(() => {
   child.kill()
 })
 

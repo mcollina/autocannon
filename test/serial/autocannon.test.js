@@ -19,12 +19,12 @@ test('should print error if url.URL is not a function', t => {
   const _exit = process.exit
 
   process.exit = (code) => {
-    t.is(code, 1)
+    t.equal(code, 1)
     process.exit = _exit
     t.end()
   }
   console.error = (obj) => {
-    t.is(
+    t.equal(
       obj,
       'autocannon requires the WHATWG URL API, but it is not available. Please upgrade to Node 6.13+.'
     )
