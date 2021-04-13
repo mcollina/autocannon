@@ -3,6 +3,7 @@
 const test = require('tap').test
 const validateOpts = require('../lib/validate')
 const helper = require('./helper')
+const { hasWorkerSupport } = require('../lib/util')
 
 test('validateOpts should not return an error with only an url passed in', (t) => {
   t.plan(1)
@@ -220,7 +221,7 @@ test('validateOpts should return an error when forever is used with cbPassedIn',
   t.equal(result.message, 'should not use the callback parameter when the `forever` option is set to true. Use the `done` event on this event emitter')
 })
 
-test('validateOpts should return an error when forever is used with workers', (t) => {
+test('validateOpts should return an error when forever is used with workers', { skip: !hasWorkerSupport }, (t) => {
   t.plan(2)
 
   const result = validateOpts({ url: 'http://localhost', forever: true, workers: 2 })
