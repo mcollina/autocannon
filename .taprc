@@ -2,7 +2,7 @@ ts: false
 jsx: false
 flow: false
 timeout: 900
-branches: 87
+branches: 86
 functions: 84
 lines: 87
 statements: 87
