@@ -239,9 +239,17 @@ function start (argv) {
       })
     })
   } else {
-    initJob(argv).catch((err) => {
+    // if forever is true then a promise is not returned and we need to try ... catch errors
+    try {
+      const tracker = initJob(argv)
+      if (tracker.then) {
+        tracker.catch((err) => {
+          console.error(err.message)
+        })
+      }
+    } catch (err) {
       console.error(err.message)
-    })
+    }
   }
 }
 
