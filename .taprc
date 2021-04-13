@@ -2,7 +2,7 @@ ts: false
 jsx: false
 flow: false
 timeout: 900
-branches: 89
-functions: 94
-lines: 95
-statements: 94
+branches: 91.68
+functions: 95.6
+lines: 96.58
+statements: 96.31
