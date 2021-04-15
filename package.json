@@ -1,6 +1,6 @@
 {
   "name": "autocannon",
-  "version": "7.0.5",
+  "version": "7.1.0",
   "description": "Fast HTTP benchmarking tool written in Node.js",
   "main": "autocannon.js",
   "bin": {
