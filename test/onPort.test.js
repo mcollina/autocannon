@@ -44,7 +44,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     detached: false
   })
 
-  t.tearDown(() => {
+  t.teardown(() => {
     child.kill()
   })
 

@@ -203,7 +203,7 @@ test('request iterator should invoke onResponse callback when set', (t) => {
       onResponse: (status, body, context) => {
         t.same(status, 200)
         t.same(body, 'ok')
-        t.deepEqual(context, {})
+        t.same(context, {})
       }
     },
     {},
@@ -211,7 +211,7 @@ test('request iterator should invoke onResponse callback when set', (t) => {
       onResponse: (status, body, context) => {
         t.same(status, 201)
         t.same(body, '')
-        t.deepEqual(context, {})
+        t.same(context, {})
       }
     }
   ]
@@ -296,28 +296,28 @@ test('request iterator should reset when setupRequest returns nothing', (t) => {
   const requestPOST = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`
 
   const iterator = new RequestIterator(opts)
-  t.is(iterator.resetted, false)
+  t.equal(iterator.resetted, false)
   // first GET, i is 0
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 1 was okay')
   iterator.nextRequest()
   // first POST, i becomes 1
-  t.is(iterator.resetted, false)
+  t.equal(iterator.resetted, false)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestPOST, 'request 2 was okay')
   iterator.nextRequest()
   // first PUT, i is 1
-  t.is(iterator.resetted, false)
+  t.equal(iterator.resetted, false)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestPUT, 'request 3 was okay')
   iterator.nextRequest()
   // second GET, i is 1
-  t.is(iterator.resetted, false)
+  t.equal(iterator.resetted, false)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 4 was okay')
   iterator.nextRequest()
   // second POST, i becomes 2, pipeline is reset
-  t.is(iterator.resetted, true)
+  t.equal(iterator.resetted, true)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 5 was okay')
   iterator.nextRequest()
   // third POST, i becomes 3, pipeline is reset
-  t.is(iterator.resetted, true)
+  t.equal(iterator.resetted, true)
   t.same(iterator.currentRequest.requestBuffer.toString(), requestGET, 'request 6 was okay')
 })
 
@@ -332,11 +332,11 @@ test('request iterator should throw when first setupRequest returns nothing', (t
   const requestPOST = `POST / HTTP/1.1\r\nHost: localhost:${server.address().port}\r\nConnection: keep-alive\r\nContent-Length: 11\r\n\r\nhello world`
 
   const iterator = new RequestIterator(opts)
-  t.is(iterator.resetted, false)
+  t.equal(iterator.resetted, false)
   // first POST, i is 0
   t.same(iterator.currentRequest.requestBuffer.toString(), requestPOST, 'request 1 was okay')
   t.throws(() => iterator.nextRequest(), 'First setupRequest() failed did not returned valid request. Stopping')
-  t.is(iterator.resetted, false)
+  t.equal(iterator.resetted, false)
 })
 
 test('request iterator should maintain context while looping on requests', (t) => {
@@ -346,7 +346,7 @@ test('request iterator should maintain context while looping on requests', (t) =
   opts.requests = [
     {
       setupRequest: (req, context) => {
-        t.deepEqual(context, {}, 'context was supposed to be empty for first request')
+        t.same(context, {}, 'context was supposed to be empty for first request')
         context.num = 1
         context.init = true
         return req
@@ -354,14 +354,14 @@ test('request iterator should maintain context while looping on requests', (t) =
     },
     {
       setupRequest: (req, context) => {
-        t.deepEqual(context, { num: 1, init: true }, 'context was supposed to be initialized for second request')
+        t.same(context, { num: 1, init: true }, 'context was supposed to be initialized for second request')
         context.num++
         return req
       }
     },
     {
       setupRequest: (req, context) => {
-        t.deepEqual(context, { num: 2, init: true }, 'context was supposed to be initialized for third request')
+        t.same(context, { num: 2, init: true }, 'context was supposed to be initialized for third request')
         context.num++
         return req
       }
@@ -417,14 +417,14 @@ test('request iterator should initialize context from options', (t) => {
   opts.requests = [
     {
       setupRequest: (req, context) => {
-        t.deepEqual(context, { foo: 'bar' }, 'context should be initialized from opts')
+        t.same(context, { foo: 'bar' }, 'context should be initialized from opts')
         context.baz = 'qux'
         return req
       }
     },
     {
       setupRequest: (req, context) => {
-        t.deepEqual(context, { foo: 'bar', baz: 'qux' }, 'context should contain updated data')
+        t.same(context, { foo: 'bar', baz: 'qux' }, 'context should contain updated data')
         return req
       }
     }

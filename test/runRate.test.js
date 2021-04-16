@@ -61,7 +61,7 @@ test('run should compensate for coordinated omission when the expected number of
     duration: 1
   }, (err, res) => {
     t.error(err)
-    t.notEqual(res.latency.totalCount, res.requests.total, 'should have recorded additionnal latencies')
+    t.not(res.latency.totalCount, res.requests.total, 'should have recorded additionnal latencies')
   })
 })
 

@@ -255,7 +255,7 @@ test('run should handle context correctly', (t) => {
     initialContext: { init: 'context' },
     requests: [{
       setupRequest: (req, context) => {
-        t.deepEqual(context, { init: 'context' }, 'context should be initialized from opts')
+        t.same(context, { init: 'context' }, 'context should be initialized from opts')
         return req
       }
     }]
@@ -414,7 +414,7 @@ test('run should not modify default options', (t) => {
     duration: 2
   }, function (err, result) {
     t.error(err)
-    t.deepEqual(defaultOptions, origin, 'calling run function does not modify default options')
+    t.same(defaultOptions, origin, 'calling run function does not modify default options')
     t.end()
   })
 })
@@ -524,7 +524,7 @@ test('tracker will emit reqMismatch when body does not match expectBody', (t) =>
 
   tracker.once('reqMismatch', (bodyStr) => {
     t.equal(bodyStr, responseBody)
-    t.notEqual(bodyStr, expectBody)
+    t.not(bodyStr, expectBody)
     tracker.stop()
   })
 })
@@ -637,7 +637,7 @@ test('should throw if duration is not a number nor a string', t => {
       t.fail()
     })
     .catch((err) => {
-      t.is(err.message, 'duration entered was in an invalid format')
+      t.equal(err.message, 'duration entered was in an invalid format')
     })
 })
 
@@ -658,7 +658,7 @@ test('should emit error', t => {
   })
 
   tracker.once('error', (error) => {
-    t.is(error.message, 'A \'type\' key with value \'text\' or \'file\' should be specified')
+    t.equal(error.message, 'A \'type\' key with value \'text\' or \'file\' should be specified')
     t.end()
   })
 })
@@ -676,7 +676,7 @@ test('should throw if timeout is less than zero', t => {
       t.fail()
     })
     .catch((err) => {
-      t.is(err.message, 'timeout must be greater than 0')
+      t.equal(err.message, 'timeout must be greater than 0')
     })
 })
 
@@ -710,7 +710,7 @@ test('should count resets', t => {
       }
     ]
   }).then((result) => {
-    t.is(result.resets, 4)
+    t.equal(result.resets, 4)
     t.end()
   })
 })

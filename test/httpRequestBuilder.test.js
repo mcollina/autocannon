@@ -154,6 +154,6 @@ test('should throw error if body is not a string or a buffer', (t) => {
   try {
     build({ body: [] })
   } catch (error) {
-    t.is(error.message, 'body must be either a string or a buffer')
+    t.equal(error.message, 'body must be either a string or a buffer')
   }
 })

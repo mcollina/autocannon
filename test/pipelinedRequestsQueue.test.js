@@ -68,7 +68,7 @@ test('PipelinedRequestsQueue methods set values to the request in first-in-last-
   const req1 = queue.terminateRequest()
   t.equal(req1.req, 1)
   t.equal(req1.body, '1')
-  t.deepEqual(req1.headers, { val: '1' })
+  t.same(req1.headers, { val: '1' })
 
   queue.addBody('2')
   queue.addByteCount(2)
@@ -77,5 +77,5 @@ test('PipelinedRequestsQueue methods set values to the request in first-in-last-
   const req2 = queue.terminateRequest()
   t.equal(req2.req, 2)
   t.equal(req2.body, '2')
-  t.deepEqual(req2.headers, { val: '2' })
+  t.same(req2.headers, { val: '2' })
 })

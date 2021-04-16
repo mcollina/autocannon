@@ -55,7 +55,7 @@ test('run should return an error with invalid form options', async t => {
   ]
 
   const server = helper.startMultipartServer()
-  t.tearDown(() => server.close())
+  t.teardown(() => server.close())
 
   for (const c of cases) {
     t.test(c.name, async t => {
@@ -70,7 +70,7 @@ test('run should return an error with invalid form options', async t => {
         })
       })
       await t.test('error', t => {
-        t.notEqual(null, err)
+        t.not(null, err)
         t.equal(c.message, err.message, `mismatching error message ${err.message}`)
         t.end()
       })
@@ -117,7 +117,7 @@ test('run should take form options as a JSON string or a JS Object', async t => 
         t.equal('j5', payload.name)
         t.equal('j5.jpeg', payload.image.filename)
       })
-      t.tearDown(() => server.close())
+      t.teardown(() => server.close())
       const [err, res] = await new Promise((resolve) => {
         initJob({
           url: 'http://localhost:' + server.address().port,
@@ -145,7 +145,7 @@ test('run should use a custom method if `options.method` is passed', t => {
     t.equal('j5', payload.name)
     t.equal('j5.jpeg', payload.image.filename)
   })
-  t.tearDown(() => server.close())
+  t.teardown(() => server.close())
 
   const form = {
     image: {
@@ -177,7 +177,7 @@ test('run should set filename', t => {
     t.equal('j5', payload.name)
     t.equal('j5.jpeg', payload.image.filename)
   })
-  t.tearDown(() => server.close())
+  t.teardown(() => server.close())
 
   const form = {
     image: {
@@ -209,7 +209,7 @@ test('run should allow overriding filename', t => {
     t.equal('j5', payload.name)
     t.equal('testfilename.jpeg', payload.image.filename)
   })
-  t.tearDown(() => server.close())
+  t.teardown(() => server.close())
 
   const form = {
     image: {
@@ -244,7 +244,7 @@ test('run should allow overriding filename with file path', t => {
     t.equal('j5', payload.name)
     t.equal('some/path/testfilename.jpeg', payload.image.filename)
   })
-  t.tearDown(() => server.close())
+  t.teardown(() => server.close())
 
   const form = {
     image: {

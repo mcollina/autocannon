@@ -19,7 +19,7 @@ test(`should not emit warnings when using >= ${defaultMaxListeners} workers`, { 
 
   setTimeout(() => {
     instance.stop()
-    t.false(emitWarningSpy.called)
+    t.notOk(emitWarningSpy.called)
     emitWarningSpy.restore()
     t.end()
   }, 2000)
