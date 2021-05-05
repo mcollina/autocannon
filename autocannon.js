@@ -167,7 +167,7 @@ function parseArguments (argvs) {
       const equalIndex = header.indexOf('=')
       const index = Math.min(colonIndex < 0 ? Infinity : colonIndex, equalIndex < 0 ? Infinity : equalIndex)
       if (Number.isFinite(index) && index > 0) {
-        obj[header.slice(0, index)] = header.slice(index + 1).trim()
+        obj[header.slice(0, index)] = header.slice(index + 1)
         return obj
       } else throw new Error(`An HTTP header was not correctly formatted: ${header}`)
     }, {})
