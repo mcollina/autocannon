@@ -53,7 +53,7 @@ test('request iterator should use headers from requests', (t) => {
       path: '/',
       method: 'POST',
       headers: {
-        'content-type': 'application/json',
+        'content-type': 'application/json'
       },
       body: JSON.stringify({ foo: 'bar' })
     },
@@ -61,7 +61,7 @@ test('request iterator should use headers from requests', (t) => {
       path: '/2',
       method: 'POST',
       headers: {
-        'content-type': 'text/html',
+        'content-type': 'text/html'
       },
       body: JSON.stringify({ foo: 'bar' })
     }
