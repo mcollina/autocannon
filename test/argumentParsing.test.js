@@ -2,6 +2,7 @@
 
 const test = require('tap').test
 const Autocannon = require('../autocannon')
+const fs = require('fs')
 
 test('parse argument', (t) => {
   t.plan(4)
@@ -157,4 +158,22 @@ test('parse argument with multiple url', (t) => {
 
   t.equal(args.url[0], 'http://localhost/foo/bar')
   t.equal(args.url[1], 'http://localhost/baz/qux')
+})
+
+test('parse argument with input file and multiple workers', (t) => {
+  t.plan(3)
+
+  const inputPath = 'help.txt'
+  const args = Autocannon.parseArguments([
+    '-m', 'POST',
+    '-w', '2',
+    '-a', 10,
+    '-i', inputPath,
+    '-H', 'Content-Type=application/json',
+    'http://localhost/foo/bar'
+  ])
+
+  t.equal(args.url, 'http://localhost/foo/bar')
+  t.equal(args.method, 'POST')
+  t.equal(args.body, fs.readFileSync(inputPath, 'utf8'))
 })
