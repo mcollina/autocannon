@@ -996,36 +996,3 @@ test('client supports receiving large response body', (t) => {
     client.destroy()
   })
 })
-
-test('client supports receiving large response body', (t) => {
-  t.plan(2)
-
-  const mockBody = Array.from({ length: 1024 * 10 }, (_, i) => `str-${i}`).join('\n')
-  const server = http.createServer((req, res) => {
-    res.end(mockBody)
-  })
-  server.listen(0)
-  server.unref()
-
-  let onResponseCalled = 0
-  const opts = server.address()
-  opts.method = 'POST'
-  opts.body = Buffer.from('hello world')
-  opts.requests = [
-    {
-      path: '/',
-      method: 'GET',
-      onResponse: (...args) => {
-        onResponseCalled++
-      }
-    }
-  ]
-
-  const client = new Client(opts)
-
-  client.on('response', (statusCode, length) => {
-    t.equal(onResponseCalled, 1, 'onResponse should be called only once')
-    t.equal(statusCode, 200, 'status code matches')
-    client.destroy()
-  })
-})
