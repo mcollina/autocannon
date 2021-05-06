@@ -498,7 +498,7 @@ test('request iterator should invoke onResponse callback with headers in it', (t
   ]
 
   const iterator = new RequestIterator(opts)
-  iterator.recordBody(iterator.currentRequest, 200, 'ok', { 'set-cookie': 123 })
+  iterator.recordBody(iterator.currentRequest, 200, 'ok', ['set-cookie', 123])
   iterator.nextRequest()
 
   t.end()
