@@ -44,6 +44,35 @@ test('request iterator should create requests with overwritten defaults', (t) =>
     'request is okay')
 })
 
+test('request iterator should use headers from requests', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.requests = [
+    {
+      path: '/',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({ foo: 'bar' })
+    },
+    {
+      path: '/2',
+      method: 'POST',
+      headers: {
+        'content-type': 'text/html'
+      },
+      body: JSON.stringify({ foo: 'bar' })
+    }
+  ]
+  const iterator = new RequestIterator(opts)
+
+  t.same(iterator.currentRequest.headers['content-type'], 'application/json')
+  iterator.nextRequest()
+  t.same(iterator.currentRequest.headers['content-type'], 'text/html')
+})
+
 test('request iterator should create requests with overwritten defaults', (t) => {
   t.plan(3)
 

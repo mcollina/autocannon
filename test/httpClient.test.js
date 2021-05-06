@@ -287,6 +287,34 @@ test('client supports custom headers', (t) => {
   })
 })
 
+test('client supports custom headers in requests', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.requests = [
+    {
+      path: '/',
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        foo: 'example'
+      })
+    }
+  ]
+  const client = new Client(opts)
+
+  server.once('request', (req, res) => {
+    t.equal(req.headers['content-type'], 'application/json', 'custom header matches')
+  })
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    client.destroy()
+  })
+})
+
 test('client supports host custom header', (t) => {
   t.plan(2)
 
