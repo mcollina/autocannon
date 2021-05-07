@@ -154,7 +154,7 @@ function parseArguments (argvs) {
   })
 
   if (argv.input) {
-    argv.body = fs.readFileSync(argv.input)
+    argv.body = fs.readFileSync(argv.input, 'utf8')
   }
 
   if (argv.headers) {
