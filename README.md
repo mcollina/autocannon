@@ -55,7 +55,7 @@ Available options:
   -W/--warmup
        Use a warm up interval before starting sampling.
        This enables startup processes to finish and traffic to normalize before sampling begins
-       use -c and -d sub args e.g. `--warmpup [ -c 1 -d 3 ]`
+       use -c and -d sub args e.g. `--warmup [ -c 1 -d 3 ]`
   --on-port
         Start the command listed after -- on the command line. When it starts listening on a port,
         start sending requests to that port. A URL is still required in order to send requests to
