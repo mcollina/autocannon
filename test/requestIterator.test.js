@@ -510,3 +510,25 @@ test('request iterator should use the same headers when set', (t) => {
   iterator.setRequest()
   t.same(iterator.currentRequest.requestBuffer, request6Res, iterator.currentRequest.requestBuffer.toString())
 })
+
+test('request iterator should invoke onResponse callback with headers in it', (t) => {
+  t.plan(4)
+
+  const opts = server.address()
+  opts.requests = [
+    {
+      onResponse: (status, body, context, headers) => {
+        t.same(status, 200)
+        t.same(body, 'ok')
+        t.same(context, {})
+        t.same(headers, { 'set-cookie': 123 })
+      }
+    }
+  ]
+
+  const iterator = new RequestIterator(opts)
+  iterator.recordBody(iterator.currentRequest, 200, 'ok', ['set-cookie', 123])
+  iterator.nextRequest()
+
+  t.end()
+})

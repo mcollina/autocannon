@@ -917,3 +917,26 @@ test('The warmup should not pollute the main result set', (t) => {
     t.type(result.warmup, 'object')
   })
 })
+
+test('should get headers passed from server onResponse callback', async t => {
+  t.plan(3)
+  const server = helper.startServer({ responses: [{ statusCode: 200, body: 'ok', headers: { 'set-cookie': 123 } }] })
+
+  await initJob({
+    url: 'http://localhost:' + server.address().port,
+    connections: 1,
+    amount: 1,
+    requests: [
+      {
+        method: 'GET',
+        onResponse (status, body, context, headers) {
+          t.same(status, 200)
+          t.same(body, 'ok')
+          t.same(headers['set-cookie'], 123)
+        }
+      }
+    ]
+  })
+
+  t.end()
+})

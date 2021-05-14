@@ -24,7 +24,8 @@ function startServer (opts) {
   server.listen(opts.socketPath || 0)
 
   function handle (req, res) {
-    let { statusCode, body } = opts.responses[server.autocannonRequests] || {}
+    let { statusCode, body, headers } = opts.responses[server.autocannonRequests] || {}
+
     server.autocannonRequests++
 
     if (!statusCode) {
@@ -38,6 +39,10 @@ function startServer (opts) {
     res.statusCode = statusCode
     const reply = () => {
       const bodyToWrite = typeof body === 'function' ? body(req) : body
+
+      if (headers) {
+        res.writeHead(statusCode, headers)
+      }
       res.end(statusCode < 200 ? undefined : bodyToWrite)
     }
 
