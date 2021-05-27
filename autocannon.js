@@ -62,6 +62,8 @@ const alias = {
   socketPath: 'S',
   excludeErrorStats: 'x',
   expectBody: 'E',
+  expectDuration: 'expectDuration',
+  expectBodySize: 'expectBodySize',
   workers: 'w',
   warmup: 'W',
   help: 'h'
