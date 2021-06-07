@@ -122,6 +122,12 @@ Available options:
   -E/--expectBody EXPECTED
         Ensure the body matches this value. If enabled, mismatches count towards bailout.
         Enabling this option will slow down the load testing.
+  -N/--expectDuration EXPECTED
+        Ensure the response duration less than expectDuration. If bigger, reqOverTimes count towards bailout.
+        Enabling this option will slow down the load testing.
+  -P/--expectBodySize EXPECTED
+        Ensure the response body bytes less than expectBodySize. If bigger, reqOverSizes count towards bailout.
+        Enabling this option will slow down the load testing.
   --renderStatusCodes
         Print status codes and their respective statistics.
   --debug
