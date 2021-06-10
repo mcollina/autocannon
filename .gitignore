@@ -28,7 +28,7 @@ node_modules
 
 # Dependency lock
 package-lock.json
-
+yarn.lock
 # Optional npm cache directory
 .npm
 
