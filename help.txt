@@ -54,7 +54,7 @@ Available options:
   -r/--connectionRate NUM
         The max number of requests to make per second from an individual connection.
   -R/--overallRate NUM
-        The max number of requests to make per second from an all connections.
+        The max number of requests to make per second from all connections.
         connection rate will take precedence if both are set.
         NOTE: if using rate limiting and a very large rate is entered which cannot be met,
               Autocannon will do as many requests as possible per second. Also latency data will be corrected in order to
