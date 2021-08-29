@@ -329,6 +329,12 @@ Please check the `request-context.js` file in samples.
 
 Note that `context` object will be reset to `initialContext` (or `{}` it is not provided) when restarting to the first available request, ensuring similar runs.
 
+### Combining connections, overallRate and amount
+
+When combining a fixed `amount` of requests with concurrent `connections` and an `overallRate` limit, autocannon will distribute the requests and the intended rate over all connections. If the `overallRate` is not integer divisable, autocannon will configure some connection clients with a higher and some with a lower number of requests/second rate. If now the `amount` *is* integer divisable, all connection clients get the same number of requests. This means that the clients with a higher request rate will finish earlier, than the others, leading to a drop in perceived request rate.
+
+Example: `connections = 10, overallRate = 17, amount = 5000`
+
 
 ### autocannon.track(instance[, opts])
 
