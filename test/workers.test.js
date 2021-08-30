@@ -80,6 +80,8 @@ test('init with workers', { skip: !hasWorkerSupport }, (t) => {
 
     t.equal(result.errors, 0, 'no errors')
     t.equal(result.mismatches, 0, 'no mismatches')
+    t.equal(result.reqOverTimes, 0, 'no reqOverTimes')
+    t.equal(result.reqOverSizes, 0, 'no reqOverSizes')
     t.equal(result.resets, 0, 'no resets')
 
     t.equal(result['1xx'], 0, '1xx codes')

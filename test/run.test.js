@@ -61,6 +61,8 @@ test('init', (t) => {
 
     t.equal(result.errors, 0, 'no errors')
     t.equal(result.mismatches, 0, 'no mismatches')
+    t.equal(result.reqOverTimes, 0, 'no reqOverTimes')
+    t.equal(result.reqOverSizes, 0, 'no reqOverSizes')
     t.equal(result.resets, 0, 'no resets')
 
     t.equal(result['1xx'], 0, '1xx codes')
@@ -126,6 +128,8 @@ test('tracker.stop()', (t) => {
 
     t.equal(result.errors, 0, 'no errors')
     t.equal(result.mismatches, 0, 'no mismatches')
+    t.equal(result.reqOverTimes, 0, 'no reqOverTimes')
+    t.equal(result.reqOverSizes, 0, 'no reqOverSizes')
 
     t.equal(result['1xx'], 0, '1xx codes')
     t.equal(result['2xx'], result.requests.total, '2xx codes')
@@ -323,6 +327,69 @@ test('run should produce 0 mismatches with expectBody set and matches', (t) => {
   }, function (err, result) {
     t.error(err)
     t.equal(result.mismatches, 0)
+    t.end()
+  })
+})
+
+test('run should produce count of reqOverTimes with expectDuration set', (t) => {
+  t.plan(2)
+
+  const server = helper.startServer({ delayResponse: 10 })
+
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    expectDuration: 1,
+    maxOverallRequests: 10,
+    timeout: 100
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.reqOverTimes, 10)
+    t.end()
+  })
+})
+
+test('run should produce 0 reqOverTimes with expectDuration set and matches', (t) => {
+  t.plan(2)
+
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    expectDuration: 1000,
+    maxOverallRequests: 10
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.reqOverTimes, 0)
+    t.end()
+  })
+})
+
+test('run should produce count of reqOverSizes with expectBodySize set', (t) => {
+  t.plan(2)
+
+  const responseBody = 'hello dave hello dave hello dave hello dave hello dave hello dave hello dave hello dave hello dave'
+  const server = helper.startServer({ body: responseBody })
+
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    expectBodySize: 10,
+    maxOverallRequests: 10,
+    timeout: 100
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.reqOverSizes, 10)
+    t.end()
+  })
+})
+
+test('run should produce 0 reqOverSizes with expectBodySize set and matches', (t) => {
+  t.plan(2)
+
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    expectBodySize: 1000,
+    maxOverallRequests: 10
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.reqOverSizes, 0)
     t.end()
   })
 })
