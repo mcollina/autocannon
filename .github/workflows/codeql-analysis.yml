@@ -1,0 +1,33 @@
+name: CodeQL Analysis
+
+on:
+    push:
+        branches:
+            - master
+        paths-ignore:
+            - "docs/**"
+            - "*.md"
+    pull_request:
+        branches:
+            - master
+        paths-ignore:
+            - "docs/**"
+            - "*.md"
+
+jobs:
+    CodeQL-Build:
+        if: github.event.pull_request.draft == false
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v2.3.4
+            # Initialises the CodeQL tools for scanning
+            - name: Initialise CodeQL
+              uses: github/codeql-action/init@v1
+              with:
+                  languages: javascript
+                  queries: security-and-quality
+            - name: Autobuild
+              uses: github/codeql-action/autobuild@v1
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v1
