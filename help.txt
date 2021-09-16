@@ -1,6 +1,6 @@
 Usage: autocannon [opts] URL
 
-URL is any valid http or https url.
+URL is any valid HTTP or HTTPS URL.
 If the PORT environment variable is set, the URL can be a path. In that case 'http://localhost:$PORT/path' will be used as the URL.
 
 Available options:
@@ -12,9 +12,9 @@ Available options:
   -d/--duration SEC
         The number of seconds to run the autocannon. default: 10.
   -a/--amount NUM
-        The amount of requests to make before exiting the benchmark. If set, duration is ignored.
+        The number of requests to make before exiting the benchmark. If set, duration is ignored.
   -S/--socketPath
-        A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
+        A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required to send the correct Host header and path.
   -w/--workers
         Number of worker threads to use to fire requests.
   -W/--warmup
@@ -23,10 +23,10 @@ Available options:
        use -c and -d sub args e.g. `--warmup [ -c 1 -d 3 ]`
   --on-port
         Start the command listed after -- on the command line. When it starts listening on a port,
-        start sending requests to that port. A URL is still required in order to send requests to
+        start sending requests to that port. A URL is still required to send requests to
         the correct path. The hostname can be omitted, `localhost` will be used by default.
   -m/--method METHOD
-        The http method to use. default: 'GET'.
+        The HTTP method to use. default: 'GET'.
   -t/--timeout NUM
         The number of seconds before timing out and resetting a connection. default: 10
   -T/--title TITLE
@@ -57,17 +57,17 @@ Available options:
         The max number of requests to make per second from all connections.
         connection rate will take precedence if both are set.
         NOTE: if using rate limiting and a very large rate is entered which cannot be met,
-              Autocannon will do as many requests as possible per second. Also latency data will be corrected in order to
-              compensate the effects of coordinated omission issue. If you are not familiar with the coordinated omission
+              Autocannon will do as many requests as possible per second. Also, latency data will be corrected to 
+              compensate for the effects of the coordinated omission issue. If you are not familiar with the coordinated omission
               issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html)
               or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
   -C/--ignoreCoordinatedOmission
-        Ignore coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'.
+        Ignore the coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'.
         NOTE: it is not recommended to enable this option.
               When the request rate cannot be met because the server is too slow,
               many request latencies might be missing and Autocannon might report a misleading latency distribution.
   -D/--reconnectRate NUM
-        Some number of requests to make before resetting a connections connection to the
+        The number of requests to make before resetting a connections connection to the
         server.
   -n/--no-progress
         Don't render the progress bar. default: false.
@@ -76,13 +76,13 @@ Available options:
   -I/--idReplacement
         Enable replacement of [<id>] with a randomly generated ID within the request body. default: false.
   -j/--json
-        Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
+        Print the output as newline delimited JSON. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
         Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -s/--servername
         Server name for the SNI (Server Name Indication) TLS extension. Defaults to the hostname of the URL when it is not an IP address.
   -x/--excludeErrorStats
-        Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
+        Exclude error statistics (non-2xx HTTP responses) from the final latency and bytes per second averages. default: false.
   -E/--expectBody EXPECTED
         Ensure the body matches this value. If enabled, mismatches count towards bailout.
         Enabling this option will slow down the load testing.

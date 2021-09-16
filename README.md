@@ -6,7 +6,7 @@
 
 ![demo](https://raw.githubusercontent.com/mcollina/autocannon/master/demo.gif)
 
-A HTTP/1.1 benchmarking tool written in node, greatly inspired by [wrk][wrk]
+An HTTP/1.1 benchmarking tool written in node, greatly inspired by [wrk][wrk]
 and [wrk2][wrk2], with support for HTTP pipelining and HTTPS.
 On _my_ box, *autocannon* can produce more load than `wrk` and `wrk2`, see [limitations](#limitations) for more details.
 
@@ -35,7 +35,7 @@ npm i autocannon --save
 ```
 Usage: autocannon [opts] URL
 
-URL is any valid http or https url.
+URL is any valid HTTP or HTTPS URL.
 If the PORT environment variable is set, the URL can be a path. In that case 'http://localhost:$PORT/path' will be used as the URL.
 
 Available options:
@@ -47,9 +47,9 @@ Available options:
   -d/--duration SEC
         The number of seconds to run the autocannon. default: 10.
   -a/--amount NUM
-        The amount of requests to make before exiting the benchmark. If set, duration is ignored.
+        The number of requests to make before exiting the benchmark. If set, duration is ignored.
   -S/--socketPath
-        A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required in order to send the correct Host header and path.
+        A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required to send the correct Host header and path.
   -w/--workers
         Number of worker threads to use to fire requests.
   -W/--warmup
@@ -58,10 +58,10 @@ Available options:
        use -c and -d sub args e.g. `--warmup [ -c 1 -d 3 ]`
   --on-port
         Start the command listed after -- on the command line. When it starts listening on a port,
-        start sending requests to that port. A URL is still required in order to send requests to
+        start sending requests to that port. A URL is still required to send requests to
         the correct path. The hostname can be omitted, `localhost` will be used by default.
   -m/--method METHOD
-        The http method to use. default: 'GET'.
+        The HTTP method to use. default: 'GET'.
   -t/--timeout NUM
         The number of seconds before timing out and resetting a connection. default: 10
   -T/--title TITLE
@@ -83,7 +83,7 @@ Available options:
         The request headers.
   --har FILE
         When provided, Autocannon will use requests from the HAR file.
-        CAUTION: you have to to specify one (or more) domain using URL option: only the HAR requests to the same domains will be considered.
+        CAUTION: you have to specify one or more domains using URL option: only the HAR requests to the same domains will be considered.
         NOTE: you can still add extra headers with -H/--headers but -m/--method, -F/--form, -i/--input -b/--body will be ignored.
   -B/--bailout NUM
         The number of failures before initiating a bailout.
@@ -94,16 +94,16 @@ Available options:
   -r/--connectionRate NUM
         The max number of requests to make per second from an individual connection.
   -R/--overallRate NUM
-        The max number of requests to make per second from an all connections.
+        The max number of requests to make per second from all connections.
         connection rate will take precedence if both are set.
         NOTE: if using rate limiting and a very large rate is entered which cannot be met,
-              Autocannon will do as many requests as possible per second. Also latency data will be corrected in order to compensate the effects of coordinated omission issue. If you are not familiar with the coordinated omission issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html) or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
+              Autocannon will do as many requests as possible per second. Also, latency data will be corrected to compensate for the effects of the coordinated omission issue. If you are not familiar with the coordinated omission issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html) or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
   -C/--ignoreCoordinatedOmission
-        Ignore coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'.
+        Ignore the coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'.
         NOTE: it is not recommended to enable this option.
               When the request rate cannot be met because the server is too slow, many request latencies might be missing and Autocannon might report a misleading latency distribution.
   -D/--reconnectRate NUM
-        Some number of requests to make before resetting a connections connection to the
+        The number of requests to make before resetting a connections connection to the
         server.
   -n/--no-progress
         Don't render the progress bar. default: false.
@@ -112,13 +112,13 @@ Available options:
   -I/--idReplacement
         Enable replacement of [<id>] with a randomly generated ID within the request body. default: false.
   -j/--json
-        Print the output as newline delimited json. This will cause the progress bar and results not to be rendered. default: false.
+        Print the output as newline delimited JSON. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
         Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false.
   -s/--servername
         Server name for the SNI (Server Name Indication) TLS extension. Defaults to the hostname of the URL when it is not an IP address.
   -x/--excludeErrorStats
-        Exclude error statistics (non 2xx http responses) from the final latency and bytes per second averages. default: false.
+        Exclude error statistics (non-2xx HTTP responses) from the final latency and bytes per second averages. default: false.
   -E/--expectBody EXPECTED
         Ensure the body matches this value. If enabled, mismatches count towards bailout.
         Enabling this option will slow down the load testing.
@@ -160,7 +160,7 @@ There are two tables: one for the request latency, and one for the request volum
 
 The latency table lists the request times at the 2.5% percentile, the fast outliers; at 50%, the median; at 97.5%, the slow outliers; at 99%, the very slowest outliers. Here, lower means faster.
 
-The request volume table lists the amount of requests sent and the amount of bytes downloaded. These values are sampled once per second. Higher values mean more requests were processed. In the above example, 4.78 MB was downloaded in 1 second in the worst case (slowest 1%). Since we only ran for 5 seconds, there are just 5 samples—the Min value and the 1% and 2.5% percentiles are actually all the same sample. With longer durations these numbers will differ more.
+The request volume table lists the number of requests sent and the number of bytes downloaded. These values are sampled once per second. Higher values mean more requests were processed. In the above example, 2.29 MB was downloaded in 10 seconds in the worst case (slowest 1%). Since we only ran for 5 seconds, there are just 5 samples—the Min value and the 1% and 2.5% percentiles are all the same sample. With longer durations these numbers will differ more.
 
 When passing the `-l` flag, a third table lists all the latency percentiles recorded by autocannon:
 
@@ -246,7 +246,7 @@ autocannon({
 }, console.log)
 ```
 
-**NOTE:** When in workers mode, you need to pass in an absolute file path to all the options that accept a `function`. This is because a function passed in to the main process can not be cloned and passed to the worker. So instead, it needs a file that it can `require`. The options with this behaviour are shown in the below example
+**NOTE:** When in workers mode, you need to pass in an absolute file path to all the options that accept a `function`. This is because a function passed into the main process can not be cloned and passed to the worker. So instead, it needs a file that it can `require`. The options with this behaviour are shown in the below example
 
 ```js
 'use strict'
@@ -277,28 +277,28 @@ autocannon({
 Start autocannon against the given target.
 
 * `opts`: Configuration options for the autocannon instance. This can have the following attributes. _REQUIRED_.
-    * `url`: The given target. Can be http or https. More than one url is allowed, but it is recommended that the number of connections be an integer multiple of the url. _REQUIRED_.
-    * `socketPath`: A path to a Unix Domain Socket or a Windows Named Pipe. A `url` is still required in order to send the correct Host header and path. _OPTIONAL_.
+    * `url`: The given target. Can be HTTP or HTTPS. More than one URL is allowed, but it is recommended that the number of connections is an integer multiple of the URL. _REQUIRED_.
+    * `socketPath`: A path to a Unix Domain Socket or a Windows Named Pipe. A `url` is still required to send the correct Host header and path. _OPTIONAL_.
     * `workers`: Number of worker threads to use to fire requests.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. Can be a [timestring](https://www.npmjs.com/package/timestring). _OPTIONAL_ default: `10`.
-    * `amount`: A `Number` stating the amount of requests to make before ending the test. This overrides duration and takes precedence, so the test won't end until the amount of requests needed to be completed are completed. _OPTIONAL_.
-    * `timeout`: The number of seconds to wait for a response before . _OPTIONAL_ default: `10`.
+    * `amount`: A `Number` stating the number of requests to make before ending the test. This overrides duration and takes precedence, so the test won't end until the number of requests needed to be completed is completed. _OPTIONAL_.
+    * `timeout`: The number of seconds to wait for a response before. _OPTIONAL_ default: `10`.
     * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
     * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
-    * `method`: The http method to use. _OPTIONAL_ `default: 'GET'`.
+    * `method`: The HTTP method to use. _OPTIONAL_ `default: 'GET'`.
     * `title`: A `String` to be added to the results for identification. _OPTIONAL_ default: `undefined`.
     * `body`: A `String` or a `Buffer` containing the body of the request. Insert one or more randomly generated IDs into the body by including `[<id>]` where the randomly generated ID should be inserted (Must also set idReplacement to true). This can be useful in soak testing POST endpoints where one or more fields must be unique. Leave undefined for an empty body. _OPTIONAL_ default: `undefined`.
     * `form`: A `String` or an `Object` containing the multipart/form-data options or a path to the JSON file containing them
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
-    * `initialContext`: An object that you'd like to initialize your context with. Checkout [an example of initializing context](./samples/init-context.js). _OPTIONAL_
-    * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`. When using `workers`, you need to supply a file path that default exports a function instead (Check out [workers](#workers) section for more details).
+    * `initialContext`: An object that you'd like to initialize your context with. Check out [an example of initializing context](./samples/init-context.js). _OPTIONAL_
+    * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`. When using `workers`, you need to supply a file path that default exports a function instead (Check out the [workers](#workers) section for more details).
     * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
     * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
     * `connectionRate`: A `Number` stating the rate of requests to make per second from each individual connection. No rate limiting by default. _OPTIONAL_
     * `overallRate`: A `Number` stating the rate of requests to make per second from all connections. `connectionRate` takes precedence if both are set. No rate limiting by default. _OPTIONAL_
-    * `ignoreCoordinatedOmission`: A `Boolean` which disable the correction of latencies to compensate the coordinated omission issue. Does not make sense when no rate of requests has been specified (`connectionRate` or `overallRate`). _OPTIONAL_ default: `false`.
-    * `reconnectRate`: A `Number` which makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
+    * `ignoreCoordinatedOmission`: A `Boolean` which disables the correction of latencies to compensate for the coordinated omission issue. Does not make sense when no rate of requests has been specified (`connectionRate` or `overallRate`). _OPTIONAL_ default: `false`.
+    * `reconnectRate`: A `Number` that makes the individual connections disconnect and reconnect to the server whenever it has sent that number of requests. _OPTIONAL_
     * `requests`: An `Array` of `Object`s which represents the sequence of requests to make while benchmarking. Can be used in conjunction with the `body`, `headers` and `method` params above. Check the samples folder for an example of how this might be used. _OPTIONAL_. Contained objects can have these attributes:
        * `body`: When present, will override `opts.body`. _OPTIONAL_
        * `headers`: When present, will override `opts.headers`. _OPTIONAL_
@@ -307,21 +307,21 @@ Start autocannon against the given target.
        * `setupRequest`: A `Function` you may provide to mutate the raw `request` object, e.g. `request.method = 'GET'`. It takes `request` (Object) and `context` (Object) parameters, and must return the modified request. When it returns a falsey value, autocannon will restart from first request. When using `workers`, you need to supply a file path that default exports a function instead (Check out [workers](#workers) section for more details) _OPTIONAL_
        * `onResponse`: A `Function` you may provide to process the received response. It takes `status` (Number), `body` (String) `context` (Object) parameters and `headers` (Key-Value Object). When using `workers`, you need to supply a file path that default exports a function instead (Check out [workers](#workers) section for more details) _OPTIONAL_
     * `har`: an `Object` of parsed [HAR](https://w3c.github.io/web-performance/specs/HAR/Overview.html) content. Autocannon will extra and use `entries.request`: `requests`, `method`, `form` and `body` options will be ignored. _NOTE_: you must ensure that entries are targeting the same domain as `url` option. _OPTIONAL_
-    * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) can be found in the samples. _OPTIONAL_ default: `false`
-    * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emiting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
+    * `idReplacement`: A `Boolean` which enables the replacement of `[<id>]` tags within the request body with a randomly generated ID, allowing for unique fields to be sent with requests. Check out [an example of programmatic usage](./samples/using-id-replacement.js) that can be found in the samples. _OPTIONAL_ default: `false`
+    * `forever`: A `Boolean` which allows you to setup an instance of autocannon that restarts indefinitely after emitting results with the `done` event. Useful for efficiently restarting your instance. To stop running forever, you must cause a `SIGINT` or call the `.stop()` function on your instance. _OPTIONAL_ default: `false`
     * `servername`: A `String` identifying the server name for the SNI (Server Name Indication) TLS extension. _OPTIONAL_ default: Defaults to the hostname of the URL when it is not an IP address.
-    * `excludeErrorStats`: A `Boolean` which allows you to disable tracking non 2xx code responses in latency and bytes per second calculations. _OPTIONAL_ default: `false`.
+    * `excludeErrorStats`: A `Boolean` which allows you to disable tracking non-2xx code responses in latency and bytes per second calculations. _OPTIONAL_ default: `false`.
     * `expectBody`: A `String` representing the expected response body. Each request whose response body is not equal to `expectBody`is counted in `mismatches`. If enabled, mismatches count towards bailout. _OPTIONAL_
-    * `tlsOptions`: An `Object` that is passed into `tls.connect` call ([Full list of options](https://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback)). Note: this only applies if your url is secure.
+    * `tlsOptions`: An `Object` that is passed into `tls.connect` call ([Full list of options](https://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback)). Note: this only applies if your URL is secure.
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
     * `results`: The results of the run.
 
-**Returns** an instance/event emitter for tracking progress, etc. If cb omitted, the return value can also be used as a Promise.
+**Returns** an instance/event emitter for tracking progress, etc. If `cb` is omitted, the return value can also be used as a Promise.
 
 ### Customizing sent requests
 
-When running, autocannon will create as many `Client` objects as desired connections. They will run in parallel, until the benchmark is over (duration or total number of requests).
+When running, autocannon will create as many `Client` objects as desired connections. They will run in parallel until the benchmark is over (duration or total number of requests).
 Each client will loop over the `requests` array, would it contain one or several requests.
 
 While going through available requests, the client will maintain a `context`: an object you can use in `onResponse` and `setupRequest` functions, to store and read some contextual data.
@@ -331,7 +331,7 @@ Note that `context` object will be reset to `initialContext` (or `{}` it is not 
 
 ### Combining connections, overallRate and amount
 
-When combining a fixed `amount` of requests with concurrent `connections` and an `overallRate` limit, autocannon will distribute the requests and the intended rate over all connections. If the `overallRate` is not integer divisable, autocannon will configure some connection clients with a higher and some with a lower number of requests/second rate. If now the `amount` *is* integer divisable, all connection clients get the same number of requests. This means that the clients with a higher request rate will finish earlier, than the others, leading to a drop in perceived request rate.
+When combining a fixed `amount` of requests with concurrent `connections` and an `overallRate` limit, autocannon will distribute the requests and the intended rate over all connections. If the `overallRate` is not integer divisible, autocannon will configure some connection clients with a higher and some with a lower number of requests/second rate. If now the `amount` *is* integer divisible, all connection clients get the same number of requests. This means that the clients with a higher request rate will finish earlier, than the others, leading to a drop in the perceived request rate.
 
 Example: `connections = 10, overallRate = 17, amount = 5000`
 
@@ -341,7 +341,7 @@ Example: `connections = 10, overallRate = 17, amount = 5000`
 Track the progress of your autocannon, programmatically.
 
 * `instance`: The instance of autocannon. _REQUIRED_.
-* `opts`: Configuration options for tracking. This can have the following attibutes. _OPTIONAL_.
+* `opts`: Configuration options for tracking. This can have the following attributes. _OPTIONAL_.
     * `outputStream`: The stream to output to. default: `process.stderr`.
     * `renderProgressBar`: A truthy value to enable the rendering of the progress bar. default: `true`.
     * `renderResultsTable`: A truthy value to enable the rendering of the results table. default: `true`.
@@ -368,14 +368,14 @@ process.once('SIGINT', () => {
 autocannon.track(instance, {renderProgressBar: false})
 ```
 
-Checkout [this example](./samples/track-run.js) to see it in use, as well.
+Check out [this example](./samples/track-run.js) to see it in use, as well.
 
 ### autocannon.printResult(resultObject[, opts])
 
 Print the result tables to the terminal, programmatically.
 
 * `resultObject`: The result object of autocannon. _REQUIRED_.
-* `opts`: Configuration options for printing the tables. This can have the following attibutes. _OPTIONAL_.
+* `opts`: Configuration options for printing the tables. This can have the following attributes. _OPTIONAL_.
     * `outputStream`: The stream to output to. default: `process.stderr`.
     * `renderResultsTable`: A truthy value to enable the rendering of the results table. default: `true`.
     * `renderLatencyTable`: A truthy value to enable the rendering of the latency table. default: `false`.
@@ -387,11 +387,11 @@ Because an autocannon instance is an `EventEmitter`, it emits several events. th
 * `start`: Emitted once everything has been setup in your autocannon instance and it has started. Useful for if running the instance forever.
 * `tick`: Emitted every second this autocannon is running a benchmark. Useful for displaying stats, etc. Used by the `track` function. The `tick` event propagates  an object containing the `counter` and `bytes` values, which can be used for extended reports.
 * `done`: Emitted when the autocannon finishes a benchmark. passes the `results` as an argument to the callback.
-* `response`: Emitted when the autocannons http-client gets a http response from the server. This passes the following arguments to the callback:
+* `response`: Emitted when the autocannons http-client gets an HTTP response from the server. This passes the following arguments to the callback:
     * `client`: The `http-client` itself. Can be used to modify the headers and body the client will send to the server. API below.
-    * `statusCode`: The http status code of the response.
+    * `statusCode`: The HTTP status code of the response.
     * `resBytes`: The response byte length.
-    * `responseTime`: The time taken to get a response for the initiating the request.
+    * `responseTime`: The time taken to get a response after initiating the request.
 * `reqError`: Emitted in the case of a request error e.g. a timeout.
 * `error`: Emitted if there is an error during the setup phase of autocannon.
 
@@ -402,7 +402,7 @@ The results object emitted by `done` and passed to the `autocannon()` callback h
 * `title`: Value of the `title` option passed to `autocannon()`.
 * `url`: The URL that was targeted.
 * `socketPath`: The UNIX Domain Socket or Windows Named Pipe that was targeted, or `undefined`.
-* `requests`: A histogram object containing statistics about the amount of requests that were sent per second.
+* `requests`: A histogram object containing statistics about the number of requests that were sent per second.
 * `latency`: A histogram object containing statistics about response latency.
 * `throughput`: A histogram object containing statistics about the response data throughput per second.
 * `duration`: The amount of time the test took, **in seconds**.
@@ -430,8 +430,8 @@ This object is passed as the first parameter of both the `setupClient` function 
 
 * `client.setHeaders(headers)`: Used to modify the headers of the request this client iterator is currently on. `headers` should be an `Object`, or `undefined` if you want to remove your headers.
 * `client.setBody(body)`: Used to modify the body of the request this client iterator is currently on. `body` should be a `String` or `Buffer`, or `undefined` if you want to remove the body.
-* `client.setHeadersAndBody(headers, body)`: Used to modify the both the headers and body this client iterator is currently on.`headers` and `body` should take the same form as above.
-* `client.setRequest(request)`: Used to modify the both the entire request that this client iterator is currently on. Can have `headers`, `body`, `method`, or `path` as attributes. Defaults to the values passed into the autocannon instance when it was created. `Note: call this when modifying multiple request values for faster encoding`
+* `client.setHeadersAndBody(headers, body)`: Used to modify both the headers and body this client iterator is currently on. `headers` and `body` should take the same form as above.
+* `client.setRequest(request)`: Used to modify the entire request that this client iterator is currently on. Can have `headers`, `body`, `method`, or `path` as attributes. Defaults to the values passed into the autocannon instance when it was created. `Note: call this when modifying multiple request values for faster encoding`
 * `client.setRequests(newRequests)`: Used to overwrite the entire requests array that was passed into the instance on initiation. `Note: call this when modifying multiple requests for faster encoding`
 
 ### `Client` events
@@ -441,9 +441,9 @@ The events a `Client` can emit are listed here:
 * `headers`: Emitted when a request sent from this client has received the headers of its reply. This received an `Object` as the parameter.
 * `body`: Emitted when a request sent from this client has received the body of a reply. This receives a `Buffer` as the parameter.
 * `response`: Emitted when the client has received a completed response for a request it made. This is passed the following arguments:
-    * `statusCode`: The http status code of the response.
+    * `statusCode`: The HTTP status code of the response.
     * `resBytes`: The response byte length.
-    * `responseTime`: The time taken to get a response for the initiating the request.
+    * `responseTime`: The time taken to get a response after initiating the request.
 * `reset`: Emitted when the requests pipeline was reset due to `setupRequest` returning a falsey value.
 
 Example using the autocannon events and the client API and events:
@@ -489,9 +489,9 @@ function handleResults(result) {
 Autocannon is written in JavaScript for the Node.js runtime and it is CPU-bound.
 We have verified that it yields comparable results with `wrk` when benchmarking Node.js
 applications using the `http` module.
-Nevertheless, it uses significant more CPU than other tools that compiles to a binary such as `wrk`.
-Autocannon can saturate the CPU, e.g. the autocannon process reaches 100%: in those cases
-we recommend to use `wrk`.
+Nevertheless, it uses significantly more CPU than other tools that compiles to a binary such as `wrk`.
+Autocannon can saturate the CPU, e.g. the autocannon process reaches 100%: in those cases,
+we recommend using `wrk`.
 
 As an example, let's consider a run with 1000 connections on a server
 with 4 cores with hyperthreading:
@@ -500,8 +500,8 @@ with 4 cores with hyperthreading:
   metrics with a total load of the CPU of 20% + 20% + 40%.
 * `autocannon` uses a single thread at 80% CPU load.
 
-Both saturates a Node.js process at around 41k req/sec, however
-`autocannon` can saturate sooner because it is single threaded.
+Both saturates a Node.js process at around 41k req/sec, however,
+`autocannon` can saturate sooner because it is single-threaded.
 
 Note that `wrk` does not support HTTP/1.1 pipelining. As a result, `autocannon` can create
 more load on the server than wrk for each open connection.
