@@ -45,6 +45,10 @@ Available options:
         The body of the request.
   -H/--headers K=V
         The request headers.
+  --har FILE
+        When provided, Autocannon will use requests from the HAR file.
+        CAUTION: you have to specify one or more domains using URL option: only the HAR requests to the same domains will be considered.
+        NOTE: you can still add extra headers with -H/--headers but -m/--method, -F/--form, -i/--input -b/--body will be ignored.
   -B/--bailout NUM
         The number of failures before initiating a bailout.
   -M/--maxConnectionRequests NUM
