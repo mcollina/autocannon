@@ -1,14 +1,16 @@
 'use strict'
 
 const path = require('path')
+const fs = require('fs')
 const test = require('tap').test
 const http = require('http')
 const initJob = require('../lib/init')
 const { hasWorkerSupport } = require('../lib/util')
 const helper = require('./helper')
-const server = helper.startServer()
+const httpsServer = helper.startHttpsServer()
 
 test('returns error when no worker support was found', (t) => {
+  const server = helper.startServer()
   initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 3,
@@ -27,6 +29,7 @@ test('returns error when no worker support was found', (t) => {
 })
 
 test('init with workers', { skip: !hasWorkerSupport }, (t) => {
+  const server = helper.startServer()
   initJob({
     url: 'http://localhost:' + server.address().port,
     connections: 3,
@@ -156,6 +159,23 @@ test('setupClient works with workers', { skip: !hasWorkerSupport }, (t) => {
 
     t.equal(2, result['2xx'], 'should have 2 ok requests')
     t.equal(0, result['4xx'], 'should not have any 404s')
+    t.end()
+  })
+})
+
+test('tlsOptions using pfx work as intended in workers', { skip: !hasWorkerSupport }, (t) => {
+  initJob({
+    url: 'http://localhost:' + httpsServer.address().port,
+    connections: 1,
+    amount: 1,
+    workers: 2,
+    tlsOptions: {
+      pfx: fs.readFileSync(path.join(__dirname, '/keystore.pkcs12')),
+      passphrase: 'test'
+    }
+  }, function (err, result) {
+    t.error(err)
+    t.ok(result.requests, 'requests are ok')
     t.end()
   })
 })
