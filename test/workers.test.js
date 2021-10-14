@@ -165,7 +165,7 @@ test('setupClient works with workers', { skip: !hasWorkerSupport }, (t) => {
 
 test('tlsOptions using pfx work as intended in workers', { skip: !hasWorkerSupport }, (t) => {
   initJob({
-    url: 'http://localhost:' + httpsServer.address().port,
+    url: 'https://localhost:' + httpsServer.address().port,
     connections: 1,
     amount: 1,
     workers: 2,
@@ -175,7 +175,7 @@ test('tlsOptions using pfx work as intended in workers', { skip: !hasWorkerSuppo
     }
   }, function (err, result) {
     t.error(err)
-    t.ok(result.requests, 'requests are ok')
+    t.ok(result, 'requests are ok')
     t.end()
   })
 })
