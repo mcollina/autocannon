@@ -52,7 +52,7 @@
     "char-spinner": "^1.0.1",
     "cli-table3": "^0.6.0",
     "color-support": "^1.1.1",
-    "cross-argv": "^1.0.0",
+    "cross-argv": "^2.0.0",
     "form-data": "^4.0.0",
     "has-async-hooks": "^1.0.0",
     "hdr-histogram-js": "^2.0.1",
