@@ -160,7 +160,7 @@ There are two tables: one for the request latency, and one for the request volum
 
 The latency table lists the request times at the 2.5% percentile, the fast outliers; at 50%, the median; at 97.5%, the slow outliers; at 99%, the very slowest outliers. Here, lower means faster.
 
-The request volume table lists the number of requests sent and the number of bytes downloaded. These values are sampled once per second. Higher values mean more requests were processed. In the above example, 2.29 MB was downloaded in 10 seconds in the worst case (slowest 1%). Since we only ran for 5 seconds, there are just 5 samples—the Min value and the 1% and 2.5% percentiles are all the same sample. With longer durations these numbers will differ more.
+The request volume table lists the number of requests sent and the number of bytes downloaded. These values are sampled once per second. Higher values mean more requests were processed. In the above example, 2.29 MB was downloaded in 1 second in the worst case (slowest 1%). Since we only ran for 10 seconds, there are just 10 samples, the Min value and the 1% and 2.5% percentiles are all the same sample. With longer durations these numbers will differ more.
 
 When passing the `-l` flag, a third table lists all the latency percentiles recorded by autocannon:
 
