@@ -58,7 +58,7 @@
     "hdr-histogram-js": "^3.0.0",
     "hdr-histogram-percentiles-obj": "^3.0.0",
     "http-parser-js": "^0.5.2",
-    "hyperid": "^2.0.3",
+    "hyperid": "^3.0.0",
     "lodash.clonedeep": "^4.5.0",
     "manage-path": "^2.0.0",
     "on-net-listen": "^1.1.1",
