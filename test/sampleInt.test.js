@@ -69,6 +69,8 @@ test('run should return sampleInt == 2000 & samples == 3', (t) => {
     sampleInt: 2000, // an input of 2 seconds will be passed in as 2000 because this is after it is parsed in autocannon.js
     url: 'https://github.com/mcollina/autocannon'
   }, (err, res) => {
+	if (err)
+	  console.err(err);
     t.equal(res.sampleInt, 2000)
     t.equal(res.samples, 3)
   })
