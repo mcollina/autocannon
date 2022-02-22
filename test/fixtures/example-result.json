@@ -75,6 +75,8 @@
     "timeouts": 0,
     "mismatches": 0,
     "duration": 2.06,
+	"sampleInt": 1000,
+	"samples": 10,
     "start": "2020-11-06T09:38:31.027Z",
     "finish": "2020-11-06T09:38:33.089Z",
     "connections": 40,

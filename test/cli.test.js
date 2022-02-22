@@ -28,6 +28,7 @@ test('should run benchmark against server', (t) => {
     /.*/,
     /$/,
     /Req\/Bytes counts sampled once per second.*$/,
+    /# of samples: 1.*$/,
     /$/,
     /.* requests in ([0-9]|\.)+s, .* read/
   ]
@@ -78,6 +79,7 @@ test('should parse HAR file and run requests', (t) => {
     /.*/,
     /$/,
     /Req\/Bytes counts sampled once per second.*$/,
+    /# of samples: 1.*$/,
     /$/,
     /.* requests in ([0-9]|\.)+s, .* read/
   ]
@@ -218,6 +220,7 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     /.*/,
     /$/,
     /Req\/Bytes counts sampled once per second.*$/,
+    /.*$/,
     /$/,
     /.* requests in ([0-9]|\.)+s, .* read/
   ]

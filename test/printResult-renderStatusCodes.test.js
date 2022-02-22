@@ -32,6 +32,7 @@ test('should stdout (print) the result', (t) => {
     /.*/,
     /$/,
     /Req\/Bytes counts sampled once per second.*$/,
+    /# of samples: 10.*$/,
     /$/,
     /.* requests in ([0-9]|\.)+s, .* read/
   ]

@@ -12,7 +12,8 @@ test('run should only send the expected number of requests per second - scenario
     url: `http://localhost:${server.address().port}`,
     connections: 2,
     overallRate: 10,
-    amount: 40
+    amount: 40,
+    sampleInt: 1000
   }, (err, res) => {
     t.error(err)
 
@@ -28,7 +29,8 @@ test('run should only send the expected number of requests per second - scenario
     url: `http://localhost:${server.address().port}`,
     connections: 2,
     connectionRate: 10,
-    amount: 40
+    amount: 40,
+    sampleInt: 1000
   }, (err, res) => {
     t.error(err)
     t.equal(Math.floor(res.duration), 2, 'should have taken 2 seconds to send 10 requests per connection with 2 connections')
@@ -43,7 +45,8 @@ test('run should only send the expected number of requests per second - scenario
     url: `http://localhost:${server.address().port}`,
     connections: 15,
     overallRate: 10,
-    amount: 40
+    amount: 40,
+    sampleInt: 1000
   }, (err, res) => {
     t.error(err)
     t.equal(Math.floor(res.duration), 4, 'should have take 4 seconds to send 10 requests per seconds')
