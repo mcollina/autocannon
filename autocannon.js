@@ -12,7 +12,7 @@ const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
 const subarg = require('subarg')
-const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
+const help = require('./help.json')
 const printResult = require('./lib/printResult')
 const initJob = require('./lib/init')
 const track = require('./lib/progressTracker')
@@ -119,7 +119,14 @@ function parseArguments (argvs) {
   }
 
   if (!checkURL(argv.url) || argv.help) {
-    console.error(help)
+    const ops = help.options
+      .map(
+        (op) => `\n  ${op.params}\n        ${op.description.join('\n        ')}`
+      )
+      .join()
+    console.error(
+      `${help.usage}\n\n${help.description}\n\nAvailable options:\n\n${ops}`
+    )
     return
   }
 

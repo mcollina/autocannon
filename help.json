@@ -1,0 +1,204 @@
+{
+  "usage": "Usage: autocannon [opts] URL",
+  "description": "URL is any valid HTTP or HTTPS URL.\nIf the PORT environment variable is set, the URL can be a path. In that case 'http://localhost:$PORT/path' will be used as the URL.",
+  "options": [
+    {
+      "params": "-c/--connections NUM",
+      "description": [
+        "The number of concurrent connections to use. default: 10."
+      ]
+    },
+    {
+      "params": "-p/--pipelining NUM",
+      "description": ["The number of pipelined requests to use. default: 1."]
+    },
+    {
+      "params": "-d/--duration SEC",
+      "description": [
+        "The number of seconds to run the autocannon. default: 10."
+      ]
+    },
+    {
+      "params": "-a/--amount NUM",
+      "description": [
+        "The number of requests to make before exiting the benchmark. If set, duration is ignored."
+      ]
+    },
+    {
+      "params": "-L SEC",
+      "description": [
+        "The number of seconds to elapse between taking samples. This controls the sample interval, & therefore the total number of samples, which affects statistical analyses. default: 1."
+      ]
+    },
+    {
+      "params": "-S/--socketPath",
+      "description": [
+        "A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required to send the correct Host header and path."
+      ]
+    },
+    {
+      "params": "-w/--workers",
+      "description": ["Number of worker threads to use to fire requests."]
+    },
+    {
+      "params": "-W/--warmup",
+      "description": [
+        "Use a warm up interval before starting sampling.",
+        "This enables startup processes to finish and traffic to normalize before sampling begins",
+        "use -c and -d sub args e.g. `--warmup [ -c 1 -d 3 ]`"
+      ]
+    },
+    {
+      "params": "--on-port",
+      "description": [
+        "Start the command listed after -- on the command line. When it starts listening on a port,",
+        "start sending requests to that port. A URL is still required to send requests to",
+        "the correct path. The hostname can be omitted, `localhost` will be used by default."
+      ]
+    },
+    {
+      "params": "-m/--method METHOD",
+      "description": ["The HTTP method to use. default: 'GET'."]
+    },
+    {
+      "params": "-t/--timeout NUM",
+      "description": [
+        "The number of seconds before timing out and resetting a connection. default: 10"
+      ]
+    },
+    {
+      "params": "-T/--title TITLE",
+      "description": ["The title to place in the results for identification."]
+    },
+    { "params": "-b/--body BODY", "description": ["The body of the request."] },
+    {
+      "params": "-F/--form FORM",
+      "description": [
+        "Upload a form (multipart/form-data). The form options can be a JSON string like",
+        "'{ \"field 1\": { \"type\": \"text\", \"value\": \"a text value\"}, \"field 2\": { \"type\": \"file\", \"path\": \"path to the file\" } }'",
+        "or a path to a JSON file containing the form options.",
+        "When uploading a file the default filename value can be overridden by using the corresponding option:",
+        "'{ \"field name\": { \"type\": \"file\", \"path\": \"path to the file\", \"options\": { \"filename\": \"myfilename\" } } }'",
+        "Passing the filepath to the form can be done by using the corresponding option:",
+        "'{ \"field name\": { \"type\": \"file\", \"path\": \"path to the file\", \"options\": { \"filepath\": \"/some/path/myfilename\" } } }'"
+      ]
+    },
+    {
+      "params": "-i/--input FILE",
+      "description": ["The body of the request."]
+    },
+    { "params": "-H/--headers K=V", "description": ["The request headers."] },
+    {
+      "params": "--har FILE",
+      "description": [
+        "When provided, Autocannon will use requests from the HAR file.",
+        "CAUTION: you have to specify one or more domains using URL option: only the HAR requests to the same domains will be considered.",
+        "NOTE: you can still add extra headers with -H/--headers but -m/--method, -F/--form, -i/--input -b/--body will be ignored."
+      ]
+    },
+    {
+      "params": "-B/--bailout NUM",
+      "description": ["The number of failures before initiating a bailout."]
+    },
+    {
+      "params": "-M/--maxConnectionRequests NUM",
+      "description": [
+        "The max number of requests to make per connection to the server."
+      ]
+    },
+    {
+      "params": "-O/--maxOverallRequests NUM",
+      "description": [
+        "The max number of requests to make overall to the server."
+      ]
+    },
+    {
+      "params": "-r/--connectionRate NUM",
+      "description": [
+        "The max number of requests to make per second from an individual connection."
+      ]
+    },
+    {
+      "params": "-R/--overallRate NUM",
+      "description": [
+        "The max number of requests to make per second from all connections.",
+        "connection rate will take precedence if both are set.",
+        "NOTE: if using rate limiting and a very large rate is entered which cannot be met,",
+        "Autocannon will do as many requests as possible per second. Also, latency data will be corrected to ",
+        "compensate for the effects of the coordinated omission issue. If you are not familiar with the coordinated omission",
+        "issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html)",
+        "or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic."
+      ]
+    },
+    {
+      "params": "-C/--ignoreCoordinatedOmission",
+      "description": [
+        "Ignore the coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'.",
+        "NOTE: it is not recommended to enable this option.",
+        "When the request rate cannot be met because the server is too slow,",
+        "many request latencies might be missing and Autocannon might report a misleading latency distribution."
+      ]
+    },
+    {
+      "params": "-D/--reconnectRate NUM",
+      "description": [
+        "The number of requests to make before resetting a connections connection to the server."
+      ]
+    },
+    {
+      "params": "-n/--no-progress",
+      "description": ["Don't render the progress bar. default: false."]
+    },
+    {
+      "params": "-l/--latency",
+      "description": ["Print all the latency data. default: false."]
+    },
+    {
+      "params": "-I/--idReplacement",
+      "description": [
+        "Enable replacement of [<id>] with a randomly generated ID within the request body. default: false."
+      ]
+    },
+    {
+      "params": "-j/--json",
+      "description": [
+        "Print the output as newline delimited JSON. This will cause the progress bar and results not to be rendered. default: false."
+      ]
+    },
+    {
+      "params": "-f/--forever",
+      "description": [
+        "Run the benchmark forever. Efficiently restarts the benchmark on completion. default: false."
+      ]
+    },
+    {
+      "params": "-s/--servername",
+      "description": [
+        "Server name for the SNI (Server Name Indication) TLS extension. Defaults to the hostname of the URL when it is not an IP address."
+      ]
+    },
+    {
+      "params": "-x/--excludeErrorStats",
+      "description": [
+        "Exclude error statistics (non-2xx HTTP responses) from the final latency and bytes per second averages. default: false."
+      ]
+    },
+    {
+      "params": "-E/--expectBody EXPECTED",
+      "description": [
+        "Ensure the body matches this value. If enabled, mismatches count towards bailout.",
+        "Enabling this option will slow down the load testing."
+      ]
+    },
+    {
+      "params": "--renderStatusCodes",
+      "description": ["Print status codes and their respective statistics."]
+    },
+    {
+      "params": "--debug",
+      "description": ["Print connection errors to stderr."]
+    },
+    { "params": "-v/--version", "description": ["Print the version number."] },
+    { "params": "-h/--help", "description": ["Print this menu."] }
+  ]
+}

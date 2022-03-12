@@ -176,7 +176,7 @@ test('parse argument with multiple url', (t) => {
 test('parse argument with input file and multiple workers', (t) => {
   t.plan(3)
 
-  const inputPath = 'help.txt'
+  const inputPath = 'help.json'
   const args = Autocannon.parseArguments([
     '-m', 'POST',
     '-w', '2',

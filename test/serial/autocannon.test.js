@@ -1,7 +1,6 @@
 'use strict'
 
 const childProcess = require('child_process')
-const fs = require('fs')
 const path = require('path')
 const test = require('tap').test
 
@@ -45,16 +44,14 @@ test('should print version if invoked with --version', async t => {
 
 test('should print help if invoked with --help', async t => {
   t.plan(1)
-  const help = fs.readFileSync(path.join(baseDir, 'help.txt'), 'utf8')
   const res = await exec(`node ${baseDir}/autocannon.js --help`)
-  t.same(res.stderr.trim(), help.trim()) // console.error adds \n at the end of print
+  t.ok(res.stderr.match(/Usage: autocannon \[opts\] URL.*/))
 })
 
 test('should print help if no url is provided', async t => {
   t.plan(1)
-  const help = fs.readFileSync(path.join(baseDir, 'help.txt'), 'utf8')
   const res = await exec(`node ${baseDir}/autocannon.js`)
-  t.same(res.stderr.trim(), help.trim()) // console.error adds \n at the end of print
+  t.ok(res.stderr.match(/Usage: autocannon \[opts\] URL.*/))
 })
 
 test('start should console an error when a promise is caught', (t) => {
