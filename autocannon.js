@@ -12,7 +12,6 @@ const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
 const subarg = require('subarg')
-const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const printResult = require('./lib/printResult')
 const initJob = require('./lib/init')
 const track = require('./lib/progressTracker')
@@ -119,6 +118,7 @@ function parseArguments (argvs) {
   }
 
   if (!checkURL(argv.url) || argv.help) {
+    const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
     console.error(help)
     return
   }
