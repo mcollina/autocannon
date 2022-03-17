@@ -72,7 +72,7 @@ const defaults = {
   timeout: 10,
   pipelining: 1,
   duration: 10,
-  sampleInt: 1,
+  sampleInt: 1000,
   reconnectRate: 0,
   renderLatencyTable: false,
   renderProgressBar: true,
