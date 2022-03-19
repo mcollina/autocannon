@@ -48,11 +48,11 @@ test('validate should not return an error', (t) => {
   t.equal(result.sampleInt, 2)
 })
 
-test('parseArguments should return sampleInt in ms (2000)', (t) => {
+test('parseArguments should accept value in ms (2000)', (t) => {
   t.plan(1)
 
   const args = [
-    '-L', 2,
+    '-L', 2000,
     'https://github.com/mcollina/autocannon'
   ]
 
@@ -66,7 +66,7 @@ test('run should return sampleInt == 2000 & samples == 3', (t) => {
 
   initJob({
     duration: 6,
-    sampleInt: 2000, // an input of 2 seconds will be passed in as 2000 because this is after it is parsed in autocannon.js
+    sampleInt: 2000,
     url: 'https://github.com/mcollina/autocannon'
   }, (err, res) => {
     if (err) {
