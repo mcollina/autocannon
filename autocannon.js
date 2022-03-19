@@ -72,7 +72,7 @@ const defaults = {
   timeout: 10,
   pipelining: 1,
   duration: 10,
-  sampleInt: 1,
+  sampleInt: 1000,
   reconnectRate: 0,
   renderLatencyTable: false,
   renderProgressBar: true,
@@ -97,8 +97,6 @@ function parseArguments (argvs) {
   argv = generateSubArgAliases(argv)
 
   argv.url = argv._.length > 1 ? argv._ : argv._[0]
-
-  argv.sampleInt = Math.round(argv.sampleInt * 1000) // convert seconds to milliseconds
 
   if (argv.onPort) {
     argv.spawn = argv['--']
