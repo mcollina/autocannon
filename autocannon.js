@@ -191,6 +191,38 @@ function parseArguments (argvs) {
     }
   }
 
+  argv.tlsOptions = {}
+
+  if (argv.cert) {
+    try {
+      argv.tlsOptions.cert = fs.readFileSync(argv.cert)
+    } catch (err) {
+      throw new Error(`Failed to load cert file: ${err.message}`)
+    }
+  }
+
+  if (argv.key) {
+    try {
+      argv.tlsOptions.key = fs.readFileSync(argv.key)
+    } catch (err) {
+      throw new Error(`Failed to load key file: ${err.message}`)
+    }
+  }
+
+  if (argv.ca) {
+    if (typeof argv.ca === 'string') {
+      argv.ca = [argv.ca]
+    } else if (Array.isArray(argv.ca._)) {
+      argv.ca = argv.ca._
+    }
+
+    try {
+      argv.tlsOptions.ca = argv.ca.map(caPath => fs.readFileSync(caPath))
+    } catch (err) {
+      throw new Error(`Failed to load ca file: ${err.message}`)
+    }
+  }
+
   // This is to distinguish down the line whether it is
   // run via command-line or programmatically
   argv[Symbol.for('internal')] = true
