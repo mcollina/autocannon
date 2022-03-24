@@ -124,8 +124,14 @@ Available options:
         Enabling this option will slow down the load testing.
   --renderStatusCodes
         Print status codes and their respective statistics.
+  --cert
+        Path to cert chain in pem format
+  --key
+        Path to private key for specified cert in pem format
+  --ca
+        Path to trusted ca certificates for the test. This argument accepts both a single file as well as a list of files
   --debug
-        Print connection errors to stderr.        
+        Print connection errors to stderr.
   -v/--version
         Print the version number.
   -h/--help
