@@ -8,6 +8,7 @@ const childProcess = require('child_process')
 test('should stdout (print) the result', (t) => {
   const lines = [
     /.*/,
+    /$/,
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
     /.*/,
     /Latency.*$/,

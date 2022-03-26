@@ -133,3 +133,5 @@ yarn.lock
 build/Release
 
 profile-*
+
+.devcontainer
