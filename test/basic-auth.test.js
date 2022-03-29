@@ -11,6 +11,7 @@ const lines = [
   /10 connections.*$/,
   /$/,
   /.*/,
+  /$/,
   /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
   /.*/,
   /Latency.*$/,
