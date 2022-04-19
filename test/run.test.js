@@ -327,6 +327,42 @@ test('run should produce 0 mismatches with expectBody set and matches', (t) => {
   })
 })
 
+test('run should produce count of mismatches with verifyBody set', (t) => {
+  t.plan(2)
+
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    verifyBody: function () {
+      return false
+    },
+    maxOverallRequests: 10,
+    timeout: 100
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.mismatches, 10)
+    t.end()
+  })
+})
+
+test('run should produce 0 mismatches with verifyBody set and return true', (t) => {
+  t.plan(2)
+
+  const responseBody = 'hello dave'
+  const server = helper.startServer({ body: responseBody })
+
+  initJob({
+    url: 'http://localhost:' + server.address().port,
+    verifyBody: function (body) {
+      return body.indexOf('hello') > -1
+    },
+    maxOverallRequests: 10
+  }, function (err, result) {
+    t.error(err)
+    t.equal(result.mismatches, 0)
+    t.end()
+  })
+})
+
 test('run should accept a unix socket/windows pipe', (t) => {
   t.plan(11)
 
