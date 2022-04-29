@@ -5,6 +5,8 @@ on: [ push, pull_request ]
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
