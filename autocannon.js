@@ -246,7 +246,7 @@ function start (argv) {
       const url = new URL(argv.url, `http://localhost:${port}`).href
       const opts = Object.assign({}, argv, {
         onPort: false,
-        url: url
+        url
       })
       const tracker = initJob(opts, () => {
         proc.kill('SIGINT')

@@ -25,7 +25,7 @@ function startBench () {
   // same with run the follow command in cli
   // autocannon -d 10 -c 2 http://localhost:xxxx http://localhost:yyyy
   autocannon({
-    url: url,
+    url,
     // connection number should n times of the number of server
     connections: 2,
     duration: 10,
