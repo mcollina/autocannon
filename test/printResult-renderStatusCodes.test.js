@@ -8,6 +8,7 @@ const childProcess = require('child_process')
 test('should stdout (print) the result', (t) => {
   const lines = [
     /.*/,
+    /$/,
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
     /.*/,
     /Latency.*$/,
@@ -32,6 +33,7 @@ test('should stdout (print) the result', (t) => {
     /.*/,
     /$/,
     /Req\/Bytes counts sampled once per second.*$/,
+    /# of samples: 10.*$/,
     /$/,
     /.* requests in ([0-9]|\.)+s, .* read/
   ]

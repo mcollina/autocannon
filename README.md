@@ -124,8 +124,14 @@ Available options:
         Enabling this option will slow down the load testing.
   --renderStatusCodes
         Print status codes and their respective statistics.
+  --cert
+        Path to cert chain in pem format
+  --key
+        Path to private key for specified cert in pem format
+  --ca
+        Path to trusted ca certificates for the test. This argument accepts both a single file as well as a list of files
   --debug
-        Print connection errors to stderr.        
+        Print connection errors to stderr.
   -v/--version
         Print the version number.
   -h/--help
@@ -257,6 +263,7 @@ autocannon({
   // ...
   workers: 4,
   setupClient: '/full/path/to/setup-client.js',
+  verifyBody: '/full/path/to/verify-body.js'
   requests: [
     {
       // ...
@@ -293,6 +300,7 @@ Start autocannon against the given target.
     * `headers`: An `Object` containing the headers of the request. _OPTIONAL_ default: `{}`.
     * `initialContext`: An object that you'd like to initialize your context with. Check out [an example of initializing context](./samples/init-context.js). _OPTIONAL_
     * `setupClient`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise each individual connection headers and body using the API shown below. The changes you make to the client in this function will take precedence over the default `body` and `headers` you pass in here. There is an example of this in the samples folder. _OPTIONAL_ default: `function noop () {}`. When using `workers`, you need to supply a file path that default exports a function instead (Check out the [workers](#workers) section for more details).
+    * `verifyBody`: A `Function` which will be passed the `Client` object for each connection to be made. This can be used to customise the validation rules for response body. This function will take precedence over the `expectBody` you pass in here. There is an example of this in the samples folder. When using `workers`, you need to supply a file path that default exports a function instead (Check out the [workers](#workers) section for more details).
     * `maxConnectionRequests`: A `Number` stating the max requests to make per connection. `amount` takes precedence if both are set. _OPTIONAL_
     * `maxOverallRequests`: A `Number` stating the max requests to make overall. Can't be less than `connections`. `maxConnectionRequests` takes precedence if both are set. _OPTIONAL_
     * `connectionRate`: A `Number` stating the rate of requests to make per second from each individual connection. No rate limiting by default. _OPTIONAL_

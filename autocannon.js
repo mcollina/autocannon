@@ -12,7 +12,6 @@ const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
 const subarg = require('subarg')
-const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
 const printResult = require('./lib/printResult')
 const initJob = require('./lib/init')
 const track = require('./lib/progressTracker')
@@ -36,6 +35,7 @@ const alias = {
   pipelining: 'p',
   timeout: 't',
   duration: 'd',
+  sampleInt: 'L',
   amount: 'a',
   json: 'j',
   renderLatencyTable: ['l', 'latency'],
@@ -72,6 +72,7 @@ const defaults = {
   timeout: 10,
   pipelining: 1,
   duration: 10,
+  sampleInt: 1000,
   reconnectRate: 0,
   renderLatencyTable: false,
   renderProgressBar: true,
@@ -115,6 +116,7 @@ function parseArguments (argvs) {
   }
 
   if (!checkURL(argv.url) || argv.help) {
+    const help = fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8')
     console.error(help)
     return
   }
@@ -189,6 +191,38 @@ function parseArguments (argvs) {
     }
   }
 
+  argv.tlsOptions = {}
+
+  if (argv.cert) {
+    try {
+      argv.tlsOptions.cert = fs.readFileSync(argv.cert)
+    } catch (err) {
+      throw new Error(`Failed to load cert file: ${err.message}`)
+    }
+  }
+
+  if (argv.key) {
+    try {
+      argv.tlsOptions.key = fs.readFileSync(argv.key)
+    } catch (err) {
+      throw new Error(`Failed to load key file: ${err.message}`)
+    }
+  }
+
+  if (argv.ca) {
+    if (typeof argv.ca === 'string') {
+      argv.ca = [argv.ca]
+    } else if (Array.isArray(argv.ca._)) {
+      argv.ca = argv.ca._
+    }
+
+    try {
+      argv.tlsOptions.ca = argv.ca.map(caPath => fs.readFileSync(caPath))
+    } catch (err) {
+      throw new Error(`Failed to load ca file: ${err.message}`)
+    }
+  }
+
   // This is to distinguish down the line whether it is
   // run via command-line or programmatically
   argv[Symbol.for('internal')] = true
@@ -212,7 +246,7 @@ function start (argv) {
       const url = new URL(argv.url, `http://localhost:${port}`).href
       const opts = Object.assign({}, argv, {
         onPort: false,
-        url: url
+        url
       })
       const tracker = initJob(opts, () => {
         proc.kill('SIGINT')

@@ -12,6 +12,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     /10 connections.*$/,
     /$/,
     /.*/,
+    /$/,
     /Stat.*2\.5%.*50%.*97\.5%.*99%.*Avg.*Stdev.*Max.*$/,
     /.*/,
     /Latency.*$/,
@@ -25,6 +26,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     /.*/,
     /$/,
     /Req\/Bytes counts sampled once per second.*$/,
+    /# of samples: 10*$/,
     /$/,
     /.* requests in ([0-9]|\.)+s, .* read/
   ]

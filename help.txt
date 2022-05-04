@@ -13,6 +13,8 @@ Available options:
         The number of seconds to run the autocannon. default: 10.
   -a/--amount NUM
         The number of requests to make before exiting the benchmark. If set, duration is ignored.
+  -L NUM
+        The number of milliseconds to elapse between taking samples. This controls the sample interval, & therefore the total number of samples, which affects statistical analyses. default: 1.
   -S/--socketPath
         A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required to send the correct Host header and path.
   -w/--workers

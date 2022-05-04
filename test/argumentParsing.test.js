@@ -190,3 +190,46 @@ test('parse argument with input file and multiple workers', (t) => {
   t.equal(args.method, 'POST')
   t.equal(args.body, fs.readFileSync(inputPath, 'utf8'))
 })
+
+test('parse argument with cert, key and multiple ca paths', (t) => {
+  t.plan(5)
+
+  const certPath = 'test/cert.pem'
+  const keyPath = 'test/key.pem'
+  const caPath1 = 'help.txt'
+  const caPath2 = 'package.json'
+  const args = Autocannon.parseArguments([
+    '-m', 'POST',
+    '--cert', certPath,
+    '--key', keyPath,
+    '--ca', '[', caPath1, caPath2, ']',
+    'http://localhost/foo/bar'
+  ])
+
+  t.equal(args.url, 'http://localhost/foo/bar')
+  t.equal(args.method, 'POST')
+  t.same(args.tlsOptions.cert, fs.readFileSync(certPath))
+  t.same(args.tlsOptions.key, fs.readFileSync(keyPath))
+  t.same(args.tlsOptions.ca, [fs.readFileSync(caPath1), fs.readFileSync(caPath2)])
+})
+
+test('parse argument with cert, key and single ca path', (t) => {
+  t.plan(5)
+
+  const certPath = 'test/cert.pem'
+  const keyPath = 'test/key.pem'
+  const caPath = 'help.txt'
+  const args = Autocannon.parseArguments([
+    '-m', 'POST',
+    '--cert', certPath,
+    '--key', keyPath,
+    '--ca', caPath,
+    'http://localhost/foo/bar'
+  ])
+
+  t.equal(args.url, 'http://localhost/foo/bar')
+  t.equal(args.method, 'POST')
+  t.same(args.tlsOptions.cert, fs.readFileSync(certPath))
+  t.same(args.tlsOptions.key, fs.readFileSync(keyPath))
+  t.same(args.tlsOptions.ca, [fs.readFileSync(caPath)])
+})

@@ -65,7 +65,7 @@ test('request builder should accept all valid standard http methods', (t) => {
 
     const build = RequestBuilder(opts)
 
-    t.doesNotThrow(() => build({ method: method }), `${method} should be usable by the request builded`)
+    t.doesNotThrow(() => build({ method }), `${method} should be usable by the request builded`)
   })
   t.end()
 })

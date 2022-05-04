@@ -424,6 +424,34 @@ test('client supports sending a body which is a string', (t) => {
   })
 })
 
+test('client supports sending a body passed on the CLI as JSON array', (t) => {
+  t.plan(3)
+
+  const body = [{ a: [{ b: 1 }] }]
+  const jsonBody = JSON.stringify(body)
+
+  // this odd format is parsed by the subarg parser when body is a JSON array
+  const mangledBody = { _: [JSON.stringify(body[0])] }
+
+  const opts = server.address()
+  opts.method = 'POST'
+  opts.body = mangledBody
+
+  const client = new Client(opts)
+
+  server.once('request', (req, res) => {
+    req.pipe(bl((err, body) => {
+      t.error(err)
+      t.same(body.toString(), jsonBody, 'body matches')
+    }))
+  })
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    client.destroy()
+  })
+})
+
 test('client supports changing the body', (t) => {
   t.plan(2)
 

@@ -15,16 +15,14 @@ function startBench () {
   const url = 'http://localhost:' + server.address().port
 
   autocannon({
-    url,
+    url: url,
     connections: 1000,
     duration: 10,
-    setupClient
+    verifyBody: verifyBody
   }, finishedBench)
 
-  let connection = 0
-
-  function setupClient (client) {
-    client.setBody('connection number', connection++)
+  function verifyBody (body) {
+    return body.indexOf('<html>') > -1
   }
 
   function finishedBench (err, res) {
