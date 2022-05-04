@@ -19,7 +19,7 @@ function startBench () {
   const url = 'http://localhost:' + server.address().port
 
   autocannon({
-    url: url,
+    url,
     requests: [
       {
         // let's create a new user

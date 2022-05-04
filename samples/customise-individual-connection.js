@@ -15,10 +15,10 @@ function startBench () {
   const url = 'http://localhost:' + server.address().port
 
   autocannon({
-    url: url,
+    url,
     connections: 1000,
     duration: 10,
-    setupClient: setupClient
+    setupClient
   }, finishedBench)
 
   let connection = 0
