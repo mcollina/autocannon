@@ -135,3 +135,4 @@ build/Release
 profile-*
 
 .devcontainer
+.history
