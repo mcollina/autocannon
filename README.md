@@ -68,7 +68,7 @@ Available options:
         The title to place in the results for identification.
   -b/--body BODY
         The body of the request.
-	Note: This option needs to be used with the '-H/--headers' option in some frameworks
+        NOTE: This option needs to be used with the '-H/--headers' option in some frameworks
   -F/--form FORM
         Upload a form (multipart/form-data). The form options can be a JSON string like
         '{ "field 1": { "type": "text", "value": "a text value"}, "field 2": { "type": "file", "path": "path to the file" } }'
