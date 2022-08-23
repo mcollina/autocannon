@@ -44,4 +44,5 @@ jobs:
     steps:
       - uses: fastify/github-action-merge-dependabot@v3
         with:
+          exclude: 'chalk;pretty-bytes'
           github-token: ${{ secrets.github_token }}
