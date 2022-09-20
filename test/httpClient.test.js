@@ -344,7 +344,7 @@ test('client supports host custom header with mixed case', (t) => {
   const client = new Client(opts)
 
   server.once('request', (req, res) => {
-    t.equal(req.headers.Host, 'www.autocannon.com', 'host header matches')
+    t.equal(req.headers.host, 'www.autocannon.com', 'host header matches')
   })
 
   client.on('response', (statusCode, length) => {
