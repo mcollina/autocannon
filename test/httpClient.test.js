@@ -334,6 +334,25 @@ test('client supports host custom header', (t) => {
   })
 })
 
+test('client supports host custom header with mixed case', (t) => {
+  t.plan(2)
+
+  const opts = server.address()
+  opts.headers = {
+    Host: 'www.autocannon.com'
+  }
+  const client = new Client(opts)
+
+  server.once('request', (req, res) => {
+    t.equal(req.headers.Host, 'www.autocannon.com', 'host header matches')
+  })
+
+  client.on('response', (statusCode, length) => {
+    t.equal(statusCode, 200, 'status code matches')
+    client.destroy()
+  })
+})
+
 test('client supports response trailers', (t) => {
   t.plan(3)
 
