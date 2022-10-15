@@ -499,7 +499,7 @@ We have verified that it yields comparable results with `wrk` when benchmarking 
 applications using the `http` module.
 Nevertheless, it uses significantly more CPU than other tools that compiles to a binary such as `wrk`.
 Autocannon can saturate the CPU, e.g. the autocannon process reaches 100%: in those cases,
-we recommend using `wrk`.
+we recommend using `wrk2`.
 
 As an example, let's consider a run with 1000 connections on a server
 with 4 cores with hyperthreading:
