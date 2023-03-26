@@ -244,7 +244,7 @@ In workers mode, `autocannon` uses instances of Node's [Worker](https://nodejs.o
 
 The `amount` and `connections` parameters are divided amongst the workers. If either parameter is not integer divisible by the number of `workers`, the per-worker value is rounded to the lowest integer, or set to `1`, whichever is the higher. All other parameters are applied per-worker as if the test were single-threaded.
 
-**NOTE:** Unlike `amount` and `connections`, the "overall" parameters `maxOverallRequests` and `overallRate` are applied **_per worker_**. For example, if you set `connections` to `4`, `workers` to `2` and `maxOverallRequests` to `10`, each worker will receive `2` connections and a `maxOverallRequests` to `10`, resulting in `20` requests being sent.
+**NOTE:** Unlike `amount` and `connections`, the "overall" parameters, `maxOverallRequests` and `overallRate`, are applied **_per worker_**. For example, if you set `connections` to `4`, `workers` to `2` and `maxOverallRequests` to `10`, each worker will receive `2` connections and a `maxOverallRequests` of `10`, resulting in `20` requests being sent.
 
 ```js
 'use strict'
