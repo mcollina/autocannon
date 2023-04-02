@@ -18,6 +18,7 @@ const track = require('./lib/progressTracker')
 const generateSubArgAliases = require('./lib/subargAliases')
 const { checkURL, ofURL } = require('./lib/url')
 const { parseHAR } = require('./lib/parseHAR')
+const aggregateResult = require('./lib/aggregateResult')
 
 if (typeof URL !== 'function') {
   console.error('autocannon requires the WHATWG URL API, but it is not available. Please upgrade to Node 6.13+.')
@@ -30,6 +31,7 @@ module.exports.track = track
 module.exports.start = start
 module.exports.printResult = printResult
 module.exports.parseArguments = parseArguments
+module.exports.aggregateResult = aggregateResult
 const alias = {
   connections: 'c',
   pipelining: 'p',
