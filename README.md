@@ -48,6 +48,8 @@ Available options:
         The number of seconds to run the autocannon. default: 10.
   -a/--amount NUM
         The number of requests to make before exiting the benchmark. If set, duration is ignored.
+  -L NUM
+        The number of milliseconds to elapse between taking samples. This controls the sample interval, & therefore the total number of samples, which affects statistical analyses. default: 1.
   -S/--socketPath
         A path to a Unix Domain Socket or a Windows Named Pipe. A URL is still required to send the correct Host header and path.
   -w/--workers
@@ -238,6 +240,12 @@ async function foo () {
 <a name="workers"></a>
 #### Workers
 
+In workers mode, `autocannon` uses instances of Node's [Worker](https://nodejs.org/dist/latest/docs/api/worker_threads.html#new-workerfilename-options) class to execute the load tests in multiple threads.
+
+The `amount` and `connections` parameters are divided amongst the workers. If either parameter is not integer divisible by the number of `workers`, the per-worker value is rounded to the lowest integer, or set to `1`, whichever is the higher. All other parameters are applied per-worker as if the test were single-threaded.
+
+**NOTE:** Unlike `amount` and `connections`, the "overall" parameters, `maxOverallRequests` and `overallRate`, are applied **_per worker_**. For example, if you set `connections` to `4`, `workers` to `2` and `maxOverallRequests` to `10`, each worker will receive `2` connections and a `maxOverallRequests` of `10`, resulting in `20` requests being sent.
+
 ```js
 'use strict'
 
@@ -290,6 +298,7 @@ Start autocannon against the given target.
     * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
     * `duration`: The number of seconds to run the autocannon. Can be a [timestring](https://www.npmjs.com/package/timestring). _OPTIONAL_ default: `10`.
     * `amount`: A `Number` stating the number of requests to make before ending the test. This overrides duration and takes precedence, so the test won't end until the number of requests needed to be completed is completed. _OPTIONAL_.
+    * `sampleInt`: The number of milliseconds to elapse between taking samples. This controls the sample interval, & therefore the total number of samples, which affects statistical analyses. default: 1.
     * `timeout`: The number of seconds to wait for a response before. _OPTIONAL_ default: `10`.
     * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
     * `bailout`: The threshold of the number of errors when making the requests to the server before this instance bail's out. This instance will take all existing results so far and aggregate them into the results. If none passed here, the instance will ignore errors and never bail out. _OPTIONAL_ default: `undefined`.
