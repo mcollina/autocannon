@@ -405,14 +405,14 @@ Aggregate the results of one or more autocannon instance runs, where the instanc
 This is an advanced use case, where you might be running a load test using autocannon across multiple machines and therefore need to defer aggregating the results to a later time.
 
 * `results`: An array of autocannon instance results, where the instances have been run with the `skipAggregateResult` option set to true. _REQUIRED_.
-* `opts`: This is a subset of the options you would pass to the main autocannon API, so you could use the same options object as the one used to run the instances. _REQUIRED_.
-    * `title`: A `String` to be added to the results for identification. _OPTIONAL_ default: `undefined`.
-    * `url`: The given target. Can be HTTP or HTTPS. More than one URL is allowed, but it is recommended that the number of connections is an integer multiple of the URL. _REQUIRED_.
-    * `socketPath`: A path to a Unix Domain Socket or a Windows Named Pipe. A `url` is still required to send the correct Host header and path. _OPTIONAL_.
-    * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
-    * `sampleInt`: The number of milliseconds to elapse between taking samples. This controls the sample interval, & therefore the total number of samples, which affects statistical analyses. default: 1.
-    * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
-    * `workers`: Number of worker threads to use to fire requests.
+* `opts`: This is a subset of the options you would pass to the main autocannon API, so you could use the same options object as the one used to run the instances. See [autocannon](<#autocannon(opts[, cb])>) for full descriptions of the options. _REQUIRED_.
+    * `url`: _REQUIRED_
+    * `title`: _OPTIONAL_ default: `undefined`
+    * `socketPath`: _OPTIONAL_
+    * `connections`: _OPTIONAL_ default: `10`.
+    * `sampleInt`: _OPTIONAL_ default: `1`
+    * `pipelining`: _OPTIONAL_ default: `1`
+    * `workers`: _OPTIONAL_ default: `undefined`
 
 ### Autocannon events
 
