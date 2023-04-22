@@ -330,6 +330,7 @@ Start autocannon against the given target.
     * `excludeErrorStats`: A `Boolean` which allows you to disable tracking non-2xx code responses in latency and bytes per second calculations. _OPTIONAL_ default: `false`.
     * `expectBody`: A `String` representing the expected response body. Each request whose response body is not equal to `expectBody`is counted in `mismatches`. If enabled, mismatches count towards bailout. _OPTIONAL_
     * `tlsOptions`: An `Object` that is passed into `tls.connect` call ([Full list of options](https://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback)). Note: this only applies if your URL is secure.
+    * `skipAggregateResult`: A `Boolean` which allows you to disable the aggregate result phase of an instance run. See [autocannon.aggregateResult](<#autocannon.aggregateResult(results[, opts])>)
 * `cb`: The callback which is called on completion of a benchmark. Takes the following params. _OPTIONAL_.
     * `err`: If there was an error encountered with the run.
     * `results`: The results of the run.
@@ -396,6 +397,22 @@ Print the result tables to the terminal, programmatically.
     * `outputStream`: The stream to output to. default: `process.stderr`.
     * `renderResultsTable`: A truthy value to enable the rendering of the results table. default: `true`.
     * `renderLatencyTable`: A truthy value to enable the rendering of the latency table. default: `false`.
+
+### autocannon.aggregateResult(results[, opts])
+
+Aggregate the results of one or more autocannon instance runs, where the instances of autocannon have been run with the `skipAggregateResult` option.
+
+This is an advanced use case, where you might be running a load test using autocannon across multiple machines and therefore need to defer aggregating the results to a later time.
+
+* `results`: An array of autocannon instance results, where the instances have been run with the `skipAggregateResult` option set to true. _REQUIRED_.
+* `opts`: This is a subset of the options you would pass to the main autocannon API, so you could use the same options object as the one used to run the instances. _REQUIRED_.
+    * `title`: A `String` to be added to the results for identification. _OPTIONAL_ default: `undefined`.
+    * `url`: The given target. Can be HTTP or HTTPS. More than one URL is allowed, but it is recommended that the number of connections is an integer multiple of the URL. _REQUIRED_.
+    * `socketPath`: A path to a Unix Domain Socket or a Windows Named Pipe. A `url` is still required to send the correct Host header and path. _OPTIONAL_.
+    * `connections`: The number of concurrent connections. _OPTIONAL_ default: `10`.
+    * `sampleInt`: The number of milliseconds to elapse between taking samples. This controls the sample interval, & therefore the total number of samples, which affects statistical analyses. default: 1.
+    * `pipelining`: The number of [pipelined requests](https://en.wikipedia.org/wiki/HTTP_pipelining) for each connection. Will cause the `Client` API to throw when greater than 1. _OPTIONAL_ default: `1`.
+    * `workers`: Number of worker threads to use to fire requests.
 
 ### Autocannon events
 
