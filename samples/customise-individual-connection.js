@@ -7,6 +7,8 @@ const server = http.createServer(handle)
 
 server.listen(0, startBench)
 
+let connection = 0
+
 function handle (req, res) {
   res.end('hello world')
 }
@@ -20,8 +22,6 @@ function startBench () {
     duration: 10,
     setupClient
   }, finishedBench)
-
-  let connection = 0
 
   function setupClient (client) {
     client.setBody('connection number', connection++)
