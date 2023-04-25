@@ -32,7 +32,7 @@ module.exports.track = track
 module.exports.start = start
 module.exports.printResult = printResult
 module.exports.parseArguments = parseArguments
-module.exports.aggregateResult = function aggregateResult (results, opts) {
+module.exports.aggregateResult = function aggregateResult (results, opts = {}) {
   if (!Array.isArray(results)) {
     throw new Error('"results" must be an array of results')
   }
