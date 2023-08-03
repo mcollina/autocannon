@@ -254,3 +254,97 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     })
     .on('end', t.end)
 })
+
+test('should run handle PUT bodies', (t) => {
+  t.test('"number" bodies work', t => {
+    t.plan(2)
+
+    const server = helper.startServer()
+    const url = 'http://localhost:' + server.address().port
+
+    const cmd = [
+      path.join(__dirname, '..'),
+      '-d', '1',
+      '-m', 'PUT',
+      '-H', 'content-type="application/x-www-form-urlencoded"',
+      '-b', '1',
+      url
+    ]
+    const child = childProcess.spawn(process.execPath, cmd, {
+      cwd: __dirname,
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      detached: false
+    })
+
+    t.teardown(() => {
+      child.kill()
+    })
+
+    const outputLines = []
+    child
+      .stderr
+      .pipe(split())
+      .on('data', (line) => {
+        outputLines.push(line)
+      })
+      .on('end', () => {
+        t.equal(
+          outputLines.some(l => l === 'body must be either a string or a buffer'),
+          false
+        )
+        t.equal(
+          /.* requests in ([0-9]|\.)+s, .* read/.test(outputLines.pop()),
+          true
+        )
+        t.end()
+      })
+  })
+
+  t.test('"string" bodies work', t => {
+    t.plan(2)
+
+    const server = helper.startServer()
+    const url = 'http://localhost:' + server.address().port
+
+    const cmd = [
+      path.join(__dirname, '..'),
+      '-d', '1',
+      '-m', 'PUT',
+      '-H', 'content-type="application/x-www-form-urlencoded"',
+      '-b', '"1"',
+      url
+    ]
+    const child = childProcess.spawn(process.execPath, cmd, {
+      cwd: __dirname,
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      detached: false
+    })
+
+    t.teardown(() => {
+      child.kill()
+    })
+
+    const outputLines = []
+    child
+      .stderr
+      .pipe(split())
+      .on('data', (line) => {
+        outputLines.push(line)
+      })
+      .on('end', () => {
+        t.equal(
+          outputLines.some(l => l === 'body must be either a string or a buffer'),
+          false
+        )
+        t.equal(
+          /.* requests in ([0-9]|\.)+s, .* read/.test(outputLines.pop()),
+          true
+        )
+        t.end()
+      })
+  })
+
+  t.end()
+})
