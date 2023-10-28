@@ -1,6 +1,6 @@
 'use strict'
 
-const http = require('http')
+const http = require('node:http')
 const autocannon = require('../autocannon')
 
 function createHandler (serverName) {
