@@ -449,6 +449,7 @@ The results object emitted by `done` and passed to the `autocannon()` callback h
 * `pipelining`: The number of pipelined requests used per connection (value of `opts.pipelining`).
 * `non2xx`: The number of non-2xx response status codes received.
 * `resets`: How many times the requests pipeline was reset due to `setupRequest` returning a falsey value.
+* `statusCodeStats`: Requests counter per status code (e.g. `{ "200": { "count": "500" } }`)
 
 The histogram objects for `requests`, `latency` and `throughput` are [hdr-histogram-percentiles-obj](https://github.com/thekemkid/hdr-histogram-percentiles-obj) objects and have this shape:
 
