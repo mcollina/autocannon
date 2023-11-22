@@ -97,3 +97,45 @@ test('verify amount of total requests', (t) => {
   const expectedRequests = connections * pipelining
   t.match(output.includes(`${expectedRequests} requests in`), true)
 })
+
+test('should not print when verbose(V=0) is false', (t) => {
+  t.plan(1)
+
+  const connections = 10
+  const pipelining = 2
+  const result = {
+    connections,
+    pipelining,
+    latency: {},
+    requests: {
+      sent: connections * pipelining
+    },
+    throughput: {
+      average: 3319,
+      mean: 3319,
+      stddev: 0,
+      min: 3318,
+      max: 3318,
+      total: 3318,
+      p0_001: 3319,
+      p0_01: 3319,
+      p0_1: 3319,
+      p1: 3319,
+      p2_5: 3319,
+      p10: 3319,
+      p25: 3319,
+      p50: 3319,
+      p75: 3319,
+      p90: 3319,
+      p97_5: 3319,
+      p99: 3319,
+      p99_9: 3319,
+      p99_99: 3319,
+      p99_999: 3319
+    }
+  }
+
+  // act
+  const output = printResult(result, { verbose: false })
+  t.ok(output.split('\n').length === 2)
+})

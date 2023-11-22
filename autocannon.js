@@ -71,6 +71,7 @@ const alias = {
   renderProgressBar: 'progress',
   renderStatusCodes: 'statusCodes',
   title: 'T',
+  verbose: 'V',
   version: 'v',
   forever: 'f',
   idReplacement: 'I',
@@ -98,12 +99,13 @@ const defaults = {
   idReplacement: false,
   excludeErrorStats: false,
   debug: false,
-  workers: 0
+  workers: 0,
+  verbose: true
 }
 
 function parseArguments (argvs) {
   let argv = subarg(argvs, {
-    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'renderStatusCodes', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort', 'debug', 'ignoreCoordinatedOmission'],
+    boolean: ['json', 'n', 'help', 'renderLatencyTable', 'renderProgressBar', 'renderStatusCodes', 'forever', 'idReplacement', 'excludeErrorStats', 'onPort', 'debug', 'ignoreCoordinatedOmission', 'verbose'],
     alias,
     default: defaults,
     '--': true
