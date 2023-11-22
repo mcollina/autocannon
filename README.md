@@ -98,12 +98,13 @@ Available options:
   -R/--overallRate NUM
         The max number of requests to make per second from all connections.
         connection rate will take precedence if both are set.
-        NOTE: if using rate limiting and a very large rate is entered which cannot be met,
-              Autocannon will do as many requests as possible per second. Also, latency data will be corrected to compensate for the effects of the coordinated omission issue. If you are not familiar with the coordinated omission issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html) or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
+        NOTE: if using rate limiting and a very large rate is entered which cannot be met, Autocannon will do as many requests as possible per second.
+        Also, latency data will be corrected to compensate for the effects of the coordinated omission issue.
+        If you are not familiar with the coordinated omission issue, you should probably read [this article](http://highscalability.com/blog/2015/10/5/your-load-generator-is-probably-lying-to-you-take-the-red-pi.html) or watch this [Gil Tene's talk](https://www.youtube.com/watch?v=lJ8ydIuPFeU) on the topic.
   -C/--ignoreCoordinatedOmission
         Ignore the coordinated omission issue when requests should be sent at a fixed rate using 'connectionRate' or 'overallRate'.
         NOTE: it is not recommended to enable this option.
-              When the request rate cannot be met because the server is too slow, many request latencies might be missing and Autocannon might report a misleading latency distribution.
+        When the request rate cannot be met because the server is too slow, many request latencies might be missing and Autocannon might report a misleading latency distribution.
   -D/--reconnectRate NUM
         The number of requests to make before resetting a connections connection to the
         server.
