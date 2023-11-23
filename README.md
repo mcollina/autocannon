@@ -136,6 +136,8 @@ Available options:
         Print connection errors to stderr.
   -v/--version
         Print the version number.
+  -V/--verbose
+        Print the table with results. default: true.
   -h/--help
         Print this menu.
 ```
