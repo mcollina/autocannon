@@ -99,6 +99,23 @@ test('request builder should add a Content-Length header when the body buffer ex
     'request is okay')
 })
 
+test('request builder should add only one HOST header', (t) => {
+  t.plan(1)
+
+  const opts = server.address()
+  opts.method = 'POST'
+  opts.headers = {
+    Host: 'example.com'
+  }
+
+  const build = RequestBuilder(opts)
+
+  const result = build({ body: 'body' })
+  t.same(result,
+    Buffer.from('POST / HTTP/1.1\r\nConnection: keep-alive\r\nHost: example.com\r\nContent-Length: 4\r\n\r\nbody'),
+    'request is okay')
+})
+
 test('request builder should add a Content-Length header with correct calculated value when the body buffer exists and idReplacement is enabled as a default override', (t) => {
   t.plan(1)
 
