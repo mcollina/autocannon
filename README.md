@@ -393,13 +393,28 @@ Check out [this example](./samples/track-run.js) to see it in use, as well.
 
 ### autocannon.printResult(resultObject[, opts])
 
-Print the result tables to the terminal, programmatically.
+Returns a text string containing the result tables.
 
 * `resultObject`: The result object of autocannon. _REQUIRED_.
-* `opts`: Configuration options for printing the tables. This can have the following attributes. _OPTIONAL_.
-    * `outputStream`: The stream to output to. default: `process.stderr`.
-    * `renderResultsTable`: A truthy value to enable the rendering of the results table. default: `true`.
-    * `renderLatencyTable`: A truthy value to enable the rendering of the latency table. default: `false`.
+* `opts`: Configuration options for generating the tables. These may include the following attributes. _OPTIONAL_.
+    * `outputStream`: The stream to which output is directed. It is primarily used to check if the terminal supports color. default: `process.stderr`.
+    * `renderResultsTable`: A truthy value to enable the creation of the results table. default: `true`.
+    * `renderLatencyTable`: A truthy value to enable the creation of the latency table. default: `false`.
+
+Example:
+
+```js
+"use strict";
+
+const { stdout } = require("node:process");
+const autocannon = require("autocannon");
+
+function print(result) {
+  stdout.write(autocannon.printResult(result));
+}
+
+autocannon({ url: "http://localhost:3000" }, (err, result) => print(result));
+```
 
 ### autocannon.aggregateResult(results[, opts])
 
