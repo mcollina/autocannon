@@ -179,11 +179,12 @@ test('should print with color when color is supported', (t) => {
     }
   }
 
-  const { FORCE_COLOR, NO_COLOR, COLOR, CI } = process.env
+  const { FORCE_COLOR, NO_COLOR, COLOR, CI, COLORTERM } = process.env
   delete process.env.FORCE_COLOR
   delete process.env.NO_COLOR
   delete process.env.COLOR
   delete process.env.CI
+  process.env.COLORTERM = 'truecolor'
   const outputStream = new Writable({
     write () {}
   })
@@ -198,6 +199,7 @@ test('should print with color when color is supported', (t) => {
   process.env.NO_COLOR = NO_COLOR
   process.env.COLOR = COLOR
   process.env.CI = CI
+  process.env.COLORTERM = COLORTERM
 })
 
 test('should not print with any color when color is not supported', (t) => {
@@ -237,11 +239,12 @@ test('should not print with any color when color is not supported', (t) => {
     }
   }
 
-  const { FORCE_COLOR, NO_COLOR, COLOR, CI } = process.env
+  const { FORCE_COLOR, NO_COLOR, COLOR, CI, COLORTERM } = process.env
   delete process.env.FORCE_COLOR
   delete process.env.NO_COLOR
   delete process.env.COLOR
   delete process.env.CI
+  process.env.COLORTERM = 'truecolor'
   const outputStream = new Writable({
     write () {}
   })
@@ -255,4 +258,5 @@ test('should not print with any color when color is not supported', (t) => {
   process.env.NO_COLOR = NO_COLOR
   process.env.COLOR = COLOR
   process.env.CI = CI
+  process.env.COLORTERM = COLORTERM
 })
