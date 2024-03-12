@@ -228,3 +228,21 @@ test('validateOpts should return an error when forever is used with workers', { 
   t.ok(result instanceof Error)
   t.equal(result.message, 'Using `forever` option isn\'t currently supported with workers')
 })
+
+test('validateOpts should not set render options by default', (t) => {
+  t.plan(3)
+
+  const result = validateOpts({ url: 'http://localhost' })
+  t.equal(result.renderProgressBar, undefined)
+  t.equal(result.renderResultsTable, undefined)
+  t.equal(result.renderLatencyTable, undefined)
+})
+
+test('validateOpts should disable render options when json is true', (t) => {
+  t.plan(3)
+
+  const result = validateOpts({ url: 'http://localhost', json: true })
+  t.equal(result.renderProgressBar, false)
+  t.equal(result.renderResultsTable, false)
+  t.equal(result.renderLatencyTable, false)
+})
