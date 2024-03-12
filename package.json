@@ -48,7 +48,7 @@
     "tap": "^16.0.0"
   },
   "dependencies": {
-    "chalk": "^4.1.0",
+    "chalk": "^5.2.0",
     "char-spinner": "^1.0.1",
     "cli-table3": "^0.6.0",
     "color-support": "^1.1.1",
