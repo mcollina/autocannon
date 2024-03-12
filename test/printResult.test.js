@@ -179,6 +179,11 @@ test('should print with color when color is supported', (t) => {
     }
   }
 
+  const { FORCE_COLOR, NO_COLOR, COLOR, CI } = process.env
+  delete process.env.FORCE_COLOR
+  delete process.env.NO_COLOR
+  delete process.env.COLOR
+  delete process.env.CI
   const outputStream = new Writable({
     write () {}
   })
@@ -187,6 +192,12 @@ test('should print with color when color is supported', (t) => {
   // act
   const output = printResult(result, { outputStream })
   t.ok(ansiRegex().test(output))
+
+  // cleanup
+  process.env.FORCE_COLOR = FORCE_COLOR
+  process.env.NO_COLOR = NO_COLOR
+  process.env.COLOR = COLOR
+  process.env.CI = CI
 })
 
 test('should not print with any color when color is not supported', (t) => {
@@ -226,6 +237,11 @@ test('should not print with any color when color is not supported', (t) => {
     }
   }
 
+  const { FORCE_COLOR, NO_COLOR, COLOR, CI } = process.env
+  delete process.env.FORCE_COLOR
+  delete process.env.NO_COLOR
+  delete process.env.COLOR
+  delete process.env.CI
   const outputStream = new Writable({
     write () {}
   })
@@ -233,4 +249,10 @@ test('should not print with any color when color is not supported', (t) => {
   // act
   const output = printResult(result, { outputStream })
   t.ok(!ansiRegex().test(output))
+
+  // cleanup
+  process.env.FORCE_COLOR = FORCE_COLOR
+  process.env.NO_COLOR = NO_COLOR
+  process.env.COLOR = COLOR
+  process.env.CI = CI
 })
