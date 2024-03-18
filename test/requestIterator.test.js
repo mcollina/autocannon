@@ -202,7 +202,11 @@ test('request iterator should not replace any [<id>] tags with generated IDs whe
 })
 
 test('request iterator should replace all [<id>] tags with generated IDs when calling move with idReplacement enabled', (t) => {
-  t.plan(4)
+  t.plan(6)
+
+  function isUrlSafe (string) {
+    return /^[A-Za-z0-9\-_]+$/.test(string)
+  }
 
   const opts = server.address()
   opts.method = 'POST'
@@ -212,15 +216,19 @@ test('request iterator should replace all [<id>] tags with generated IDs when ca
 
   const iterator = new RequestIterator(opts)
   const first = iterator.currentRequest.requestBuffer.toString().trim()
+  const firstId = first.split('\n').pop().trim()
 
   t.equal(first.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
-  t.equal(first.slice(-1), '0', 'Generated ID should end with request number')
+  t.ok(firstId.endsWith('0'), 'Generated ID should end with request number')
+  t.ok(isUrlSafe(firstId), 'Generated ID should be URL-safe')
 
   iterator.nextRequest()
   const second = iterator.currentRequest.requestBuffer.toString().trim()
+  const secondId = second.split('\n').pop().trim()
 
   t.equal(second.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
-  t.equal(second.slice(-1), '1', 'Generated ID should end with a unique request number')
+  t.ok(secondId.endsWith('1'), 'Generated ID should end with a unique request number')
+  t.ok(isUrlSafe(secondId), 'Generated ID should be URL-safe')
 })
 
 test('request iterator should invoke onResponse callback when set', (t) => {
