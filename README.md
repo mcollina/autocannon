@@ -113,7 +113,7 @@ Available options:
   -l/--latency
         Print all the latency data. default: false.
   -I/--idReplacement
-        Enable replacement of [<id>] with a randomly generated ID within the request body. default: false.
+        Enable replacement of `[<id>]` with a randomly generated ID within the request body. e.g. `/items/[<id>]`. default: false.
   -j/--json
         Print the output as newline delimited JSON. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever
