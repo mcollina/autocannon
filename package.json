@@ -49,6 +49,7 @@
     "tap": "^16.0.0"
   },
   "dependencies": {
+    "@minimistjs/subarg": "^1.0.0",
     "chalk": "^4.1.0",
     "char-spinner": "^1.0.1",
     "cli-table3": "^0.6.0",
@@ -70,7 +71,6 @@
     "reinterval": "^1.1.0",
     "retimer": "^3.0.0",
     "semver": "^7.3.2",
-    "subarg": "^1.0.0",
     "timestring": "^6.0.0"
   }
 }
