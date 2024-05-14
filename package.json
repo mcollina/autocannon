@@ -66,7 +66,7 @@
     "lodash.flatten": "^4.4.0",
     "manage-path": "^2.0.0",
     "on-net-listen": "^1.1.1",
-    "pretty-bytes": "^5.4.1",
+    "pretty-bytes": "^6.1.0",
     "progress": "^2.0.3",
     "reinterval": "^1.1.0",
     "retimer": "^3.0.0",
