@@ -62,6 +62,7 @@ Available options:
         Start the command listed after -- on the command line. When it starts listening on a port,
         start sending requests to that port. A URL is still required to send requests to
         the correct path. The hostname can be omitted, `localhost` will be used by default.
+        If the command after -- is `node <script>`, this flag is optional and assumed to be `true`.
   -m/--method METHOD
         The HTTP method to use. default: 'GET'.
   -t/--timeout NUM
