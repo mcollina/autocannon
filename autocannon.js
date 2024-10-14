@@ -115,6 +115,11 @@ function parseArguments (argvs) {
 
   argv.url = argv._.length > 1 ? argv._ : argv._[0]
 
+  // Assume onPort if `-- node` is provided
+  if (argv['--'][0] === 'node') {
+    argv.onPort = true
+  }
+
   if (argv.onPort) {
     argv.spawn = argv['--']
   }
