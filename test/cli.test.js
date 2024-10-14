@@ -47,7 +47,9 @@ test('should run benchmark against server', (t) => {
   })
 
   t.teardown(() => {
-    child.kill()
+    try {
+      child.kill()
+    } catch {}
   })
 
   child
@@ -102,7 +104,9 @@ test('should parse HAR file and run requests', (t) => {
   })
 
   t.teardown(() => {
-    child.kill()
+    try {
+      child.kill()
+    } catch {}
   })
 
   child
@@ -126,7 +130,9 @@ test('should throw on unknown HAR file', (t) => {
   })
 
   t.teardown(() => {
-    child.kill()
+    try {
+      child.kill()
+    } catch {}
   })
 
   const lines = []
@@ -155,7 +161,9 @@ test('should throw on invalid HAR file', (t) => {
   })
 
   t.teardown(() => {
-    child.kill()
+    try {
+      child.kill()
+    } catch {}
   })
 
   const lines = []
@@ -187,7 +195,9 @@ test('should write warning about unused HAR requests', (t) => {
   })
 
   t.teardown(() => {
-    child.kill()
+    try {
+      child.kill()
+    } catch {}
   })
 
   const lines = []
@@ -241,7 +251,9 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
   })
 
   t.teardown(() => {
-    child.kill()
+    try {
+      child.kill()
+    } catch {}
   })
 
   child
@@ -278,7 +290,9 @@ test('should run handle PUT bodies', (t) => {
     })
 
     t.teardown(() => {
-      child.kill()
+      try {
+        child.kill()
+      } catch {}
     })
 
     const outputLines = []
@@ -323,7 +337,9 @@ test('should run handle PUT bodies', (t) => {
     })
 
     t.teardown(() => {
-      child.kill()
+      try {
+        child.kill()
+      } catch {}
     })
 
     const outputLines = []
