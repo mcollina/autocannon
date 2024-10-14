@@ -1,10 +1,15 @@
 'use strict'
 
+const why = require('why-is-node-running')
 const t = require('tap')
 const split = require('split2')
 const path = require('path')
 const childProcess = require('child_process')
 const helper = require('./helper')
+
+setInterval(function () {
+  console.log(why())
+}, 30000).unref()
 
 const lines = [
   /Running 1s test @ .*$/,
@@ -46,7 +51,9 @@ const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), 
 })
 
 t.teardown(() => {
-  child.kill()
+  try {
+    child.kill()
+  } catch {}
 })
 
 child
