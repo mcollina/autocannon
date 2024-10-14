@@ -46,7 +46,8 @@
     "sinon": "^15.0.0",
     "split2": "^4.0.0",
     "standard": "^17.0.0",
-    "tap": "^16.0.0"
+    "tap": "^16.0.0",
+    "why-is-node-running": "^2.3.0"
   },
   "dependencies": {
     "@minimistjs/subarg": "^1.0.0",
