@@ -62,6 +62,7 @@ Available options:
         Start the command listed after -- on the command line. When it starts listening on a port,
         start sending requests to that port. A URL is still required to send requests to
         the correct path. The hostname can be omitted, `localhost` will be used by default.
+        If the command after -- is `node <script>`, this flag is optional and assumed to be `true`.
   -m/--method METHOD
         The HTTP method to use. default: 'GET'.
   -t/--timeout NUM
@@ -113,7 +114,7 @@ Available options:
   -l/--latency
         Print all the latency data. default: false.
   -I/--idReplacement
-        Enable replacement of [<id>] with a randomly generated ID within the request body. default: false.
+        Enable replacement of `[<id>]` with a randomly generated ID within the request body. e.g. `/items/[<id>]`. default: false.
   -j/--json
         Print the output as newline delimited JSON. This will cause the progress bar and results not to be rendered. default: false.
   -f/--forever

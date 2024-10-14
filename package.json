@@ -30,7 +30,7 @@
   "contributors": [
     "Glen Keane <glenkeane.94@gmail.com>",
     "Donald Robertson <donaldarobertson89@gmail.com",
-    "Salman Mitha <SalmanMitha@gmail.com"
+    "Salman Mitha <SalmanMitha@gmail.com>"
   ],
   "license": "MIT",
   "bugs": {
@@ -38,6 +38,7 @@
   },
   "homepage": "https://github.com/mcollina/autocannon#readme",
   "devDependencies": {
+    "ansi-regex": "^5.0.1",
     "bl": "^6.0.0",
     "busboy": "^0.3.1",
     "pre-commit": "^1.1.2",
@@ -45,9 +46,11 @@
     "sinon": "^15.0.0",
     "split2": "^4.0.0",
     "standard": "^17.0.0",
-    "tap": "^16.0.0"
+    "tap": "^16.0.0",
+    "why-is-node-running": "^2.3.0"
   },
   "dependencies": {
+    "@minimistjs/subarg": "^1.0.0",
     "chalk": "^4.1.0",
     "char-spinner": "^1.0.1",
     "cli-table3": "^0.6.0",
@@ -69,7 +72,6 @@
     "reinterval": "^1.1.0",
     "retimer": "^3.0.0",
     "semver": "^7.3.2",
-    "subarg": "^1.0.0",
     "timestring": "^6.0.0"
   }
 }

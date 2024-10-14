@@ -184,15 +184,19 @@ test('request iterator should allow for rebuilding the current request', (t) => 
 })
 
 test('request iterator should not replace any [<id>] tags with generated IDs when calling move with idReplacement disabled', (t) => {
-  t.plan(2)
+  t.plan(3)
 
   const opts = server.address()
+  opts.path = '/[%3Cid%3E]'
   opts.method = 'POST'
   opts.body = '[<id>]'
   opts.requests = [{}]
 
   const iterator = new RequestIterator(opts)
   const result = iterator.currentRequest.requestBuffer.toString().trim()
+
+  const path = result.split(' ')[1]
+  t.equal(path, '/[%3Cid%3E]', '[<id>] should be present in path')
 
   const contentLength = result.split('Content-Length: ')[1].slice(0, 1)
   t.equal(contentLength, '6', 'Content-Length was incorrect')
@@ -202,25 +206,40 @@ test('request iterator should not replace any [<id>] tags with generated IDs whe
 })
 
 test('request iterator should replace all [<id>] tags with generated IDs when calling move with idReplacement enabled', (t) => {
-  t.plan(4)
+  t.plan(10)
+
+  function isUrlSafe (string) {
+    return /^[A-Za-z0-9\-_]+$/.test(string)
+  }
 
   const opts = server.address()
   opts.method = 'POST'
-  opts.body = '[<id>]'
+  opts.path = '/[%3Cid%3E]'
+  opts.body = '[<id>] [%3Cid%3E]'
   opts.requests = [{}]
   opts.idReplacement = true
 
   const iterator = new RequestIterator(opts)
   const first = iterator.currentRequest.requestBuffer.toString().trim()
+  const firstPath = first.split(' ')[1]
+  const firstId = firstPath.slice(1)
 
-  t.equal(first.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
-  t.equal(first.slice(-1), '0', 'Generated ID should end with request number')
+  t.equal(first.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced in body')
+  t.ok(first.includes('[%3Cid%3E]'), 'Encoded [<id>] tags should not be replaced in body')
+  t.equal(firstPath.includes('[%3Cid%3E]'), false, 'One or more [<id>] tags were not replaced in path')
+  t.ok(firstId.endsWith('0'), 'Generated ID should end with request number')
+  t.ok(isUrlSafe(firstId), 'Generated ID should be URL-safe')
 
   iterator.nextRequest()
   const second = iterator.currentRequest.requestBuffer.toString().trim()
+  const secondPath = second.split(' ')[1]
+  const secondId = secondPath.slice(1)
 
-  t.equal(second.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced')
-  t.equal(second.slice(-1), '1', 'Generated ID should end with a unique request number')
+  t.equal(second.includes('[<id>]'), false, 'One or more [<id>] tags were not replaced in body')
+  t.ok(second.includes('[%3Cid%3E]'), 'Encoded [<id>] tags should not be replaced in body')
+  t.equal(secondPath.includes('[%3Cid%3E]'), false, 'One or more [<id>] tags were not replaced in path')
+  t.ok(secondId.endsWith('1'), 'Generated ID should end with a unique request number')
+  t.ok(isUrlSafe(secondId), 'Generated ID should be URL-safe')
 })
 
 test('request iterator should invoke onResponse callback when set', (t) => {

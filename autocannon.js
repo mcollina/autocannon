@@ -11,7 +11,7 @@ const URL = require('url').URL
 const spawn = require('child_process').spawn
 const managePath = require('manage-path')
 const hasAsyncHooks = require('has-async-hooks')
-const subarg = require('subarg')
+const subarg = require('@minimistjs/subarg')
 const printResult = require('./lib/printResult')
 const initJob = require('./lib/init')
 const track = require('./lib/progressTracker')
@@ -114,6 +114,11 @@ function parseArguments (argvs) {
   argv = generateSubArgAliases(argv)
 
   argv.url = argv._.length > 1 ? argv._ : argv._[0]
+
+  // Assume onPort if `-- node` is provided
+  if (argv['--'][0] === 'node') {
+    argv.onPort = true
+  }
 
   if (argv.onPort) {
     argv.spawn = argv['--']
