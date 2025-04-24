@@ -7,6 +7,9 @@ concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -19,12 +22,13 @@ jobs:
         node-version: [20, 22]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         persist-credentials: false
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
+        check-latest: true
         node-version: ${{ matrix.node-version }}
     - run: node --version
     - run: npm --version
