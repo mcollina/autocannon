@@ -357,12 +357,8 @@ test('client supports response trailers', (t) => {
   t.plan(3)
 
   const client = new Client(trailerServer.address())
-  let n = 0
-  client.on('body', (raw) => {
-    if (++n === 1) {
-      // trailer value
-      t.ok(/7895bf4b8828b55ceaf47747b4bca667/.test(raw.toString()))
-    }
+  client.on('trailers', (rawTrailers) => {
+    t.same(rawTrailers, ['Content-MD5', '7895bf4b8828b55ceaf47747b4bca667'])
   })
   client.on('response', (statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
