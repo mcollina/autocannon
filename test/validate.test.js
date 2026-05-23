@@ -246,3 +246,64 @@ test('validateOpts should disable render options when json is true', (t) => {
   t.equal(result.renderResultsTable, false)
   t.equal(result.renderLatencyTable, false)
 })
+
+test('validateOpts should return an error if renderOnlyStatusCode is used without renderStatusCodes', (t) => {
+  t.plan(2)
+
+  const result = validateOpts({ url: 'http://localhost', renderOnlyStatusCode: 200 })
+  t.ok(result instanceof Error)
+  t.equal(result.message, 'renderStatusCodes must be enabled to use renderOnlyStatusCode')
+})
+
+test('validateOpts should return an error if renderOnlyStatusCode is not a valid status code', (t) => {
+  t.plan(12)
+
+  // Invalid status code
+  const result = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: 'foo' })
+  t.ok(result instanceof Error)
+  t.equal(result.message, 'renderOnlyStatusCode must be a valid status code or comma separated list of status codes')
+
+  // Out of bounds status code
+  const result2 = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: 600 })
+  t.ok(result2 instanceof Error)
+  t.equal(result2.message, 'renderOnlyStatusCode must be between 100 and 599')
+
+  // Out of bounds status code in comma separated list
+  const result3 = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: '200,10' })
+  t.ok(result3 instanceof Error)
+  t.equal(result3.message, 'renderOnlyStatusCode must be between 100 and 599')
+
+  // Valid status code, with forgotten comma at the end
+  const result4 = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: '200,302,' })
+  t.ok(result4 instanceof Error)
+  t.equal(result4.message, 'renderOnlyStatusCode must be between 100 and 599')
+
+  // Valid status code, with non-numerical characters
+  const result5 = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: '20O' })
+  t.ok(result5 instanceof Error)
+  t.equal(result5.message, 'renderOnlyStatusCode must be a valid status code or comma separated list of status codes')
+
+  // Valid status code, with non-numerical characters in comma separated list
+  const result6 = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: '200,302{' })
+  t.ok(result6 instanceof Error)
+  t.equal(result6.message, 'renderOnlyStatusCode must be a valid status code or comma separated list of status codes')
+})
+
+test('validateOpts should return undefined for renderOnlyStatusCode if it is not set', (t) => {
+  t.plan(1)
+
+  const result = validateOpts({ url: 'http://localhost', renderStatusCodes: true })
+  t.equal(result.renderOnlyStatusCode, undefined)
+})
+
+test('validateOpts should return a valid array of status codes for renderOnlyStatusCode', (t) => {
+  t.plan(2)
+
+  // Multiple status codes
+  const result = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: '200,302' })
+  t.same(result.renderOnlyStatusCode, [200, 302])
+
+  // Single status code
+  const result2 = validateOpts({ url: 'http://localhost', renderStatusCodes: true, renderOnlyStatusCode: '200' })
+  t.same(result2.renderOnlyStatusCode, [200])
+})

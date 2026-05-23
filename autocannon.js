@@ -93,6 +93,7 @@ const defaults = {
   renderLatencyTable: false,
   renderProgressBar: true,
   renderStatusCodes: false,
+  renderOnlyStatusCode: null,
   json: false,
   forever: false,
   method: 'GET',

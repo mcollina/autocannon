@@ -128,6 +128,9 @@ Available options:
         Enabling this option will slow down the load testing.
   --renderStatusCodes
         Print status codes and their respective statistics.
+  --renderOnlyStatusCode NUM/STRING
+        Print the specified status code and their respective statistics. This can be used by supplying a single status code, or multiple comma-separated status codes.
+        Example: --renderOnlyStatusCode=200 or --renderOnlyStatusCode=301,302,404
   --cert
         Path to cert chain in pem format
   --key
