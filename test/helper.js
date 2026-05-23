@@ -228,6 +228,47 @@ function customizeHAR (fixturePath, replaced, domain) {
   return har
 }
 
+// Server that sends 103 Early Hints before the final 200 response.
+// Uses raw net.createServer because Node's http module doesn't support
+// writing 1xx informational responses via the standard API.
+function startEarlyHintsServer () {
+  const net = require('net')
+  const server = net.createServer((socket) => {
+    let buf = ''
+    socket.on('data', (chunk) => {
+      buf += chunk.toString()
+      // Wait until we have a complete HTTP request (ends with \r\n\r\n)
+      while (buf.includes('\r\n\r\n')) {
+        const idx = buf.indexOf('\r\n\r\n')
+        buf = buf.slice(idx + 4)
+
+        // Send 103 Early Hints
+        socket.write(
+          'HTTP/1.1 103 Early Hints\r\n' +
+          'Link: </style.css>; rel=preload; as=style\r\n' +
+          '\r\n'
+        )
+
+        // Send the final 200 OK response
+        const body = 'hello world'
+        socket.write(
+          'HTTP/1.1 200 OK\r\n' +
+          'Content-Length: ' + body.length + '\r\n' +
+          'Connection: keep-alive\r\n' +
+          '\r\n' +
+          body
+        )
+      }
+    })
+    socket.on('error', noop)
+  })
+
+  server.listen(0)
+  server.unref()
+
+  return server
+}
+
 module.exports.startServer = startServer
 module.exports.startTimeoutServer = startTimeoutServer
 module.exports.startSocketDestroyingServer = startSocketDestroyingServer
@@ -236,6 +277,7 @@ module.exports.startTrailerServer = startTrailerServer
 module.exports.startTlsServer = startTlsServer
 module.exports.startMultipartServer = startMultipartServer
 module.exports.startBasicAuthServer = startBasicAuthServer
+module.exports.startEarlyHintsServer = startEarlyHintsServer
 module.exports.customizeHAR = customizeHAR
 
 function noop () {}

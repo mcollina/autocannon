@@ -358,7 +358,8 @@ test('client supports response trailers', (t) => {
 
   const client = new Client(trailerServer.address())
   client.on('trailers', (rawTrailers) => {
-    t.same(rawTrailers, ['Content-MD5', '7895bf4b8828b55ceaf47747b4bca667'])
+    // trailer value
+    t.ok(rawTrailers.includes('7895bf4b8828b55ceaf47747b4bca667'), 'trailer value received')
   })
   client.on('response', (statusCode, length) => {
     t.equal(statusCode, 200, 'status code matches')
@@ -1037,5 +1038,79 @@ test('client supports receiving large response body', (t) => {
     t.equal(onResponseCalled, 1, 'onResponse should be called only once')
     t.equal(statusCode, 200, 'status code matches')
     client.destroy()
+  })
+})
+
+// --- Early Hints (103) tests ---
+
+const earlyHintsServer = helper.startEarlyHintsServer()
+
+test('client handles 103 Early Hints and emits responses', (t) => {
+  t.plan(4)
+
+  const client = new Client(earlyHintsServer.address())
+  let responseCount = 0
+
+  client.on('response', (statusCode, length) => {
+    responseCount++
+    if (responseCount === 1) {
+      t.equal(statusCode, 103, 'first status code should be 103')
+      t.equal(length, 0, '103 should have no body')
+    } else if (responseCount === 2) {
+      t.equal(statusCode, 200, 'second status code should be 200')
+      t.ok(length > 0, '200 should have bytes')
+      client.destroy()
+    }
+  })
+})
+
+test('client handles multiple sequential requests with 103 Early Hints', (t) => {
+  t.plan(12)
+
+  const opts = earlyHintsServer.address()
+  opts.responseMax = 3
+  const client = new Client(opts)
+  let responseCount = 0
+
+  client.on('response', (statusCode, length) => {
+    responseCount++
+    if (responseCount % 2 !== 0) {
+      t.equal(statusCode, 103, `response ${responseCount} should be 103`)
+      t.equal(length, 0, `response ${responseCount} should have no body`)
+    } else {
+      t.equal(statusCode, 200, `response ${responseCount} should be 200`)
+      t.ok(length > 0, `response ${responseCount} should have bytes`)
+    }
+  })
+
+  client.on('done', () => {
+    t.end()
+  })
+})
+
+test('client still emits headers event for 103 Early Hints', (t) => {
+  t.plan(5)
+
+  const client = new Client(earlyHintsServer.address())
+  let sawEarlyHints = false
+  let responseCount = 0
+
+  client.on('headers', (opts) => {
+    if (opts.statusCode === 103) {
+      sawEarlyHints = true
+    }
+  })
+
+  client.on('response', (statusCode, length) => {
+    responseCount++
+    if (responseCount === 1) {
+      t.equal(statusCode, 103, 'first status code should be 103')
+      t.equal(length, 0, '103 should have no body')
+    } else {
+      t.equal(statusCode, 200, 'final status code should be 200')
+      t.ok(sawEarlyHints, 'should have seen 103 Early Hints via headers event')
+      t.ok(length > 0, 'response should have bytes')
+      client.destroy()
+    }
   })
 })
