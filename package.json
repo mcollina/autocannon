@@ -49,6 +49,9 @@
     "tap": "^16.0.0",
     "why-is-node-running": "^2.3.0"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@minimistjs/subarg": "^1.0.0",
     "chalk": "^4.1.0",
@@ -56,7 +59,6 @@
     "cli-table3": "^0.6.0",
     "color-support": "^1.1.1",
     "cross-argv": "^2.0.0",
-    "form-data": "^4.0.0",
     "has-async-hooks": "^1.0.0",
     "hdr-histogram-js": "^3.0.0",
     "hdr-histogram-percentiles-obj": "^3.0.0",
