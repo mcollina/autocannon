@@ -99,6 +99,22 @@ test('should parse and return GET entries', (t) => {
   t.end()
 })
 
+test('should preserve HAR URL paths, queries and fragments', (t) => {
+  const cases = [
+    ['http://example.com:8080/some%20path?q=a%20b#fragment', 'http://example.com:8080', '/some%20path?q=a%20b#fragment'],
+    ['https://example.com:443', 'https://example.com', '/'],
+    ['http://[::1]:8080/?q=1#fragment', 'http://[::1]:8080', '/?q=1#fragment']
+  ]
+  t.plan(cases.length)
+
+  for (const [url, origin, path] of cases) {
+    const requests = parseHAR({
+      log: { entries: [{ request: { method: 'GET', url, headers: [] } }] }
+    })
+    t.strictSame(requests.get(origin), [{ origin, method: 'GET', path, headers: {} }])
+  }
+})
+
 test('should throw on HAR with invalid entries', (t) => {
   t.plan(2)
 
