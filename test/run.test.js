@@ -74,6 +74,30 @@ test('init', (t) => {
   })
 })
 
+test('run preserves URL credentials, host and request target', (t) => {
+  t.plan(6)
+
+  const server = helper.startServer({
+    body (req) {
+      t.equal(req.url, '/some%20path?name=a%20b&value=1', 'path and query stay encoded')
+      t.equal(req.headers.host, `localhost:${server.address().port}`, 'host includes the port')
+      t.equal(req.headers.authorization, `Basic ${Buffer.from('user@name:p@ss:word').toString('base64')}`, 'credentials are decoded')
+      return 'hello world'
+    }
+  })
+  t.teardown(() => server.close())
+
+  initJob({
+    url: `http://user%40name:p%40ss%3Aword@localhost:${server.address().port}/some%20path?name=a%20b&value=1#fragment`,
+    connections: 1,
+    amount: 1
+  }, (err, result) => {
+    t.error(err)
+    t.equal(result.errors, 0, 'no connection errors')
+    t.equal(result.requests.total, 1, 'request completed')
+  })
+})
+
 test('tracker.stop()', (t) => {
   const tracker = initJob({
     url: 'http://localhost:' + server.address().port,
