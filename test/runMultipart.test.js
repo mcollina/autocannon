@@ -1,6 +1,6 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const { tmpdir } = require('os')
 const { join } = require('path')
 const { writeFile } = require('fs')
@@ -55,10 +55,10 @@ test('run should return an error with invalid form options', async t => {
   ]
 
   const server = helper.startMultipartServer()
-  t.teardown(() => server.close())
+  t.after(() => server.close())
 
   for (const c of cases) {
-    t.test(c.name, async t => {
+    await t.test(c.name, async t => {
       const [err] = await new Promise((resolve) => {
         initJob({
           url: 'http://localhost:' + server.address().port,
@@ -69,10 +69,9 @@ test('run should return an error with invalid form options', async t => {
           resolve([err, res])
         })
       })
-      await t.test('error', t => {
-        t.not(null, err)
-        t.equal(c.message, err.message, `mismatching error message ${err.message}`)
-        t.end()
+      await t.test('error', (t) => {
+        t.assert.notStrictEqual(null, err)
+        t.assert.strictEqual(c.message, err.message, `mismatching error message ${err.message}`)
       })
     })
   }
@@ -112,12 +111,12 @@ test('run should take form options as a JSON string or a JS Object', async t => 
   const allCases = [...cases, ...cases.map(c => ({ ...c, workers: true }))]
 
   for (const c of allCases) {
-    t.test(c.name, { skip: c.workers && !hasWorkerSupport }, async t => {
+    await t.test(c.name, { skip: c.workers && !hasWorkerSupport }, async t => {
       const server = helper.startMultipartServer(null, payload => {
-        t.equal('j5', payload.name)
-        t.equal('j5.jpeg', payload.image.filename)
+        t.assert.strictEqual('j5', payload.name)
+        t.assert.strictEqual('j5.jpeg', payload.image.filename)
       })
-      t.teardown(() => server.close())
+      t.after(() => server.close())
       const [err, res] = await new Promise((resolve) => {
         initJob({
           url: 'http://localhost:' + server.address().port,
@@ -129,23 +128,22 @@ test('run should take form options as a JSON string or a JS Object', async t => 
           resolve([err, res])
         })
       })
-      await t.test('result', t => {
-        t.equal(null, err)
-        t.equal(0, res.errors, 'result should not have errors')
-        t.equal(1, res['2xx'], 'result status code should be 2xx')
-        t.equal(0, res.non2xx, 'result status code should be 2xx')
-        t.end()
+      await t.test('result', (t) => {
+        t.assert.strictEqual(null, err)
+        t.assert.strictEqual(0, res.errors, 'result should not have errors')
+        t.assert.strictEqual(1, res['2xx'], 'result status code should be 2xx')
+        t.assert.strictEqual(0, res.non2xx, 'result status code should be 2xx')
       })
     })
   }
 })
 
-test('run should use a custom method if `options.method` is passed', t => {
+test('run should use a custom method if `options.method` is passed', (t, done) => {
   const server = helper.startMultipartServer(null, payload => {
-    t.equal('j5', payload.name)
-    t.equal('j5.jpeg', payload.image.filename)
+    t.assert.strictEqual('j5', payload.name)
+    t.assert.strictEqual('j5.jpeg', payload.image.filename)
   })
-  t.teardown(() => server.close())
+  t.after(() => server.close())
 
   const form = {
     image: {
@@ -164,20 +162,20 @@ test('run should use a custom method if `options.method` is passed', t => {
     amount: 1,
     form
   }, (err, res) => {
-    t.equal(null, err)
-    t.equal(0, res.errors, 'result should not have errors')
-    t.equal(1, res['2xx'], 'result status code should be 2xx')
-    t.equal(0, res.non2xx, 'result status code should be 2xx')
-    t.end()
+    t.assert.strictEqual(null, err)
+    t.assert.strictEqual(0, res.errors, 'result should not have errors')
+    t.assert.strictEqual(1, res['2xx'], 'result status code should be 2xx')
+    t.assert.strictEqual(0, res.non2xx, 'result status code should be 2xx')
+    done()
   })
 })
 
-test('run should set filename', t => {
+test('run should set filename', (t, done) => {
   const server = helper.startMultipartServer(null, payload => {
-    t.equal('j5', payload.name)
-    t.equal('j5.jpeg', payload.image.filename)
+    t.assert.strictEqual('j5', payload.name)
+    t.assert.strictEqual('j5.jpeg', payload.image.filename)
   })
-  t.teardown(() => server.close())
+  t.after(() => server.close())
 
   const form = {
     image: {
@@ -196,20 +194,20 @@ test('run should set filename', t => {
     amount: 1,
     form
   }, (err, res) => {
-    t.equal(null, err)
-    t.equal(0, res.errors, 'result should not have errors')
-    t.equal(1, res['2xx'], 'result status code should be 2xx')
-    t.equal(0, res.non2xx, 'result status code should be 2xx')
-    t.end()
+    t.assert.strictEqual(null, err)
+    t.assert.strictEqual(0, res.errors, 'result should not have errors')
+    t.assert.strictEqual(1, res['2xx'], 'result status code should be 2xx')
+    t.assert.strictEqual(0, res.non2xx, 'result status code should be 2xx')
+    done()
   })
 })
 
-test('run should allow overriding filename', t => {
+test('run should allow overriding filename', (t, done) => {
   const server = helper.startMultipartServer(null, payload => {
-    t.equal('j5', payload.name)
-    t.equal('testfilename.jpeg', payload.image.filename)
+    t.assert.strictEqual('j5', payload.name)
+    t.assert.strictEqual('testfilename.jpeg', payload.image.filename)
   })
-  t.teardown(() => server.close())
+  t.after(() => server.close())
 
   const form = {
     image: {
@@ -231,20 +229,20 @@ test('run should allow overriding filename', t => {
     amount: 1,
     form
   }, (err, res) => {
-    t.equal(null, err)
-    t.equal(0, res.errors, 'result should not have errors')
-    t.equal(1, res['2xx'], 'result status code should be 2xx')
-    t.equal(0, res.non2xx, 'result status code should be 2xx')
-    t.end()
+    t.assert.strictEqual(null, err)
+    t.assert.strictEqual(0, res.errors, 'result should not have errors')
+    t.assert.strictEqual(1, res['2xx'], 'result status code should be 2xx')
+    t.assert.strictEqual(0, res.non2xx, 'result status code should be 2xx')
+    done()
   })
 })
 
-test('run should allow overriding filename with file path', t => {
+test('run should allow overriding filename with file path', (t, done) => {
   const server = helper.startMultipartServer({ preservePath: true }, payload => {
-    t.equal('j5', payload.name)
-    t.equal('some/path/testfilename.jpeg', payload.image.filename)
+    t.assert.strictEqual('j5', payload.name)
+    t.assert.strictEqual('some/path/testfilename.jpeg', payload.image.filename)
   })
-  t.teardown(() => server.close())
+  t.after(() => server.close())
 
   const form = {
     image: {
@@ -266,10 +264,10 @@ test('run should allow overriding filename with file path', t => {
     amount: 1,
     form
   }, (err, res) => {
-    t.equal(null, err)
-    t.equal(0, res.errors, 'result should not have errors')
-    t.equal(1, res['2xx'], 'result status code should be 2xx')
-    t.equal(0, res.non2xx, 'result status code should be 2xx')
-    t.end()
+    t.assert.strictEqual(null, err)
+    t.assert.strictEqual(0, res.errors, 'result should not have errors')
+    t.assert.strictEqual(1, res['2xx'], 'result status code should be 2xx')
+    t.assert.strictEqual(0, res.non2xx, 'result status code should be 2xx')
+    done()
   })
 })

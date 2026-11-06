@@ -1,19 +1,18 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const { parseHAR } = require('../lib/parseHAR')
 
 test('should throw on empty HAR', (t) => {
   t.plan(1)
 
-  t.throws(() => parseHAR(null), /Could not parse HAR content: no entries found/)
-  t.end()
+  t.assert.throws(() => parseHAR(null), /Could not parse HAR content: no entries found/)
 })
 
 test('should throw on HAR with no entries', (t) => {
   t.plan(1)
 
-  t.throws(() => parseHAR({
+  t.assert.throws(() => parseHAR({
     log: {
       version: '1.2',
       creator: {
@@ -33,13 +32,12 @@ test('should throw on HAR with no entries', (t) => {
       ]
     }
   }), /Could not parse HAR content: no entries found/)
-  t.end()
 })
 
 test('should throw on HAR with empty entries', (t) => {
   t.plan(1)
 
-  t.throws(() => parseHAR({
+  t.assert.throws(() => parseHAR({
     log: {
       version: '1.2',
       creator: {
@@ -60,13 +58,12 @@ test('should throw on HAR with empty entries', (t) => {
       entries: []
     }
   }), /Could not parse HAR content: no entries found/)
-  t.end()
 })
 
 test('should parse and return GET entries', (t) => {
   t.plan(1)
 
-  t.strictSame(parseHAR(require('./fixtures/httpbin-get.json')).get('https://httpbin.org'), [{
+  t.assert.deepStrictEqual(parseHAR(require('./fixtures/httpbin-get.json')).get('https://httpbin.org'), [{
     method: 'GET',
     origin: 'https://httpbin.org',
     path: '/get',
@@ -96,7 +93,6 @@ test('should parse and return GET entries', (t) => {
       TE: 'Trailers'
     }
   }])
-  t.end()
 })
 
 test('should preserve HAR URL paths, queries and fragments', (t) => {
@@ -105,54 +101,51 @@ test('should preserve HAR URL paths, queries and fragments', (t) => {
     ['https://example.com:443', 'https://example.com', '/'],
     ['http://[::1]:8080/?q=1#fragment', 'http://[::1]:8080', '/?q=1#fragment']
   ]
-  t.plan(cases.length)
+  t.plan(cases.length, { wait: true })
 
   for (const [url, origin, path] of cases) {
     const requests = parseHAR({
       log: { entries: [{ request: { method: 'GET', url, headers: [] } }] }
     })
-    t.strictSame(requests.get(origin), [{ origin, method: 'GET', path, headers: {} }])
+    t.assert.deepStrictEqual(requests.get(origin), [{ origin, method: 'GET', path, headers: {} }])
   }
 })
 
 test('should throw on HAR with invalid entries', (t) => {
   t.plan(2)
 
-  t.throws(() => parseHAR({
+  t.assert.throws(() => parseHAR({
     log: {
       entries: ['invalid']
     }
   }), /Could not parse HAR content: invalid request in entry #1/)
-  t.throws(() => parseHAR({
+  t.assert.throws(() => parseHAR({
     log: {
       entries: [{ request: { headers: [], url: 'http://localhost' } }, { request: null }]
     }
   }), /Could not parse HAR content: invalid request in entry #2/)
-
-  t.end()
 })
 
 test('should throw on HAR with invalid headers', (t) => {
   t.plan(2)
   const url = 'http://localhost'
 
-  t.throws(() => parseHAR({
+  t.assert.throws(() => parseHAR({
     log: {
       entries: [{ request: { headers: [], url } }, { request: { headers: ['foo'], url } }]
     }
   }), /Could not parse HAR content: invalid name or value in header #1 of entry #2/)
-  t.throws(() => parseHAR({
+  t.assert.throws(() => parseHAR({
     log: {
       entries: [{ request: { headers: null } }]
     }
   }), /Could not parse HAR content: invalid headers array in entry #1/)
-  t.end()
 })
 
 test('should parse and return POST entries', (t) => {
   t.plan(1)
 
-  t.strictSame(parseHAR(require('./fixtures/httpbin-post.json')).get('https://httpbin.org'), [{
+  t.assert.deepStrictEqual(parseHAR(require('./fixtures/httpbin-post.json')).get('https://httpbin.org'), [{
     method: 'POST',
     origin: 'https://httpbin.org',
     path: '/post',
@@ -191,14 +184,13 @@ test('should parse and return POST entries', (t) => {
     },
     body: 'text=a+text+value&number=10'
   }])
-  t.end()
 })
 
 test('should split requests per origin', (t) => {
   t.plan(2)
 
   const requetsPerOrigin = parseHAR(require('./fixtures/multi-domains.json'))
-  t.strictSame(requetsPerOrigin.get('https://httpbin.org'), [{
+  t.assert.deepStrictEqual(requetsPerOrigin.get('https://httpbin.org'), [{
     method: 'POST',
     origin: 'https://httpbin.org',
     path: '/post',
@@ -234,7 +226,7 @@ test('should split requests per origin', (t) => {
     }
   }])
 
-  t.strictSame(requetsPerOrigin.get('https://github.com'), [{
+  t.assert.deepStrictEqual(requetsPerOrigin.get('https://github.com'), [{
     method: 'POST',
     origin: 'https://github.com',
     path: '/',
@@ -254,5 +246,4 @@ test('should split requests per origin', (t) => {
     },
     body: 'text=a+text+value&number=10'
   }])
-  t.end()
 })

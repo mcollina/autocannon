@@ -3,7 +3,7 @@
 const os = require('os')
 const http = require('http')
 const path = require('path')
-const test = require('tap').test
+const { test } = require('node:test')
 const Client = require('../lib/httpClient')
 const helper = require('./helper')
 const server = helper.startServer()
@@ -32,14 +32,15 @@ const makeResponseFromBody = ({ server, method, body, headers = {} }) => {
 }
 
 test('client calls a server twice', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const client = new Client(server.address())
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     if (count++ > 0) {
       client.destroy()
     }
@@ -47,16 +48,17 @@ test('client calls a server twice', (t) => {
 })
 
 test('client calls a https server twice', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = httpsServer.address()
   opts.protocol = 'https:'
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     if (count++ > 0) {
       client.destroy()
     }
@@ -64,7 +66,7 @@ test('client calls a https server twice', (t) => {
 })
 
 test('client calculates correct duration when using pipelining', (t) => {
-  t.plan(6)
+  t.plan(6, { wait: true })
 
   const delayResponse = 500
   const lazyServer = helper.startServer({ delayResponse })
@@ -72,15 +74,16 @@ test('client calculates correct duration when using pipelining', (t) => {
   opts.pipelining = 2
   const startTime = process.hrtime()
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('response', (statusCode, length, duration) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(duration > delayResponse, `Expected response delay > ${delayResponse}ms but got ${duration}ms`)
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(duration > delayResponse, `Expected response delay > ${delayResponse}ms but got ${duration}ms`)
 
     const hrduration = process.hrtime(startTime)
     const maxExpectedDuration = hrduration[0] * 1e3 + hrduration[1] / 1e6
-    t.ok(duration < maxExpectedDuration, `Expected response delay < ${maxExpectedDuration}ms but got ${duration}ms`)
+    t.assert.ok(duration < maxExpectedDuration, `Expected response delay < ${maxExpectedDuration}ms but got ${duration}ms`)
 
     if (++count === 2) {
       client.destroy()
@@ -89,16 +92,17 @@ test('client calculates correct duration when using pipelining', (t) => {
 })
 
 test('client calls a tls server without SNI servername twice', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = tlsServer.address()
   opts.protocol = 'https:'
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('headers', (response) => {
-    t.equal(response.statusCode, 200, 'status code matches')
-    t.same(response.headers, ['X-servername', '', 'Content-Length', '0'])
+    t.assert.strictEqual(response.statusCode, 200, 'status code matches')
+    t.assert.deepStrictEqual(response.headers, ['X-servername', '', 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
@@ -106,17 +110,18 @@ test('client calls a tls server without SNI servername twice', (t) => {
 })
 
 test('client calls a tls server with SNI servername twice', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.servername = 'example.com'
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('headers', (response) => {
-    t.equal(response.statusCode, 200, 'status code matches')
-    t.same(response.headers, ['X-servername', opts.servername, 'Content-Length', '0'])
+    t.assert.strictEqual(response.statusCode, 200, 'status code matches')
+    t.assert.deepStrictEqual(response.headers, ['X-servername', opts.servername, 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
@@ -124,17 +129,18 @@ test('client calls a tls server with SNI servername twice', (t) => {
 })
 
 test('client uses SNI servername from URL hostname by default', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.hostname = 'localhost'
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('headers', (response) => {
-    t.equal(response.statusCode, 200, 'status code matches')
-    t.same(response.headers, ['X-servername', opts.hostname, 'Content-Length', '0'])
+    t.assert.strictEqual(response.statusCode, 200, 'status code matches')
+    t.assert.deepStrictEqual(response.headers, ['X-servername', opts.hostname, 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
@@ -142,18 +148,19 @@ test('client uses SNI servername from URL hostname by default', (t) => {
 })
 
 test('client prefers SNI servername from opts over URL hostname', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.hostname = 'localhost'
   opts.servername = 'example.com'
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('headers', (response) => {
-    t.equal(response.statusCode, 200, 'status code matches')
-    t.same(response.headers, ['X-servername', opts.servername, 'Content-Length', '0'])
+    t.assert.strictEqual(response.statusCode, 200, 'status code matches')
+    t.assert.deepStrictEqual(response.headers, ['X-servername', opts.servername, 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
@@ -161,17 +168,18 @@ test('client prefers SNI servername from opts over URL hostname', (t) => {
 })
 
 test('client ignores IP address in hostname-derived SNI servername', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.hostname = opts.address
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('headers', (response) => {
-    t.equal(response.statusCode, 200, 'status code matches')
-    t.same(response.headers, ['X-servername', '', 'Content-Length', '0'])
+    t.assert.strictEqual(response.statusCode, 200, 'status code matches')
+    t.assert.deepStrictEqual(response.headers, ['X-servername', '', 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
@@ -179,17 +187,18 @@ test('client ignores IP address in hostname-derived SNI servername', (t) => {
 })
 
 test('client ignores falsy SNI servername', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = tlsServer.address()
   opts.protocol = 'https:'
   opts.servername = ''
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('headers', (response) => {
-    t.equal(response.statusCode, 200, 'status code matches')
-    t.same(response.headers, ['X-servername', '', 'Content-Length', '0'])
+    t.assert.strictEqual(response.statusCode, 200, 'status code matches')
+    t.assert.deepStrictEqual(response.headers, ['X-servername', '', 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
@@ -197,7 +206,7 @@ test('client ignores falsy SNI servername', (t) => {
 })
 
 test('client passes through tlsOptions to connect', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = tlsServer.address()
   opts.protocol = 'https:'
@@ -207,11 +216,12 @@ test('client passes through tlsOptions to connect', (t) => {
     passphrase: 'test'
   }
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('headers', (response) => {
-    t.equal(response.statusCode, 200, 'status code matches')
-    t.same(response.headers, ['X-servername', '', 'X-email', 'tes@test.com', 'Content-Length', '0'])
+    t.assert.strictEqual(response.statusCode, 200, 'status code matches')
+    t.assert.deepStrictEqual(response.headers, ['X-servername', '', 'X-email', 'tes@test.com', 'Content-Length', '0'])
     if (count++ > 0) {
       client.destroy()
     }
@@ -219,14 +229,15 @@ test('client passes through tlsOptions to connect', (t) => {
 })
 
 test('http client automatically reconnects', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const client = new Client(server.address())
+  t.after(() => client.destroy())
   let count = 0
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     if (count++ > 0) {
       client.destroy()
     }
@@ -240,7 +251,7 @@ test('http client automatically reconnects', (t) => {
 })
 
 test('http clients should have a different body', (t) => {
-  t.plan(3)
+  t.plan(3, { wait: true })
 
   let clientCnt = 0
   const clients = []
@@ -254,41 +265,44 @@ test('http clients should have a different body', (t) => {
 
   for (let i = 0; i < 3; i++) {
     const client = new Client(opts)
+    t.after(() => client.destroy())
 
     clients.push(client)
   }
 
   for (let i = 0; i < clients.length; i++) {
     const client = clients[i]
+    t.after(() => client.destroy())
     const body = JSON.parse(client.requestIterator.currentRequest.body)
 
-    t.equal(body.name, reqArray[i], 'body match')
+    t.assert.strictEqual(body.name, reqArray[i], 'body match')
     client.destroy()
   }
 })
 
 test('client supports custom headers', (t) => {
-  t.plan(3)
+  t.plan(3, { wait: true })
 
   const opts = server.address()
   opts.headers = {
     hello: 'world'
   }
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
-    t.equal(req.headers.hello, 'world', 'custom header matches')
+    t.assert.strictEqual(req.headers.hello, 'world', 'custom header matches')
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     client.destroy()
   })
 })
 
 test('client supports custom headers in requests', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.requests = [
@@ -304,65 +318,69 @@ test('client supports custom headers in requests', (t) => {
     }
   ]
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
-    t.equal(req.headers['content-type'], 'application/json', 'custom header matches')
+    t.assert.strictEqual(req.headers['content-type'], 'application/json', 'custom header matches')
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
     client.destroy()
   })
 })
 
 test('client supports host custom header', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.headers = {
     host: 'www.autocannon.com'
   }
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
-    t.equal(req.headers.host, 'www.autocannon.com', 'host header matches')
+    t.assert.strictEqual(req.headers.host, 'www.autocannon.com', 'host header matches')
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
     client.destroy()
   })
 })
 
 test('client supports host custom header with mixed case', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.headers = {
     Host: 'www.autocannon.com'
   }
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
-    t.equal(req.headers.host, 'www.autocannon.com', 'host header matches')
+    t.assert.strictEqual(req.headers.host, 'www.autocannon.com', 'host header matches')
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
     client.destroy()
   })
 })
 
 test('client supports response trailers', (t) => {
-  t.plan(3)
+  t.plan(3, { wait: true })
 
   const client = new Client(trailerServer.address())
+  t.after(() => client.destroy())
   client.on('trailers', (rawTrailers) => {
-    t.same(rawTrailers, ['Content-MD5', '7895bf4b8828b55ceaf47747b4bca667'])
+    t.assert.deepStrictEqual(rawTrailers, ['Content-MD5', '7895bf4b8828b55ceaf47747b4bca667'])
   })
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     client.destroy()
   })
 })
@@ -374,73 +392,76 @@ test('client supports response trailers', (t) => {
   'PUT'
 ].forEach((method) => {
   test(`client supports ${method}`, (t) => {
-    t.plan(3)
+    t.plan(3, { wait: true })
 
     const opts = server.address()
     opts.method = method
 
     const client = new Client(opts)
+    t.after(() => client.destroy())
 
     server.once('request', (req, res) => {
-      t.equal(req.method, method, 'custom method matches')
+      t.assert.strictEqual(req.method, method, 'custom method matches')
     })
 
     client.on('response', (statusCode, length) => {
-      t.equal(statusCode, 200, 'status code matches')
-      t.ok(length > 'hello world'.length, 'length includes the headers')
+      t.assert.strictEqual(statusCode, 200, 'status code matches')
+      t.assert.ok(length > 'hello world'.length, 'length includes the headers')
       client.destroy()
     })
   })
 })
 
 test('client supports sending a body', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = server.address()
   opts.method = 'POST'
   opts.body = Buffer.from('hello world')
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
     req.pipe(bl((err, body) => {
-      t.error(err)
-      t.same(body.toString(), opts.body.toString(), 'body matches')
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), opts.body.toString(), 'body matches')
     }))
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     client.destroy()
   })
 })
 
 test('client supports sending a body which is a string', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const opts = server.address()
   opts.method = 'POST'
   opts.body = 'hello world'
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
     req.pipe(bl((err, body) => {
-      t.error(err)
-      t.same(body.toString(), opts.body, 'body matches')
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), opts.body, 'body matches')
     }))
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     client.destroy()
   })
 })
 
 test('client supports sending a body passed on the CLI as JSON array', (t) => {
-  t.plan(3)
+  t.plan(3, { wait: true })
 
   const body = [{ a: [{ b: 1 }] }]
   const jsonBody = JSON.stringify(body)
@@ -453,138 +474,146 @@ test('client supports sending a body passed on the CLI as JSON array', (t) => {
   opts.body = mangledBody
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
     req.pipe(bl((err, body) => {
-      t.error(err)
-      t.same(body.toString(), jsonBody, 'body matches')
+      t.assert.ifError(err)
+      t.assert.deepStrictEqual(body.toString(), jsonBody, 'body matches')
     }))
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
     client.destroy()
   })
 })
 
 test('client supports changing the body', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.method = 'POST'
   opts.body = 'hello world'
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   const body = 'modified'
   client.setBody(body)
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, body }), 'body changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, body }), 'body changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.method = 'POST'
 
   const client = new Client(opts)
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
+  t.after(() => client.destroy())
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   const headers = { header: 'modified' }
   client.setHeaders(headers)
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers }), 'header changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers }), 'header changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers and body', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   const body = 'modified'
   const headers = { header: 'modifiedHeader' }
   client.setBody(body)
   client.setHeaders(headers)
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers and body together', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   const body = 'modified'
   const headers = { header: 'modifiedHeader' }
   client.setHeadersAndBody(headers, body)
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers and body with null values', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   client.setBody(null)
   client.setHeaders(null)
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'changes updated request')
   client.destroy()
 })
 
 test('client supports changing the headers and body together with null values', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   client.setHeadersAndBody(null, null)
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'changes updated request')
   client.destroy()
 })
 
 test('client supports updating the current request object', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = server.address()
   opts.body = 'hello world'
   opts.method = 'POST'
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'request is okay before modifying')
 
   const newReq = {
     headers: {
@@ -595,12 +624,12 @@ test('client supports updating the current request object', (t) => {
   }
   client.setRequest(newReq)
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...newReq }), 'changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...newReq }), 'changes updated request')
   client.destroy()
 })
 
 test('client customiseRequest function overwrites the headers and body', (t) => {
-  t.plan(5)
+  t.plan(5, { wait: true })
 
   const opts = server.address()
   opts.body = 'hello world'
@@ -608,75 +637,80 @@ test('client customiseRequest function overwrites the headers and body', (t) => 
   const body = 'modified'
   const headers = { header: 'modifiedHeader' }
   opts.setupClient = (client) => {
-    t.ok(client.setHeadersAndBody, 'client had setHeadersAndBody method')
-    t.ok(client.setHeaders, 'client had setHeaders method')
-    t.ok(client.setBody, 'client had setBody method')
+    t.assert.ok(client.setHeadersAndBody, 'client had setHeadersAndBody method')
+    t.assert.ok(client.setHeaders, 'client had setHeaders method')
+    t.assert.ok(client.setBody, 'client had setBody method')
 
     client.setHeadersAndBody(headers, body)
   }
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
+  t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts, headers, body }), 'changes updated request')
 
-  t.notSame(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'changes updated request')
+  t.assert.notDeepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts }), 'changes updated request')
 
   client.destroy()
 })
 
 test('client should throw when attempting to modify the request with a pipelining greater than 1', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   const opts = server.address()
   opts.pipelining = 10
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.throws(() => client.setHeaders({}))
+  t.assert.throws(() => client.setHeaders({}))
 
   client.destroy()
 })
 
 test('client pipelined requests count should equal pipelining when greater than 1', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   const opts = server.address()
   opts.pipelining = 10
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
-  t.equal(client.pipelinedRequests.size(), client.opts.pipelining)
+  t.assert.strictEqual(client.pipelinedRequests.size(), client.opts.pipelining)
 
   client.destroy()
 })
 
 test('client should emit a timeout when no response is received', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   const opts = timeoutServer.address()
   opts.timeout = 1
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   client.on('timeout', () => {
-    t.ok(1, 'timeout should have happened')
+    t.assert.ok(1, 'timeout should have happened')
     client.destroy()
   })
 })
 
 test('client should emit 2 timeouts when no responses are received', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const opts = timeoutServer.address()
   opts.timeout = 1
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let count = 0
   client.on('timeout', () => {
-    t.ok(1, 'timeout should have happened')
+    t.assert.ok(1, 'timeout should have happened')
     if (count++ > 0) {
       client.destroy()
     }
   })
 })
 
-test('client should have 2 different requests it iterates over', (t) => {
+test('client should have 2 different requests it iterates over', (t, done) => {
   t.plan(3)
   const server = helper.startServer()
   const opts = server.address()
@@ -693,6 +727,7 @@ test('client should have 2 different requests it iterates over', (t) => {
   ]
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let number = 0
   client.setRequests(requests)
   client.on('response', (statusCode, length) => {
@@ -700,20 +735,20 @@ test('client should have 2 different requests it iterates over', (t) => {
     switch (number) {
       case 1:
       case 3:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[0] }), 'request was okay')
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[0] }), 'request was okay')
         break
       case 2:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[1] }), 'body changes updated request')
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[1] }), 'body changes updated request')
         break
       case 4:
         client.destroy()
-        t.end()
+        done()
         break
     }
   })
 })
 
-test('client should emit reset when request iterator has reset', (t) => {
+test('client should emit reset when request iterator has reset', (t, done) => {
   t.plan(1)
   const server = helper.startServer()
   const opts = server.address()
@@ -736,13 +771,14 @@ test('client should emit reset when request iterator has reset', (t) => {
   ]
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
   client.setRequests(requests)
   client.on('reset', () => {
     client.destroy()
-    t.end()
+    done()
   })
   client.on('response', () => {
-    t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[0] }), 'first request was okay')
+    t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...requests[0] }), 'first request was okay')
   })
 })
 
@@ -752,15 +788,15 @@ test('client should stop when first setupRequest() fails', (t) => {
   const opts = server.address()
 
   const client = new Client(opts)
-  t.throws(
+  t.after(() => client.destroy())
+  t.assert.throws(
     () => client.setRequests([{ method: 'GET', setupRequest: () => {} }]),
-    'First setupRequest() failed did not returned valid request. Stopping'
+    { message: 'First setupRequest() failed did not returned valid request. Stopping' }
   )
   client.destroy()
-  t.end()
 })
 
-test('client exposes response bodies and statuses', (t) => {
+test('client exposes response bodies and statuses', (t, done) => {
   const server = helper.startServer({
     body: ({ method }) => method === 'POST' ? 'hello!' : 'world!'
   })
@@ -783,27 +819,28 @@ test('client exposes response bodies and statuses', (t) => {
   const responses = []
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let number = 0
   client.on('response', (statusCode, length) => {
     number++
     switch (number) {
       case 1:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'first request')
-        t.same(responses, [{
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'first request')
+        t.assert.deepStrictEqual(responses, [{
           status: 200,
           body: 'hello!'
         }])
         break
       case 2:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[1] }), 'second request')
-        t.same(responses, [{
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[1] }), 'second request')
+        t.assert.deepStrictEqual(responses, [{
           status: 200,
           body: 'hello!'
         }])
         break
       case 3:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[2] }), 'third request')
-        t.same(responses, [{
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[2] }), 'third request')
+        t.assert.deepStrictEqual(responses, [{
           status: 200,
           body: 'hello!'
         }, {
@@ -812,8 +849,8 @@ test('client exposes response bodies and statuses', (t) => {
         }])
         break
       case 4:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'first request')
-        t.same(responses, [{
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'first request')
+        t.assert.deepStrictEqual(responses, [{
           status: 200,
           body: 'hello!'
         }, {
@@ -824,13 +861,13 @@ test('client exposes response bodies and statuses', (t) => {
           body: 'hello!'
         }])
         client.destroy()
-        t.end()
+        done()
         break
     }
   })
 })
 
-test('client keeps context and reset it when looping on requests', (t) => {
+test('client keeps context and reset it when looping on requests', (t, done) => {
   const server = helper.startServer()
   const opts = server.address()
   let number = 0
@@ -842,7 +879,7 @@ test('client keeps context and reset it when looping on requests', (t) => {
       body: 'hello world again',
       onResponse: (status, body, context) => {
         if (number < 3) {
-          t.same(context, {}, 'context was supposed to be null')
+          t.assert.deepStrictEqual(context, {}, 'context was supposed to be null')
           context.previousRes = body
         }
       }
@@ -851,7 +888,7 @@ test('client keeps context and reset it when looping on requests', (t) => {
       method: 'PUT',
       setupRequest: (req, context) => {
         if (number < 3) {
-          t.same(context, { previousRes: expectedResponse }, 'context was supposed to contain previous response')
+          t.assert.deepStrictEqual(context, { previousRes: expectedResponse }, 'context was supposed to contain previous response')
         }
         return Object.assign({}, req, { body: context.previousRes })
       }
@@ -859,51 +896,54 @@ test('client keeps context and reset it when looping on requests', (t) => {
   ]
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
   client.on('response', (statusCode, length) => {
     number++
     switch (number) {
       case 1:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'hard-coded body')
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, ...opts.requests[0] }), 'hard-coded body')
         break
       case 2:
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'PUT', body: expectedResponse }), 'dynamic body')
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'PUT', body: expectedResponse }), 'dynamic body')
         client.destroy()
-        t.end()
+        done()
         break
     }
   })
 })
 
-test('client supports http basic authentication', (t) => {
+test('client supports http basic authentication', (t, done) => {
   t.plan(2)
   const server = helper.startServer()
   const opts = server.address()
   opts.auth = 'username:password'
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   server.once('request', (req, res) => {
-    t.equal(req.headers.authorization, 'Basic dXNlcm5hbWU6cGFzc3dvcmQ=', 'authorization header matches')
+    t.assert.strictEqual(req.headers.authorization, 'Basic dXNlcm5hbWU6cGFzc3dvcmQ=', 'authorization header matches')
   })
 
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
     client.destroy()
-    t.end()
+    done()
   })
 })
 
 test('should return client instance', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
   const caller = {}
   const opts = server.address()
   opts.auth = 'username:password'
   const client = Client.call(caller, opts)
+  t.after(() => client.destroy())
 
-  t.type(client, Client)
+  t.assert.ok(client instanceof Client)
   client.destroy()
 })
 
-test('client calls twice using socket on secure server', (t) => {
+test('client calls twice using socket on secure server', (t, done) => {
   t.plan(4)
   const socketPath = process.platform === 'win32'
     ? path.join('\\\\?\\pipe', process.cwd(), 'autocannon-' + Date.now())
@@ -916,18 +956,19 @@ test('client calls twice using socket on secure server', (t) => {
     socketPath,
     connections: 1
   })
+  t.after(() => client.destroy())
   let count = 0
   client.on('response', (statusCode, length) => {
-    t.equal(statusCode, 200, 'status code matches')
-    t.ok(length > 'hello world'.length, 'length includes the headers')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
+    t.assert.ok(length > 'hello world'.length, 'length includes the headers')
     if (count++ > 0) {
       client.destroy()
-      t.end()
+      done()
     }
   })
 })
 
-test('client emits mistmatch when expectBody doesn\'t match actual body', (t) => {
+test('client emits mistmatch when expectBody doesn\'t match actual body', (t, done) => {
   const responses = ['hello...', 'world!']
   const server = helper.startServer({
     body: ({ method }) => responses[method === 'POST' ? 0 : 1]
@@ -945,15 +986,16 @@ test('client emits mistmatch when expectBody doesn\'t match actual body', (t) =>
   opts.expectBody = responses[0]
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
   client.on('mismatch', (body) => {
     // we expect body mismatch on second request
-    t.same(body, responses[1])
+    t.assert.deepStrictEqual(body, responses[1])
     client.destroy()
-    t.end()
+    done()
   })
 })
 
-test('client invokes appropriate onResponse when using pipelining', (t) => {
+test('client invokes appropriate onResponse when using pipelining', (t, done) => {
   const server = helper.startServer({
     body: ({ method }) => method
   })
@@ -977,38 +1019,39 @@ test('client invokes appropriate onResponse when using pipelining', (t) => {
   ]
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
   let number = 0
   client.on('response', (statusCode, length) => {
     number++
     switch (number) {
       case 1:
         // 1st & 2nd were sent, receiving 1st
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'GET' }), 'current should be second request')
-        t.same(responses, ['POST'])
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'GET' }), 'current should be second request')
+        t.assert.deepStrictEqual(responses, ['POST'])
         break
       case 2:
         // 3rd was sent as 1st is finished, receiving 2nd
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'PUT' }), 'current should be third request')
-        t.same(responses, ['POST', 'GET'])
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'PUT' }), 'current should be third request')
+        t.assert.deepStrictEqual(responses, ['POST', 'GET'])
         break
       case 3:
         // 1st was resent, receiving 3rd
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'current should be first request')
-        t.same(responses, ['POST', 'GET', 'PUT'])
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'POST' }), 'current should be first request')
+        t.assert.deepStrictEqual(responses, ['POST', 'GET', 'PUT'])
         break
       case 4:
         // 2nd was resent, receiving 1st
-        t.same(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'GET' }), 'current should be second request')
-        t.same(responses, ['POST', 'GET', 'PUT', 'POST'])
+        t.assert.deepStrictEqual(client.getRequestBuffer().toString(), makeResponseFromBody({ server, method: 'GET' }), 'current should be second request')
+        t.assert.deepStrictEqual(responses, ['POST', 'GET', 'PUT', 'POST'])
         client.destroy()
-        t.end()
+        done()
         break
     }
   })
 })
 
 test('client supports receiving large response body', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const mockBody = Array.from({ length: 1024 * 10 }, (_, i) => `str-${i}`).join('\n')
   const server = http.createServer((req, res) => {
@@ -1032,10 +1075,11 @@ test('client supports receiving large response body', (t) => {
   ]
 
   const client = new Client(opts)
+  t.after(() => client.destroy())
 
   client.on('response', (statusCode, length) => {
-    t.equal(onResponseCalled, 1, 'onResponse should be called only once')
-    t.equal(statusCode, 200, 'status code matches')
+    t.assert.strictEqual(onResponseCalled, 1, 'onResponse should be called only once')
+    t.assert.strictEqual(statusCode, 200, 'status code matches')
     client.destroy()
   })
 })

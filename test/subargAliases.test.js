@@ -1,10 +1,10 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const generateSubArgAliases = require('../lib/subargAliases')
 
 test('generateSubArgAliases Should generate warmup aliases', (t) => {
-  t.plan(4)
+  t.plan(4, { wait: true })
 
   const args = {
     connections: 1,
@@ -17,14 +17,14 @@ test('generateSubArgAliases Should generate warmup aliases', (t) => {
 
   const result = generateSubArgAliases(args)
 
-  t.equal(result.connections, 1)
-  t.equal(result.duration, 2)
-  t.equal(result.warmup.connections, 3)
-  t.equal(result.warmup.duration, 4)
+  t.assert.strictEqual(result.connections, 1)
+  t.assert.strictEqual(result.duration, 2)
+  t.assert.strictEqual(result.warmup.connections, 3)
+  t.assert.strictEqual(result.warmup.duration, 4)
 })
 
 test('generateSubArgAliases should not process aliases that are not defined in subargAliases.js', (t) => {
-  t.plan(5)
+  t.plan(5, { wait: true })
 
   const args = {
     connections: 1,
@@ -36,9 +36,9 @@ test('generateSubArgAliases should not process aliases that are not defined in s
 
   const result = generateSubArgAliases(args)
 
-  t.equal(result.connections, 1)
-  t.equal(result.warmup.connections, 3)
-  t.equal(result.warmup.c, 3)
-  t.equal(result.warmup.T, 'A title')
-  t.equal(Object.keys(result.warmup).length, 3)
+  t.assert.strictEqual(result.connections, 1)
+  t.assert.strictEqual(result.warmup.connections, 3)
+  t.assert.strictEqual(result.warmup.c, 3)
+  t.assert.strictEqual(result.warmup.T, 'A title')
+  t.assert.strictEqual(Object.keys(result.warmup).length, 3)
 })

@@ -1,13 +1,13 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const validate = require('../lib/validate')
 const parseArguments = require('../autocannon').parseArguments
 const initJob = require('../lib/init')
 const printResult = require('../lib/printResult')
 
 test('validate should return an error', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const args = {
     sampleInt: 'hello',
@@ -16,12 +16,12 @@ test('validate should return an error', (t) => {
 
   const result = validate(args)
 
-  t.ok(result instanceof Error)
-  t.equal(result.message, 'sample interval entered was in an invalid format')
+  t.assert.ok(result instanceof Error)
+  t.assert.strictEqual(result.message, 'sample interval entered was in an invalid format')
 })
 
 test('validate should return an error', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const args = {
     sampleInt: -1,
@@ -30,12 +30,12 @@ test('validate should return an error', (t) => {
 
   const result = validate(args)
 
-  t.ok(result instanceof Error)
-  t.equal(result.message, 'sample interval can not be less than 0')
+  t.assert.ok(result instanceof Error)
+  t.assert.strictEqual(result.message, 'sample interval can not be less than 0')
 })
 
 test('validate should not return an error', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const args = {
     sampleInt: 2,
@@ -44,12 +44,12 @@ test('validate should not return an error', (t) => {
 
   const result = validate(args)
 
-  t.ok(!(result instanceof Error))
-  t.equal(result.sampleInt, 2)
+  t.assert.ok(!(result instanceof Error))
+  t.assert.strictEqual(result.sampleInt, 2)
 })
 
 test('parseArguments should accept value in ms (2000)', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   const args = [
     '-L', 2000,
@@ -58,11 +58,11 @@ test('parseArguments should accept value in ms (2000)', (t) => {
 
   const result = parseArguments(args)
 
-  t.equal(result.sampleInt, 2000)
+  t.assert.strictEqual(result.sampleInt, 2000)
 })
 
 test('run should return sampleInt == 2000 & samples == 3', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   initJob({
     duration: 6,
@@ -72,13 +72,13 @@ test('run should return sampleInt == 2000 & samples == 3', (t) => {
     if (err) {
       console.err(err)
     }
-    t.equal(res.sampleInt, 2000)
-    t.equal(res.samples, 3)
+    t.assert.strictEqual(res.sampleInt, 2000)
+    t.assert.strictEqual(res.samples, 3)
   })
 })
 
 test('printResult should print the sample interval (2) & the total samples (3)', (t) => {
-  t.plan(2)
+  t.plan(2, { wait: true })
 
   const result = {
     duration: 6,
@@ -114,6 +114,6 @@ test('printResult should print the sample interval (2) & the total samples (3)',
 
   const output = printResult(result, {})
 
-  t.ok(output.includes('Req/Bytes counts sampled every 2 seconds.'))
-  t.ok(output.includes('# of samples: 3'))
+  t.assert.ok(output.includes('Req/Bytes counts sampled every 2 seconds.'))
+  t.assert.ok(output.includes('# of samples: 3'))
 })

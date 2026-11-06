@@ -1,7 +1,7 @@
 'use strict'
 
 const why = require('why-is-node-running')
-const t = require('tap')
+const { test } = require('node:test')
 const split = require('split2')
 const path = require('path')
 const childProcess = require('child_process')
@@ -35,46 +35,48 @@ const lines = [
   /.* requests in ([0-9]|\.)+s, .* read/
 ]
 
-t.plan(lines.length * 2 + 2)
+test('CLI resolves hostless URLs using PORT', t => {
+  t.plan(lines.length * 2 + 2, { wait: true })
 
-const server = helper.startServer()
-const port = server.address().port
-const url = '/path' // no hostname
+  const server = helper.startServer()
+  const port = server.address().port
+  const url = '/path' // no hostname
 
-const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', url], {
-  cwd: __dirname,
-  env: Object.assign({}, process.env, {
-    PORT: port
-  }),
-  stdio: ['ignore', 'pipe', 'pipe'],
-  detached: false
-})
-
-t.teardown(() => {
-  try {
-    child.kill()
-  } catch {}
-})
-
-child
-  .stderr
-  .pipe(split())
-  .on('data', (line) => {
-    const regexp = lines.shift()
-    t.ok(regexp, 'we are expecting this line')
-    t.ok(regexp.test(line), 'line matches ' + regexp)
-  })
-  .on('end', () => {
-    t.ok(server.autocannonConnects > 0, 'targeted the correct port')
+  const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-d', '1', url], {
+    cwd: __dirname,
+    env: Object.assign({}, process.env, {
+      PORT: port
+    }),
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false
   })
 
-const noPortChild = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), url], {
-  cwd: __dirname,
-  env: process.env,
-  stdio: ['ignore', 'pipe', 'pipe'],
-  detached: false
-})
+  t.after(() => {
+    try {
+      child.kill()
+    } catch {}
+  })
 
-noPortChild.on('exit', (code) => {
-  t.equal(code, 1, 'should exit with error when a hostless URL is passed and no PORT var is available')
+  child
+    .stderr
+    .pipe(split())
+    .on('data', (line) => {
+      const regexp = lines.shift()
+      t.assert.ok(regexp, 'we are expecting this line')
+      t.assert.ok(regexp.test(line), 'line matches ' + regexp)
+    })
+    .on('end', () => {
+      t.assert.ok(server.autocannonConnects > 0, 'targeted the correct port')
+    })
+
+  const noPortChild = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), url], {
+    cwd: __dirname,
+    env: process.env,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false
+  })
+
+  noPortChild.on('exit', (code) => {
+    t.assert.strictEqual(code, 1, 'should exit with error when a hostless URL is passed and no PORT var is available')
+  })
 })

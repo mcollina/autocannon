@@ -1,6 +1,6 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const split = require('split2')
 const path = require('path')
 const childProcess = require('child_process')
@@ -8,7 +8,7 @@ const { Writable } = require('stream')
 const ansiRegex = require('ansi-regex')
 const printResult = require('../lib/printResult')
 
-test('should stdout (print) the result', (t) => {
+test('should stdout (print) the result', (t, done) => {
   const lines = [
     /.*/,
     /$/,
@@ -39,7 +39,7 @@ test('should stdout (print) the result', (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     child.kill()
   })
 
@@ -48,14 +48,14 @@ test('should stdout (print) the result', (t) => {
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      t.ok(regexp, 'we are expecting this line')
-      t.ok(regexp.test(line), 'line matches ' + regexp)
+      t.assert.ok(regexp, 'we are expecting this line')
+      t.assert.ok(regexp.test(line), 'line matches ' + regexp)
     })
-    .on('end', t.end)
+    .on('end', done)
 })
 
 test('verify amount of total requests', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   // arrange
   const connections = 10
@@ -97,11 +97,11 @@ test('verify amount of total requests', (t) => {
 
   // assert
   const expectedRequests = connections * pipelining
-  t.match(output.includes(`${expectedRequests} requests in`), true)
+  t.assert.strictEqual(output.includes(`${expectedRequests} requests in`), true)
 })
 
 test('should not print when verbose(V=0) is false', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   const connections = 10
   const pipelining = 2
@@ -139,11 +139,11 @@ test('should not print when verbose(V=0) is false', (t) => {
 
   // act
   const output = printResult(result, { verbose: false })
-  t.ok(output.split('\n').length === 2)
+  t.assert.ok(output.split('\n').length === 2)
 })
 
 test('should print with color when color is supported', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   const connections = 10
   const pipelining = 2
@@ -192,7 +192,7 @@ test('should print with color when color is supported', (t) => {
 
   // act
   const output = printResult(result, { outputStream })
-  t.ok(ansiRegex().test(output))
+  t.assert.ok(ansiRegex().test(output))
 
   // cleanup
   process.env.FORCE_COLOR = FORCE_COLOR
@@ -203,7 +203,7 @@ test('should print with color when color is supported', (t) => {
 })
 
 test('should not print with any color when color is not supported', (t) => {
-  t.plan(1)
+  t.plan(1, { wait: true })
 
   const connections = 10
   const pipelining = 2
@@ -251,7 +251,7 @@ test('should not print with any color when color is not supported', (t) => {
 
   // act
   const output = printResult(result, { outputStream })
-  t.ok(!ansiRegex().test(output))
+  t.assert.ok(!ansiRegex().test(output))
 
   // cleanup
   process.env.FORCE_COLOR = FORCE_COLOR

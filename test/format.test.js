@@ -1,6 +1,6 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const format = require('../lib/format')
 
 const pairs = {
@@ -13,7 +13,6 @@ const pairs = {
 Object.keys(pairs).forEach((expected) => {
   const original = pairs[expected]
   test(`format ${original} into ${expected}`, (t) => {
-    t.equal(expected, format(original))
-    t.end()
+    t.assert.strictEqual(expected, format(original))
   })
 })
