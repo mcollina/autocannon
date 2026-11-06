@@ -1,6 +1,6 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const initJob = require('../../lib/init')
 const helper = require('../helper')
 
@@ -30,5 +30,4 @@ test('should clean up HdrHistogram WASM memory at each run', async (t) => {
   await Promise.all(lotsOfRuns)
 
   // if the process has not crashed, we are good \o/
-  t.end()
 })

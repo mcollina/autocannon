@@ -1,11 +1,11 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const split = require('split2')
 const path = require('path')
 const childProcess = require('child_process')
 
-test('should stdout (print) the result', (t) => {
+test('should stdout (print) the result', (t, done) => {
   const lines = [
     /.*/,
     /$/,
@@ -47,7 +47,7 @@ test('should stdout (print) the result', (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     child.kill()
   })
 
@@ -56,8 +56,8 @@ test('should stdout (print) the result', (t) => {
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      t.ok(regexp, 'we are expecting this line')
-      t.ok(regexp.test(line), 'line matches ' + regexp)
+      t.assert.ok(regexp, 'we are expecting this line')
+      t.assert.ok(regexp.test(line), 'line matches ' + regexp)
     })
-    .on('end', t.end)
+    .on('end', done)
 })

@@ -1,10 +1,10 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const Autocannon = require('../autocannon')
 
 test('debug works', (t) => {
-  t.plan(5)
+  t.plan(5, { wait: true })
 
   const args = Autocannon.parseArguments([
     '-H', 'X-Http-Method-Override=GET',
@@ -14,9 +14,9 @@ test('debug works', (t) => {
     'http://localhost/foo/bar'
   ])
 
-  t.equal(args.url, 'http://localhost/foo/bar')
-  t.strictSame(args.headers, { 'X-Http-Method-Override': 'GET' })
-  t.equal(args.method, 'POST')
-  t.equal(args.body, 'the body')
-  t.equal(args.debug, true)
+  t.assert.strictEqual(args.url, 'http://localhost/foo/bar')
+  t.assert.deepStrictEqual(args.headers, { 'X-Http-Method-Override': 'GET' })
+  t.assert.strictEqual(args.method, 'POST')
+  t.assert.strictEqual(args.body, 'the body')
+  t.assert.strictEqual(args.debug, true)
 })

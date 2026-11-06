@@ -1,7 +1,7 @@
 'use strict'
 
 const path = require('path')
-const { test } = require('tap')
+const { test } = require('node:test')
 const spawn = require('child_process').spawn
 const split = require('split2')
 const hasAsyncHooks = require('has-async-hooks')
@@ -31,7 +31,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     /.* requests in ([0-9]|\.)+s, .* read/
   ]
 
-  t.plan(lines.length * 2)
+  t.plan(lines.length * 2, { wait: true })
 
   const child = spawn(process.execPath, [
     path.join(__dirname, '..'),
@@ -46,7 +46,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     child.kill()
   })
 
@@ -55,8 +55,8 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      t.ok(regexp, 'we are expecting this line')
-      t.ok(regexp.test(line), 'line matches ' + regexp)
+      t.assert.ok(regexp, 'we are expecting this line')
+      t.assert.ok(regexp.test(line), 'line matches ' + regexp)
     })
 })
 
@@ -85,7 +85,7 @@ test('assume --on-port flag if -- node is set', { skip: !hasAsyncHooks() }, (t) 
     /.* requests in ([0-9]|\.)+s, .* read/
   ]
 
-  t.plan(lines.length * 2)
+  t.plan(lines.length * 2, { wait: true })
 
   const child = spawn(process.execPath, [
     path.join(__dirname, '..'),
@@ -100,7 +100,7 @@ test('assume --on-port flag if -- node is set', { skip: !hasAsyncHooks() }, (t) 
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     child.kill()
   })
 
@@ -109,7 +109,7 @@ test('assume --on-port flag if -- node is set', { skip: !hasAsyncHooks() }, (t) 
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      t.ok(regexp, 'we are expecting this line')
-      t.ok(regexp.test(line), 'line matches ' + regexp + `actual: ${line}  expected: ${regexp}`)
+      t.assert.ok(regexp, 'we are expecting this line')
+      t.assert.ok(regexp.test(line), 'line matches ' + regexp + `actual: ${line}  expected: ${regexp}`)
     })
 })

@@ -560,6 +560,14 @@ Both saturates a Node.js process at around 41k req/sec, however,
 Note that `wrk` does not support HTTP/1.1 pipelining. As a result, `autocannon` can create
 more load on the server than wrk for each open connection.
 
+## Development
+
+Running the tests requires Node.js 22.15.0 or newer. After `npm install`, run
+`npm test` to lint the code and run the `node:test` suite through borp with code
+coverage. Coverage thresholds and test file patterns are configured in
+`.borp.yaml`. Use `npm run lint` to run ESLint with neostandard, or
+`npm run lint:fix` to apply automatic fixes.
+
 <a name="acknowledgements"></a>
 ## Acknowledgements
 

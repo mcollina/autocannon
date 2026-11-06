@@ -1,11 +1,11 @@
 'use strict'
-const test = require('tap').test
+const { test } = require('node:test')
 const initJob = require('../../lib/init')
 
 test('should log error on connection error', t => {
-  t.plan(1)
+  t.plan(1, { wait: true })
   console.error = function (obj) {
-    t.type(obj, Error)
+    t.assert.ok(obj instanceof Error)
     console.error = () => {}
   }
   initJob({

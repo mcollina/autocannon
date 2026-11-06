@@ -1,6 +1,6 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const split = require('split2')
 const path = require('path')
 const fs = require('fs')
@@ -9,7 +9,7 @@ const childProcess = require('child_process')
 const helper = require('./helper')
 const { hasWorkerSupport } = require('../lib/util')
 
-test('should run benchmark against server', (t) => {
+test('should run benchmark against server', (t, done) => {
   const lines = [
     /Running 1s test @ .*$/,
     /10 connections.*$/,
@@ -46,7 +46,7 @@ test('should run benchmark against server', (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     try {
       child.kill()
     } catch {}
@@ -57,13 +57,13 @@ test('should run benchmark against server', (t) => {
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      t.ok(regexp, 'we are expecting this line')
-      t.ok(regexp.test(line), 'line matches ' + regexp)
+      t.assert.ok(regexp, 'we are expecting this line')
+      t.assert.ok(regexp.test(line), 'line matches ' + regexp)
     })
-    .on('end', t.end)
+    .on('end', done)
 })
 
-test('should parse HAR file and run requests', (t) => {
+test('should parse HAR file and run requests', (t, done) => {
   const lines = [
     /Running \d+ requests test @ .*$/,
     /1 connections.*$/,
@@ -103,7 +103,7 @@ test('should parse HAR file and run requests', (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     try {
       child.kill()
     } catch {}
@@ -114,12 +114,12 @@ test('should parse HAR file and run requests', (t) => {
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      t.ok(regexp.test(line), `"${line}" matches ${regexp}`)
+      t.assert.ok(regexp.test(line), `"${line}" matches ${regexp}`)
     })
-    .on('end', t.end)
+    .on('end', done)
 })
 
-test('should throw on unknown HAR file', (t) => {
+test('should throw on unknown HAR file', (t, done) => {
   t.plan(1)
 
   const child = childProcess.spawn(process.execPath, [path.join(__dirname, '..'), '-a', 4, '-c', 1, '--har', 'does not exist', 'http://localhost'], {
@@ -129,7 +129,7 @@ test('should throw on unknown HAR file', (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     try {
       child.kill()
     } catch {}
@@ -142,12 +142,12 @@ test('should throw on unknown HAR file', (t) => {
     .on('data', line => lines.push(line))
     .on('end', () => {
       const output = lines.join('\n')
-      t.ok(output.includes('Error: Failed to load HAR file content: ENOENT'), `Unexpected output:\n${output}`)
-      t.end()
+      t.assert.ok(output.includes('Error: Failed to load HAR file content: ENOENT'), `Unexpected output:\n${output}`)
+      done()
     })
 })
 
-test('should throw on invalid HAR file', (t) => {
+test('should throw on invalid HAR file', (t, done) => {
   t.plan(1)
 
   const harPath = path.join(os.tmpdir(), 'autocannon-test.har')
@@ -160,7 +160,7 @@ test('should throw on invalid HAR file', (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     try {
       child.kill()
     } catch {}
@@ -173,12 +173,12 @@ test('should throw on invalid HAR file', (t) => {
     .on('data', line => lines.push(line))
     .on('end', () => {
       const output = lines.join('\n')
-      t.ok(output.includes('Error: Failed to load HAR file content: Unexpected token'), `Unexpected output:\n${output}`)
-      t.end()
+      t.assert.ok(output.includes('Error: Failed to load HAR file content: Unexpected token'), `Unexpected output:\n${output}`)
+      done()
     })
 })
 
-test('should write warning about unused HAR requests', (t) => {
+test('should write warning about unused HAR requests', (t, done) => {
   t.plan(1)
 
   const server = helper.startServer()
@@ -194,7 +194,7 @@ test('should write warning about unused HAR requests', (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     try {
       child.kill()
     } catch {}
@@ -207,12 +207,12 @@ test('should write warning about unused HAR requests', (t) => {
     .on('data', line => lines.push(line))
     .on('end', () => {
       const output = lines.join('\n')
-      t.ok(output.includes(`Warning: skipping requests to 'https://github.com' as the target is ${url}`), `Unexpected output:\n${output}`)
-      t.end()
+      t.assert.ok(output.includes(`Warning: skipping requests to 'https://github.com' as the target is ${url}`), `Unexpected output:\n${output}`)
+      done()
     })
 })
 
-test('run with workers', { skip: !hasWorkerSupport }, (t) => {
+test('run with workers', { skip: !hasWorkerSupport }, (t, done) => {
   const lines = [
     /Running 1s test @ .*$/,
     /10 connections.*$/,
@@ -250,7 +250,7 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     detached: false
   })
 
-  t.teardown(() => {
+  t.after(() => {
     try {
       child.kill()
     } catch {}
@@ -261,14 +261,14 @@ test('run with workers', { skip: !hasWorkerSupport }, (t) => {
     .pipe(split())
     .on('data', (line) => {
       const regexp = lines.shift()
-      t.ok(regexp, 'we are expecting this line')
-      t.ok(regexp.test(line), 'line matches ' + regexp)
+      t.assert.ok(regexp, 'we are expecting this line')
+      t.assert.ok(regexp.test(line), 'line matches ' + regexp)
     })
-    .on('end', t.end)
+    .on('end', done)
 })
 
-test('should run handle PUT bodies', (t) => {
-  t.test('"number" bodies work', t => {
+test('should run handle PUT bodies', async (t) => {
+  await t.test('"number" bodies work', (t, done) => {
     t.plan(2)
 
     const server = helper.startServer()
@@ -289,7 +289,7 @@ test('should run handle PUT bodies', (t) => {
       detached: false
     })
 
-    t.teardown(() => {
+    t.after(() => {
       try {
         child.kill()
       } catch {}
@@ -303,19 +303,19 @@ test('should run handle PUT bodies', (t) => {
         outputLines.push(line)
       })
       .on('end', () => {
-        t.equal(
+        t.assert.strictEqual(
           outputLines.some(l => l === 'body must be either a string or a buffer'),
           false
         )
-        t.equal(
+        t.assert.strictEqual(
           /.* requests in ([0-9]|\.)+s, .* read/.test(outputLines.pop()),
           true
         )
-        t.end()
+        done()
       })
   })
 
-  t.test('"string" bodies work', t => {
+  await t.test('"string" bodies work', (t, done) => {
     t.plan(2)
 
     const server = helper.startServer()
@@ -336,7 +336,7 @@ test('should run handle PUT bodies', (t) => {
       detached: false
     })
 
-    t.teardown(() => {
+    t.after(() => {
       try {
         child.kill()
       } catch {}
@@ -350,17 +350,15 @@ test('should run handle PUT bodies', (t) => {
         outputLines.push(line)
       })
       .on('end', () => {
-        t.equal(
+        t.assert.strictEqual(
           outputLines.some(l => l === 'body must be either a string or a buffer'),
           false
         )
-        t.equal(
+        t.assert.strictEqual(
           /.* requests in ([0-9]|\.)+s, .* read/.test(outputLines.pop()),
           true
         )
-        t.end()
+        done()
       })
   })
-
-  t.end()
 })
