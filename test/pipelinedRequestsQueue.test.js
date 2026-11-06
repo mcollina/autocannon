@@ -14,7 +14,9 @@ test('PipelinedRequestsQueue measures time precisely', (t) => {
   setTimeout(() => {
     const data = queue.terminateRequest()
 
-    t.ok(data.duration > delay, `Calculated duration ${data.duration} should not be less than the induced delay ${delay}`)
+    // libuv timers have millisecond granularity and may fire slightly
+    // before the requested delay when measured with hrtime, allow 1ms slack
+    t.ok(data.duration > delay - 1, `Calculated duration ${data.duration} should not be less than the induced delay ${delay}`)
 
     const hrduration = process.hrtime(startTime)
     const maxExpectedDuration = Math.ceil(hrduration[0] * 1e3 + hrduration[1] / 1e6)
