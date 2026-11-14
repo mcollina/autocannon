@@ -579,7 +579,7 @@ Logo and identity designed by Cosmic Fox Design: https://www.behance.net/cosmicf
 
 ### Chat on Gitter
 
-If you are using autocannon or you have any questions, let us know: [Gitter](https://gitter.im/mcollina/autocannon)
+If you are using autocannon or you have any questions, let us know: Gitter
 
 ### Contributors
 
