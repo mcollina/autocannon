@@ -569,10 +569,6 @@ Logo and identity designed by Cosmic Fox Design: https://www.behance.net/cosmicf
 
 [wrk][wrk] and [wrk2][wrk2] provided great inspiration.
 
-### Chat on Gitter
-
-If you are using autocannon or you have any questions, let us know: [Gitter](https://gitter.im/mcollina/autocannon)
-
 ### Contributors
 
 - [Glen Keane](mailto:glenkeane.94@gmail.com) | [Github](https://github.com/GlenTiki)
