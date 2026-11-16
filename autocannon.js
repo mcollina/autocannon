@@ -294,6 +294,13 @@ function start (argv) {
         AUTOCANNON_SOCKET: socketPath
       })
     })
+
+    // Do not leave the spawned server running if we are terminated:
+    // it would keep our inherited stdio open.
+    process.once('SIGTERM', () => {
+      proc.kill('SIGTERM')
+      process.exit(143)
+    })
   } else {
     // if forever is true then a promise is not returned and we need to try ... catch errors
     try {
