@@ -3,10 +3,11 @@
 const path = require('path')
 const { test } = require('node:test')
 const spawn = require('child_process').spawn
+const { once } = require('events')
 const split = require('split2')
 const hasAsyncHooks = require('has-async-hooks')
 
-test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
+test('--on-port flag', { skip: !hasAsyncHooks(), timeout: 30000 }, (t) => {
   const lines = [
     /Running 1s test @ .*$/,
     /10 connections.*$/,
@@ -46,9 +47,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     detached: false
   })
 
-  t.after(() => {
-    child.kill()
-  })
+  t.after(() => waitForExit(child))
 
   child
     .stderr
@@ -60,7 +59,7 @@ test('--on-port flag', { skip: !hasAsyncHooks() }, (t) => {
     })
 })
 
-test('assume --on-port flag if -- node is set', { skip: !hasAsyncHooks() }, (t) => {
+test('assume --on-port flag if -- node is set', { skip: !hasAsyncHooks(), timeout: 30000 }, (t) => {
   const lines = [
     /Running 1s test @ .*$/,
     /10 connections.*$/,
@@ -100,9 +99,7 @@ test('assume --on-port flag if -- node is set', { skip: !hasAsyncHooks() }, (t) 
     detached: false
   })
 
-  t.after(() => {
-    child.kill()
-  })
+  t.after(() => waitForExit(child))
 
   child
     .stderr
@@ -113,3 +110,13 @@ test('assume --on-port flag if -- node is set', { skip: !hasAsyncHooks() }, (t) 
       t.assert.ok(regexp.test(line), 'line matches ' + regexp + `actual: ${line}  expected: ${regexp}`)
     })
 })
+
+// Let autocannon exit on its own so it can stop the target process first:
+// killing it early would orphan the target, which keeps the stderr pipe
+// open and the test process alive. Only force it if it does not finish.
+async function waitForExit (child) {
+  if (child.exitCode !== null || child.signalCode !== null) return
+  const timer = setTimeout(() => child.kill(), 10000)
+  await once(child, 'exit')
+  clearTimeout(timer)
+}
